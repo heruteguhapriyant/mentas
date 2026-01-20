@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/../layouts/header.php'; ?>
+<?php require_once __DIR__ . '/layout/header.php'; ?>
 
 <main class="container contributor-dashboard">
     <div class="dashboard-header">
@@ -100,4 +100,4 @@
 .empty-state { padding: 2rem; text-align: center; background: #f9f9f9; border-radius: 8px; color: #666; }
 </style>
 
-<?php require_once __DIR__ . '/../layouts/footer.php'; ?>
+<?php require_once __DIR__ . '/layout/footer.php'; ?>

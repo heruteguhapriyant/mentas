@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/../layouts/header.php'; ?>
+<?php require_once __DIR__ . '/layout/header.php'; ?>
 
 <main class="container contributor-form-page">
     <div class="page-header">
@@ -90,4 +90,4 @@ textarea.form-control { resize: vertical; min-height: 100px; }
 }
 </style>
 
-<?php require_once __DIR__ . '/../layouts/footer.php'; ?>
+<?php require_once __DIR__ . '/layout/footer.php'; ?>
