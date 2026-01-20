@@ -46,8 +46,13 @@
     </section>
 
     <!-- Katalog Section -->
+<<<<<<< HEAD
     <section class="program-section" style="padding-top: 0;">
         <div class="program-card">
+=======
+    <section class="program-section">
+        <div class="program-card" >
+>>>>>>> c48663278a924eb7b10c97b0df9f5d5b55e8d103
             <h3>Katalog Komunitas</h3>
             <ul>
                 <li>Sanggar Seni</li>
