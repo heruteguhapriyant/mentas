@@ -7,7 +7,13 @@ class Controller
         extract($data);
 
         $__viewPath = "../app/views/$view.php";
-        require "../app/views/layouts/main.php";
+        
+        // Admin views use their own layout (no public header/footer)
+        if (strpos($view, 'admin/') === 0 || strpos($view, 'auth/') === 0) {
+            require $__viewPath;
+        } else {
+            // Public views use main layout with header/footer
+            require "../app/views/layouts/main.php";
+        }
     }
 }
-

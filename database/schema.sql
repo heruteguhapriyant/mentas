@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS communities (
 -- Password: admin123 (bcrypt hash)
 -- =============================================
 INSERT INTO users (name, email, password, role, status) VALUES
-('Admin Mentas', 'admin@mentas.id', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'active');
+('Admin Mentas', 'admin@mentas.id', '$2y$10$CrNLJmt0PsTeNU2Y/1XQv.vcOBXS4/bC24wT.me0qo8njwBtFhFv', 'admin', 'active');
 
 -- =============================================
 -- DATA AWAL: Kategori Blog (Opsi B)

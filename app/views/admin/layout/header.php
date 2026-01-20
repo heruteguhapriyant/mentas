@@ -207,15 +207,27 @@
                 </a></li>
                 
                 <div class="menu-divider"></div>
+                <li style="padding: 0.5rem 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.75rem; text-transform: uppercase;">Blog</li>
                 
                 <li><a href="<?= BASE_URL ?>/admin/categories">
-                    <i class="fas fa-folder"></i> Kategori Blog
+                    <i class="fas fa-folder"></i> Kategori
                 </a></li>
                 <li><a href="<?= BASE_URL ?>/admin/posts">
                     <i class="fas fa-newspaper"></i> Artikel
                 </a></li>
                 
                 <div class="menu-divider"></div>
+                <li style="padding: 0.5rem 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.75rem; text-transform: uppercase;">Konten</li>
+                
+                <li><a href="<?= BASE_URL ?>/admin/zines">
+                    <i class="fas fa-book"></i> Buletin Sastra
+                </a></li>
+                <li><a href="<?= BASE_URL ?>/admin/communities">
+                    <i class="fas fa-users-cog"></i> Katalog Komunitas
+                </a></li>
+                
+                <div class="menu-divider"></div>
+                <li style="padding: 0.5rem 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.75rem; text-transform: uppercase;">Pengguna</li>
                 
                 <li><a href="<?= BASE_URL ?>/admin/users">
                     <i class="fas fa-users"></i> Kelola User
@@ -223,6 +235,9 @@
                 
                 <div class="menu-divider"></div>
                 
+                <li><a href="<?= BASE_URL ?>/admin/settings">
+                    <i class="fas fa-cog"></i> Pengaturan
+                </a></li>
                 <li><a href="<?= BASE_URL ?>">
                     <i class="fas fa-globe"></i> Lihat Website
                 </a></li>

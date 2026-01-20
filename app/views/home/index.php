@@ -47,14 +47,14 @@
 
     <!-- Katalog Section -->
     <section class="program-section" style="padding-top: 0;">
-        <div class="program-card highlight" style="background: #ff8a34;">
-            <h3 style="color: #fff;">Katalog Komunitas</h3>
-            <ul style="color: #fff;">
+        <div class="program-card">
+            <h3>Katalog Komunitas</h3>
+            <ul>
                 <li>Sanggar Seni</li>
                 <li>Komunitas Sastra</li>
                 <li>Teater & Pertunjukan</li>
             </ul>
-            <a href="<?= BASE_URL ?>/katalog" class="btn-dark" style="background: #000; color: #fff; display: inline-block; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">Lihat Katalog</a>
+            <a href="<?= BASE_URL ?>/katalog" class="btn-outline">Lihat Katalog</a>
         </div>
 
         <div class="program-card">
