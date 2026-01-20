@@ -7,64 +7,49 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/mentas.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8f9fa; 
+        /* Override header untuk contributor - selalu scrolled state (merah) */
+        .header {
+            background: #d52c2c !important;
+            padding: 15px 60px;
+            border-bottom: 3px solid #0000004b;
         }
-        .contributor-nav {
-            background: #1a1a2e;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 60px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+        .header .logo-default { display: none; }
+        .header .logo-sticky { 
+            display: block;
+            transform: scale(3.6);
+            transform-origin: left center;
         }
-        .contributor-nav .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .header .navbar a { color: #fff; }
+        .header .navbar a:hover { color: #000; font-weight: 600; }
+        .header .profile-icon {
+            border-color: #fff;
             color: #fff;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.2rem;
+            background: transparent;
         }
-        .contributor-nav .logo img {
-            height: 35px;
+        .header .profile-icon:hover {
+            background: #fff;
+            color: #d52c2c;
         }
-        .contributor-nav .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        .contributor-nav .nav-links a {
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color 0.2s;
-        }
-        .contributor-nav .nav-links a:hover {
-            color: #fff;
-        }
-        .contributor-nav .nav-links .logout {
-            color: #ff6b6b;
-        }
+        /* Container utama contributor */
+        body { padding-top: 80px; }
     </style>
 </head>
 <body>
-    <nav class="contributor-nav">
-        <a href="<?= BASE_URL ?>" class="logo">
-            <img src="<?= BASE_URL ?>/assets/images/mentas-putih.png" alt="Mentas.id">
-        </a>
-        <div class="nav-links">
-            <a href="<?= BASE_URL ?>"><i class="fas fa-globe"></i> Website</a>
-            <a href="<?= BASE_URL ?>/contributor"><i class="fas fa-th-large"></i> Dashboard</a>
-            <a href="<?= BASE_URL ?>/auth/logout" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <header class="header scrolled">
+        <div class="header-container">
+            <div class="logo">
+                <a href="<?= BASE_URL ?>">
+                    <img src="<?= BASE_URL ?>/assets/images/Mentas-logo.png" alt="Mentas Logo" class="logo-default">
+                    <img src="<?= BASE_URL ?>/assets/images/mentas-putih.png" alt="Mentas Logo White" class="logo-sticky">
+                </a>
+            </div>
+            <nav class="navbar">
+                <a href="<?= BASE_URL ?>"><i class="fas fa-globe"></i> Website</a>
+                <a href="<?= BASE_URL ?>/contributor"><i class="fas fa-th-large"></i> Dashboard</a>
+                <a href="<?= BASE_URL ?>/contributor/create"><i class="fas fa-plus-circle"></i> Tulis Artikel</a>
+            </nav>
+            <a href="<?= BASE_URL ?>/auth/logout" class="profile-icon" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
-    </nav>
+    </header>
