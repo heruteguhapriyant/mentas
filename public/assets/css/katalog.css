@@ -1,0 +1,275 @@
+/* =========================
+   HERO
+========================= */
+
+.katalog-hero {
+    padding: 120px 60px 60px;
+}
+
+.katalog-hero-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.katalog-hero-text {
+    text-align: left;
+}
+
+.katalog-title {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.katalog-location {
+    opacity: 0.9;
+    font-size: 14px;
+    color: #d52c2c;
+}
+
+/* =========================
+   AVATAR
+========================= */
+
+.katalog-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 4px solid rgba(255,255,255,0.3);
+}
+
+.katalog-avatar-placeholder {
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.katalog-avatar-placeholder i {
+    font-size: 3rem;
+    color: #fff;
+}
+
+/* =========================
+   INDEX THUMB
+========================= */
+
+.katalog-thumb {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.katalog-thumb-placeholder {
+    width: 100%;
+    height: 120px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.katalog-thumb-placeholder i {
+    font-size: 2.5rem;
+    color: #fff;
+}
+
+/* =========================
+   DETAIL
+========================= */
+
+.katalog-detail-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.katalog-card {
+    width: 100%;
+    max-width: 800px;
+}
+
+.katalog-description {
+    line-height: 1.8;
+    margin-top: 15px;
+    color: #555;
+}
+
+.katalog-contact {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.katalog-contact i {
+    color: #d52c2c;
+    width: 20px;
+}
+
+.katalog-contact a {
+    color: #d52c2c;
+}
+
+/* =========================
+   INDEX
+========================= */
+
+/* =========================
+   HERO
+========================= */
+
+.katalog-hero {
+    padding: 120px 60px 60px;
+}
+
+.katalog-hero-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.katalog-hero-text {
+    text-align: left;
+}
+
+.katalog-title {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.katalog-location {
+    opacity: 0.9;
+    font-size: 14px;
+    color: #555;
+}
+
+/* =========================
+   AVATAR
+========================= */
+
+.katalog-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 4px solid rgba(255,255,255,0.3);
+}
+
+.katalog-avatar-placeholder {
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.katalog-avatar-placeholder i {
+    font-size: 3rem;
+    color: #fff;
+}
+
+/* =========================
+   INDEX THUMB
+========================= */
+
+.katalog-thumb {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.katalog-thumb-placeholder {
+    width: 100%;
+    height: 120px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.katalog-thumb-placeholder i {
+    font-size: 2.5rem;
+    color: #fff;
+}
+
+/* =========================
+   DETAIL
+========================= */
+
+.katalog-detail-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.katalog-card {
+    width: 100%;
+    max-width: 800px;
+}
+
+.katalog-description {
+    line-height: 1.8;
+    margin-top: 15px;
+    color: #555;
+}
+
+.katalog-contact {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.katalog-contact i {
+    color: #d52c2c;
+    width: 20px;
+}
+
+.katalog-contact a {
+    color: #d52c2c;
+}
+
+/* =========================
+   INDEX
+========================= */
+
+.katalog-index-section {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.katalog-excerpt {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.katalog-empty {
+    text-align: center;
+    width: 100%;
+    padding: 3rem;
+    color: #666;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.katalog-footer {
+    margin-top: 20px;
+    text-align: center;
+}
