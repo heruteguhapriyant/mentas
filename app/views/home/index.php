@@ -46,7 +46,7 @@
     </section>
 
     <!-- Katalog Section -->
-    <section class="program-section" style="padding-top: 0;">
+    <section class="program-section">
         <div class="program-card" >
             <h3>Katalog Komunitas</h3>
             <ul>
