@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 19, 2026 at 02:44 PM
+-- Generation Time: Jan 24, 2026 at 04:31 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -47,7 +47,24 @@ INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `is_active`, `sor
 (2, 'Esai', 'esai', 'Esai dan opini tentang kesenian', 1, 2, '2026-01-18 15:11:13', '2026-01-18 15:11:13'),
 (3, 'Komunitas', 'komunitas', 'Cerita dan kegiatan komunitas seni', 1, 3, '2026-01-18 15:11:13', '2026-01-18 15:11:13'),
 (4, 'Tradisi', 'tradisi', 'Warisan tradisi dan budaya nusantara', 1, 4, '2026-01-18 15:11:13', '2026-01-18 15:11:13'),
-(5, 'Ekosistem', 'ekosistem', 'Ekosistem seni dan budaya Indonesia', 1, 5, '2026-01-18 15:11:13', '2026-01-18 15:11:13');
+(5, 'Ekosistem', 'ekosistem', 'Ekosistem seni dan budaya Indonesia', 1, 5, '2026-01-18 15:11:13', '2026-01-18 15:11:13'),
+(7, 'Mitologi', 'mitologi-1', 'Berisi tentang mitologi yang ada di seluruh dunia', 1, 6, '2026-01-20 10:37:00', '2026-01-20 10:37:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `comments`
+--
+
+CREATE TABLE `comments` (
+  `id` int NOT NULL,
+  `post_id` int NOT NULL,
+  `user_id` int DEFAULT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `body` text NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -106,11 +123,129 @@ CREATE TABLE `posts` (
 --
 
 INSERT INTO `posts` (`id`, `title`, `slug`, `excerpt`, `body`, `cover_image`, `category_id`, `author_id`, `status`, `views`, `created_at`, `updated_at`, `published_at`) VALUES
-(1, 'Wayang Klithik Wonosoco, Ki Sutikno, Dalang Terakhir dan Beban Ingatan', 'wayang-klithik-wonosoco-ki-sutikno-dalang-terakhir-dan-beban-ingatan', 'ADA saat-saat ketika kebudayaan tidak hadir sebagai perayaan yang riuh, melainkan sebagai bisikan halus yang meminta untuk didengarkan dengan lebih pelan.', 'Oleh Imam Khanafi, penulis esai, tinggal di Kudus\r\n\r\nADA saat-saat ketika kebudayaan tidak hadir sebagai perayaan yang riuh, melainkan sebagai bisikan halus yang meminta untuk didengarkan dengan lebih pelan. Ia hidup dalam jeda, dalam ingatan yang hampir terlewat, dan dalam kesediaan manusia untuk menoleh ke belakang tanpa rasa nostalgia berlebihan. Dari sanalah kesenian tradisi menemukan maknanya yang paling dalam: bukan sekadar warisan masa lalu, tetapi cermin yang mengajukan pertanyaan sunyi kepada kita hari ini, apakah kita masih mau merawat yang rapuh, yang sederhana, dan yang nyaris dilupakan, agar ia tetap bernapas di tengah perubahan zaman.\r\n\r\nDi Desa Wonosoco, Kecamatan Undaan, Kabupaten Kudus, kesenian tidak pernah berdiri sendiri. Ia lahir dari tanah, air, dan doa-doa yang berulang dalam waktu panjang. Wayang Klithik Wonosoco merupakan wayang kayu pipih yang digerakkan dengan tangan dalang bukan sekadar bentuk seni pertunjukan, melainkan bagian dari kosmologi desa. Ia hidup bersama ritual bersih sendang, bersama kisah tentang mata air yang dijaga, dan bersama ingatan kolektif tentang leluhur.\r\n\r\nCerita lisan desa menyebutkan bahwa Wayang Klithik lahir bersamaan dengan pendirian Wonosoco. Dalam kisah itu, Pangeran Kajoran dari Mataram dan Ki Saji bersemedi setelah peperangan. Dari semedi itu, dua mata air yaitu Sendang Dewot dan Sendang Gading yang muncul sebagai penanda kehidupan baru. Air bukan hanya sumber penghidupan, tetapi juga pusat spiritualitas. Di sekitar air itulah, Wayang Klithik tumbuh sebagai medium doa, pengingat, dan penuntun moral.\r\n\r\nPerkiraan sejarah menempatkan Wayang Klithik Wonosoco telah ada sejak abad ke-13, sebuah masa peralihan penting di Jawa ketika Islam mulai menyebar dan bernegosiasi dengan tradisi pra-Islam. Wayang Klithik menjadi ruang temu: antara dakwah dan ritus lama, antara kisah-kisah babad Jawa dan nilai-nilai spiritual yang diwariskan turun-temurun.\r\n\r\nHari ini, Wayang Klithik Wonosoco berada di titik kritis. Dari generasi ke generasi, tradisi ini diwariskan melalui garis dalang. Namun kini, hanya tersisa satu dalang aktif: Ki Sutikno, generasi kedelapan dalang Wayang Klithik Wonosoco.\r\n\r\nLebih dari 30 tahun Ki Sutikno mendalang, belajar langsung dari ayahnya, dan setia membawakan lakon-lakon klasik babad Tanah Jawa. Ia bukan sekadar seniman, tetapi penjaga ingatan. Setiap gerak wayang, setiap dialog, menyimpan pengetahuan yang tidak tertulis di buku.\r\n\r\nDi Wonosoco, wayang kayu itu masih digerakkan. Suaranya mungkin semakin lirih, tetapi selama ia masih dipentaskan, ingatan desa belum sepenuhnya hilang. Wayang Klithik mengingatkan kita bahwa sejarah tidak selalu ditulis di buku, kadang ia hidup di panggung kecil, di tangan seorang dalang, menunggu untuk terus didengarkan.', NULL, 4, 1, 'published', 130, '2026-01-09 21:14:00', '2026-01-18 23:38:40', '2026-01-09 21:14:00'),
+(1, 'Wayang Klithik Wonosoco, Ki Sutikno, Dalang Terakhir dan Beban Ingatan', 'wayang-klithik-wonosoco-ki-sutikno-dalang-terakhir-dan-beban-ingatan-1', 'ADA saat-saat ketika kebudayaan tidak hadir sebagai perayaan yang riuh, melainkan sebagai bisikan halus yang meminta untuk didengarkan dengan lebih pelan.', 'Oleh Imam Khanafi, penulis esai, tinggal di Kudus\r\n\r\nADA saat-saat ketika kebudayaan tidak hadir sebagai perayaan yang riuh, melainkan sebagai bisikan halus yang meminta untuk didengarkan dengan lebih pelan. Ia hidup dalam jeda, dalam ingatan yang hampir terlewat, dan dalam kesediaan manusia untuk menoleh ke belakang tanpa rasa nostalgia berlebihan. Dari sanalah kesenian tradisi menemukan maknanya yang paling dalam: bukan sekadar warisan masa lalu, tetapi cermin yang mengajukan pertanyaan sunyi kepada kita hari ini, apakah kita masih mau merawat yang rapuh, yang sederhana, dan yang nyaris dilupakan, agar ia tetap bernapas di tengah perubahan zaman.\r\n\r\nDi Desa Wonosoco, Kecamatan Undaan, Kabupaten Kudus, kesenian tidak pernah berdiri sendiri. Ia lahir dari tanah, air, dan doa-doa yang berulang dalam waktu panjang. Wayang Klithik Wonosoco merupakan wayang kayu pipih yang digerakkan dengan tangan dalang bukan sekadar bentuk seni pertunjukan, melainkan bagian dari kosmologi desa. Ia hidup bersama ritual bersih sendang, bersama kisah tentang mata air yang dijaga, dan bersama ingatan kolektif tentang leluhur.\r\n\r\nCerita lisan desa menyebutkan bahwa Wayang Klithik lahir bersamaan dengan pendirian Wonosoco. Dalam kisah itu, Pangeran Kajoran dari Mataram dan Ki Saji bersemedi setelah peperangan. Dari semedi itu, dua mata air yaitu Sendang Dewot dan Sendang Gading yang muncul sebagai penanda kehidupan baru. Air bukan hanya sumber penghidupan, tetapi juga pusat spiritualitas. Di sekitar air itulah, Wayang Klithik tumbuh sebagai medium doa, pengingat, dan penuntun moral.\r\n\r\nPerkiraan sejarah menempatkan Wayang Klithik Wonosoco telah ada sejak abad ke-13, sebuah masa peralihan penting di Jawa ketika Islam mulai menyebar dan bernegosiasi dengan tradisi pra-Islam. Wayang Klithik menjadi ruang temu: antara dakwah dan ritus lama, antara kisah-kisah babad Jawa dan nilai-nilai spiritual yang diwariskan turun-temurun.\r\n\r\nHari ini, Wayang Klithik Wonosoco berada di titik kritis. Dari generasi ke generasi, tradisi ini diwariskan melalui garis dalang. Namun kini, hanya tersisa satu dalang aktif: Ki Sutikno, generasi kedelapan dalang Wayang Klithik Wonosoco.\r\n\r\nLebih dari 30 tahun Ki Sutikno mendalang, belajar langsung dari ayahnya, dan setia membawakan lakon-lakon klasik babad Tanah Jawa. Ia bukan sekadar seniman, tetapi penjaga ingatan. Setiap gerak wayang, setiap dialog, menyimpan pengetahuan yang tidak tertulis di buku.\r\n\r\nDi Wonosoco, wayang kayu itu masih digerakkan. Suaranya mungkin semakin lirih, tetapi selama ia masih dipentaskan, ingatan desa belum sepenuhnya hilang. Wayang Klithik mengingatkan kita bahwa sejarah tidak selalu ditulis di buku, kadang ia hidup di panggung kecil, di tangan seorang dalang, menunggu untuk terus didengarkan.', 'uploads/posts/696e693835e17.jpeg', 4, 1, 'published', 131, '2026-01-09 21:14:00', '2026-01-19 17:26:42', '2026-01-09 21:14:00'),
 (2, 'Ruang Tamu yang Tidak Pernah Kosong', 'ruang-tamu-yang-tidak-pernah-kosong', 'Argumentasi Sisi Rekonstruksi dan Drama Trauma Domestik dalam Pementasan Teater Djavu SMK Taman Siswa dalam final Festival Teater Pelajar.', 'Oleh Imam Khanafi, esais, penonton teater\r\n\r\nRuang tamu kerap dipahami sebagai ruang paling netral dalam rumah. Ia bukan kamar tidur yang intim, bukan dapur yang fungsional, bukan halaman yang terbuka. Ruang tamu adalah tempat menerima: tamu, kabar, gosip, konflik, dan sering kali kepura-puraan.\r\n\r\nDalam pementasan Argumentasi Sisi Rekonstruksi karya Diky Soemarno oleh Teater Djavu, ruang tamu tidak lagi menjadi latar pasif, melainkan pusat gravitasi dramatik. Seluruh konflik keluarga patriarkal yang paradoksnya kini berwujud matriarkal dipadatkan ke dalam satu ruang yang seolah tak pernah bernapas lega.\r\n\r\nPementasan yang dilakukan dengan sting panggung di ruang tamu, dengan jam kursi, perabot kuno, dan dialog yang berlangsung di sana, menegaskan satu hal penting: tragedi keluarga tidak pernah benar-benar pergi. Ia hanya berpindah jam, berpindah kursi, berpindah posisi duduk.\r\n\r\nDalam konteks ini, ruang tamu menjadi metafora dari kehidupan keluarga Indonesia pasca-trauma domestik: terlihat rapi di permukaan, namun menyimpan endapan luka yang tak selesai.\r\n\r\nIbu Sastro adalah pusat kontrol ruang tamu itu. Di usia 50-an, ia hadir sebagai figur dominan yang mengatur ritme, jam, dan batasan. Ia bukan sekadar ibu, melainkan penjaga moral, penentu aturan, dan pengingat masa lalu yang tak boleh dilupakan namun juga tak boleh dibicarakan secara jujur.\r\n\r\nJudul Argumentasi Sisi Rekonstruksi menemukan maknanya di sini. Argumentasi bukan sekadar debat verbal, melainkan cara bertahan hidup. Setiap karakter berargumentasi untuk membenarkan posisinya: ibu dengan kontrol, Lusi dengan kepatuhan, Yoni dengan pemberontakan, Bi Iyah dengan keheningan.\r\n\r\nPementasan Teater Djavu di ruang tamu menghapus jarak antara panggung dan kehidupan. Penonton tidak lagi aman sebagai pengamat. Mereka duduk di ruang yang sama, menghirup udara yang sama, dan mungkin mengingat ruang tamu mereka sendiri.\r\n\r\nDan di situlah kekuatan naskah ini bekerja: membuat kita bertanya, trauma apa yang sedang kita rawat diam-diam di ruang tamu rumah kita?', NULL, 2, 1, 'published', 91, '2025-12-25 00:23:00', '2026-01-19 14:37:15', '2025-12-25 00:23:00'),
-(3, 'Sanggar Widyas Budaya Gelar Fragmen Ramayana dalam Pentas Tahunan ke-18', 'sanggar-widyas-budaya-gelar-fragmen-ramayana', 'Sanggar Widyas Budaya kembali menggelar pentas tahunan dengan membawakan fragmen Ramayana yang memukau.', 'Sanggar Widyas Budaya kembali menggelar pentas tahunan ke-18 mereka dengan membawakan fragmen Ramayana yang memukau para penonton.\r\n\r\nAcara yang digelar di Gedung Kesenian ini menjadi bukti konsistensi sanggar dalam melestarikan seni tari tradisional Jawa. Puluhan penari dari berbagai usia tampil apik membawakan kisah epik Ramayana.\r\n\r\nKetua Sanggar, Ibu Widyastuti, menyampaikan bahwa pentas tahunan ini merupakan ajang untuk menunjukkan hasil latihan selama setahun penuh. \"Kami berharap generasi muda tetap mencintai seni tradisi kita,\" ujarnya.\r\n\r\nPentas tahun ini menampilkan babak Shinta Obong yang menjadi klimaks dari kisah Ramayana. Para penari senior membawakan karakter utama dengan sangat memukau.', NULL, 1, 1, 'published', 45, '2025-12-29 12:36:00', '2026-01-18 23:16:33', '2025-12-29 12:36:00'),
+(3, 'Sanggar Widyas Budaya Gelar Fragmen Ramayana dalam Pentas Tahunan ke-18', 'sanggar-widyas-budaya-gelar-fragmen-ramayana', 'Sanggar Widyas Budaya kembali menggelar pentas tahunan dengan membawakan fragmen Ramayana yang memukau.', 'Sanggar Widyas Budaya kembali menggelar pentas tahunan ke-18 mereka dengan membawakan fragmen Ramayana yang memukau para penonton.\r\n\r\nAcara yang digelar di Gedung Kesenian ini menjadi bukti konsistensi sanggar dalam melestarikan seni tari tradisional Jawa. Puluhan penari dari berbagai usia tampil apik membawakan kisah epik Ramayana.\r\n\r\nKetua Sanggar, Ibu Widyastuti, menyampaikan bahwa pentas tahunan ini merupakan ajang untuk menunjukkan hasil latihan selama setahun penuh. \"Kami berharap generasi muda tetap mencintai seni tradisi kita,\" ujarnya.\r\n\r\nPentas tahun ini menampilkan babak Shinta Obong yang menjadi klimaks dari kisah Ramayana. Para penari senior membawakan karakter utama dengan sangat memukau.', NULL, 1, 1, 'published', 47, '2025-12-29 12:36:00', '2026-01-19 15:53:41', '2025-12-29 12:36:00'),
 (4, 'Komunitas Sastra Kudus Gelar Diskusi Bulanan', 'komunitas-sastra-kudus-diskusi-bulanan', 'Komunitas Sastra Kudus mengadakan diskusi bulanan membahas perkembangan sastra kontemporer Indonesia.', 'Komunitas Sastra Kudus menggelar diskusi bulanan mereka dengan tema \"Sastra Kontemporer Indonesia: Tantangan dan Peluang\".\r\n\r\nDiskusi yang berlangsung di Cafe Literasi ini dihadiri oleh puluhan pegiat sastra dari berbagai latar belakang. Narasumber utama, Pak Bambang Suryanto, membahas tentang bagaimana sastra Indonesia bisa tetap relevan di era digital.\r\n\r\n\"Kita perlu memanfaatkan platform digital untuk menyebarkan karya sastra, namun tetap menjaga kualitas dan kedalaman karya,\" ujar Bambang.\r\n\r\nPeserta juga berdiskusi tentang tantangan publikasi buku di era digital dan bagaimana komunitas bisa berperan dalam ekosistem literasi.', NULL, 3, 1, 'published', 35, '2026-01-05 07:00:00', '2026-01-19 14:36:33', '2026-01-05 07:00:00'),
-(5, 'Ekosistem Seni Budaya Jawa Tengah: Peta dan Potensi', 'ekosistem-seni-budaya-jawa-tengah', 'Memetakan ekosistem seni budaya di Jawa Tengah dan potensi pengembangannya.', 'Jawa Tengah memiliki ekosistem seni budaya yang sangat kaya dan beragam. Dari wayang kulit hingga batik, dari gamelan hingga tari tradisional, semuanya membentuk identitas budaya yang unik.\r\n\r\nBerdasarkan pemetaan yang dilakukan tim Mentas.id, terdapat lebih dari 500 komunitas seni aktif di seluruh Jawa Tengah. Komunitas-komunitas ini tersebar dari Semarang hingga Solo, dari Kudus hingga Kebumen.\r\n\r\nYang menarik, banyak komunitas yang mulai menggabungkan tradisi dengan inovasi. Misalnya, pertunjukan wayang kontemporer yang menggabungkan teknologi mapping dengan lakon klasik.\r\n\r\nTantangan terbesar adalah regenerasi. Banyak maestro seni yang sudah berusia lanjut namun belum memiliki penerus yang memadai. Ini menjadi PR besar bagi kita semua.', NULL, 5, 1, 'published', 69, '2026-01-12 03:00:00', '2026-01-19 14:37:08', '2026-01-12 03:00:00');
+(5, 'Ekosistem Seni Budaya Jawa Tengah: Peta dan Potensi', 'ekosistem-seni-budaya-jawa-tengah', 'Memetakan ekosistem seni budaya di Jawa Tengah dan potensi pengembangannya.', 'Jawa Tengah memiliki ekosistem seni budaya yang sangat kaya dan beragam. Dari wayang kulit hingga batik, dari gamelan hingga tari tradisional, semuanya membentuk identitas budaya yang unik.\r\n\r\nBerdasarkan pemetaan yang dilakukan tim Mentas.id, terdapat lebih dari 500 komunitas seni aktif di seluruh Jawa Tengah. Komunitas-komunitas ini tersebar dari Semarang hingga Solo, dari Kudus hingga Kebumen.\r\n\r\nYang menarik, banyak komunitas yang mulai menggabungkan tradisi dengan inovasi. Misalnya, pertunjukan wayang kontemporer yang menggabungkan teknologi mapping dengan lakon klasik.\r\n\r\nTantangan terbesar adalah regenerasi. Banyak maestro seni yang sudah berusia lanjut namun belum memiliki penerus yang memadai. Ini menjadi PR besar bagi kita semua.', NULL, 5, 1, 'published', 75, '2026-01-12 03:00:00', '2026-01-23 13:51:25', '2026-01-12 03:00:00'),
+(6, 'Widyas Budaya 2023', 'widyas-budaya-2023', 'Sanggar Widyas Budaya menggelar pentas tahunan ke-18 di Gedung Serbaguna Desa Gabus, Pati pada Minggu (28/12/2025) malam.', 'Sanggar Widyas Budaya menggelar pentas tahunan ke-18 di Gedung Serbaguna Desa Gabus, Kecamatan Gabus, Kabupaten Pati, Minggu (28/12) malam. Dalam perhelatan ini, mereka menyuguhkan berbagai tarian daerah hingga sendratari kolosal yang mengangkat kisah Ramayana.\r\n\r\nPara seniman muda dengan apik memeragakan berbagai adegan dari epos asal India tersebut. Mulai dari adegan penculikan Sinta hingga peperangan antara Rama melawan Rahwana.\r\n\r\nSelain Sendratari Ramayana, puluhan penari juga bergantian menunjukkan kebolehannya di hadapan ratusan penonton. Penampilan mereka meliputi Tari Jeket Nuswantoro, Golek Manis, Tari Kupu-kupu Manis, Tari Tampak, Tari Lilin, dan sejumlah tarian lainnya. Aksi para seniman cilik hingga remaja ini sukses memukau penonton yang hadir.\r\n\r\nPimpinan Sanggar Tari Widyas Budaya, Hani Indrayani mengaku, pementasan ini dapat terlaksana berkat kerja keras anak didiknya dalam berlatih selama satu tahun terakhir. Ia juga mengapresiasi dukungan para wali murid yang telah mempercayakan pendidikan seni putra-putrinya kepada Widyas Budaya.\r\n\r\n“Ada sekitar 56 anak yang ikut pentas ini dengan sembilan tarian dan satu sendratari Ramayana. Ini untuk ajang kreativitas anak. Selama setahun dia belajar dan pentas ini. Usia mulai 3 tahun sampai anak kuliahan,” ujarnya.\r\n\r\nHani menjelaskan, pentas tahunan ini bertujuan untuk terus menghidupkan semangat generasi penerus agar mencintai dunia tari tradisional. Pihaknya tidak ingin anak-anak melupakan kebudayaan asli Indonesia.\r\n\r\n“Setiap tahun kita punya tema tersendiri. Seperti kemarin tari Nuswantoro, Bhineka Tunggal Ika. Untuk tahun ini Ramayana, terus untuk tahun besok ada lagi. Jadi setiap tahun ada tema-tema sendiri,” terangnya.\r\n\r\nIa menambahkan, selain mengasah skill menari, para anak didik juga diajarkan tata krama dan sopan santun khas adat ketimuran. Menurutnya, hal ini penting agar anak memiliki kepribadian yang baik.\r\n\r\n“Ini kita mengenalkan tari tradisi di daerah. Terutama tari Jawa agar tidak pudar. Tahun besok tari kreasi. Pondasi awal menang tari tradisional. Anak bisa menanam karakter, unggah-ungguh, sopan santun dengan tari,” pungkasnya.', 'uploads/posts/widyas-budaya.jpg', 1, 1, 'published', 5, '2026-01-19 16:03:47', '2026-01-23 13:55:07', NULL),
+(8, 'Dialog Asa Jatmiko Dan Perjalanan FTP', 'dialog-asa-jatmiko-dan-perjalanan-ftp', 'Gagasan Festival Teater Pelajar (FTP) di Kudus tidak lahir dari ambisi membuat perhelatan besar, apalagi dari kalkulasi prestise kebudayaan.', 'Gagasan Festival Teater Pelajar (FTP) di Kudus tidak lahir dari ambisi membuat perhelatan besar, apalagi dari kalkulasi prestise kebudayaan. Ia tumbuh dari pengalaman lapangan yang sangat konkret: perjumpaan antara teater dan pelajar di ruang-ruang sekolah. Sekitar tahun 2005–2006, saya menggagas program pentas keliling SMA dan SMP di Kudus dengan satu pesan sederhana: berteater itu mudah dan menyenangkan.\r\n\r\nBersama Teater Djarum, kami memainkan naskah-naskah yang relatif ringan dan komunikatif, komedi yang dekat dengan keseharian remaja seperti Sepasang Mata Indah, Hanya Satu Kali, Senja dengan Dua Kelelawar, hingga Ketika Iblis Menikahi Seorang Perempuan.\r\n\r\nSetelah pentas, kami tidak berhenti di tepuk tangan. Kami duduk, berbincang, dan mendengar. Saat itu, hanya satu dua sekolah yang telah memiliki kelompok teater.\r\n\r\nBeberapa tahun kemudian, dampaknya mulai tampak. Sekolah-sekolah menunjukkan minat untuk membuka ekstrakurikuler teater. Pelajar membentuk kelompok secara mandiri. Teater pelajar bermunculan bukan karena instruksi kurikulum, melainkan karena kebutuhan berekspresi.\r\n\r\nDari situ muncul pertanyaan yang lebih mendasar:\r\n\r\nakan dikemanakan aktivitas ini? Apa muaranya?\r\n\r\nFTP lahir sebagai jawaban atas kegelisahan tersebut. Sejak awal, festival ini tidak dirancang semata sebagai ajang kompetisi, melainkan sebagai ruang temu, ruang belajar, berbagi, dan saling menguatkan antar teater pelajar.\r\n\r\nFTP pertama digelar pada tahun 2007 dengan segala keterbatasannya, seperti panggung tratak ala panggung mantenan, lantai gemlodak, namun dengan kesungguhan penuh.\r\n\r\nDari kesederhanaan itu, FTP kemudian berkembang menjadi agenda tahunan yang relatif mapan.\r\n\r\nDalam perjalanannya, saya sempat merumuskan jargon berteater itu keren. Pada masa itu, “keren” kerap dilekatkan pada gaya hidup kebarat-baratan, pada citra modern yang sering kali menjauh dari konteks lokal.\r\n\r\neater saya tempatkan sebagai ruang alternatif sebagai sikap atas zaman, bahwa pelajar yang berteater adalah pribadi yang memiliki nilai, daya juang, kepekaan sosial, serta tanggung jawab tanpa harus mengorbankan prestasi akademik.\r\n\r\nLambat laun dampak FTP ternyata tidak berhenti pada pelajar.\r\n\r\nDi Kudus, gairah berteater di kalangan seniman lokal ikut tumbuh. Banyak di antara mereka terlibat sebagai pelatih, pendamping, bahkan sutradara teater pelajar.\r\n\r\nProses kreatif kembali hidup. Kompetisi muncul, tetapi dalam arti yang sehat serta saling memacu kualitas, bukan saling menyingkirkan. Hubungan simbiosis pun terjalin antara seniman, sekolah, dan komunitas.\r\n\r\nMenariknya, dalam beberapa kelompok teater pelajar, peran orangtua mulai ikut terlibat. Dari sinilah saya semakin yakin bahwa ekosistem teater yang ideal bertumpu pada tiga pilar: sekolah, siswa, dan orangtua.\r\n\r\nKetika ketiganya berjalan bersama, anak-anak memiliki ruang yang lapang untuk tumbuh, bukan hanya sebagai aktor panggung, tetapi sebagai manusia yang utuh.\r\n\r\nSeiring perubahan zaman, jargon itu kembali saya perbarui. Kini saya lebih memilih mengatakan: berteater itu cerdas. Anak-anak hari ini, pada dasarnya, sudah “keren”.\r\n\r\nMereka menguasai teknologi informasi, media sosial, dan berbagai perangkat digital yang jauh melampaui generasi sebelumnya. Tantangannya bukan lagi soal akses atau gaya, melainkan soal kesadaran.\r\n\r\nDi tengah arus informasi yang cepat dan budaya instan, teater menawarkan sesuatu yang semakin langka: proses. Ia mengajarkan kesabaran, kehadiran, dan relasi antarmanusia.\r\n\r\nTeater melatih kecerdasan intelektual sekaligus emosional dan kemampuan berpikir kritis sekaligus berempati. Dalam pengertian ini, teater bukan sekadar seni pertunjukan, melainkan ruang latihan kewarasan.\r\n\r\nMaka FTP hari ini tidak hanya relevan sebagai festival, tetapi sebagai praktik kebudayaan. Ia menjadi ikhtiar kecil namun konsisten untuk mengingatkan bahwa manusia bukan sekadar pengguna teknologi, melainkan makhluk yang perlu terus belajar memahami diri dan sesamanya.\r\n\r\nBahwa kecerdasan bukan hanya soal cepat dan canggih, tetapi juga soal bijak dan berbudaya.\r\n\r\nDi titik ini, berteater menjadi lebih dari sekadar aktivitas ekstrakurikuler. Menjelma sebagai cara manusia berjumpa dengan dirinya: cerdas otaknya, cerdas emosinya, dan cerdas kemanusiaannya.\r\n\r\nBarangkali di sanalah teater menemukan tugas kulturalnya dalam pendidikan hari ini yang bukan hanya mengisi panggung, tetapi ikut merawat masa depan.', 'uploads/posts/696e6c04dce1a.jpg', 3, 1, 'published', 13, '2026-01-19 17:38:12', '2026-01-24 02:09:12', '2026-01-19 10:38:12'),
+(9, 'Seni, Kebiasaan Berpikir dan Mengapa Kita Terlalu Mudah Kaget?', 'seni-kebiasaan-berpikir-dan-mengapa-kita-terlalu-mudah-kaget', 'BEBERAPA hari terakhir, dari panggung teater di Kudus dan Jepara, pameran kolektif di Rembang, Jepara dan Kudus hingga berderet festival kita bisa melihat sebuah pemandangan yang menarik: kebudayaan bergerak begitu subur, tetapi publiknya, bahkan kadang para pengelolanya, tampak terlalu mudah kaget. Perbedaan pendapat dianggap ancaman, kritik dibaca sebagai serangan pribadi, dan komentar tajam ditafsirkan sebagai permusuhan.', 'Oleh Imam Khanafi, Phos Collective, sedang melakukan program yang membuka kembali kesenian sebagai ruang gagasan bagi masa depan Kudus.\r\n\r\nBEBERAPA hari terakhir, dari panggung teater di Kudus dan Jepara, pameran kolektif di Rembang, Jepara dan Kudus hingga berderet festival kita bisa melihat sebuah pemandangan yang menarik: kebudayaan bergerak begitu subur, tetapi publiknya, bahkan kadang para pengelolanya, tampak terlalu mudah kaget. Perbedaan pendapat dianggap ancaman, kritik dibaca sebagai serangan pribadi, dan komentar tajam ditafsirkan sebagai permusuhan.\r\n\r\nPadahal di ruang lain percekcokan menjadi kegiatan pagi, pertengkaran justru dianggap olahraga pikiran. Kawan dekat bisa saling mencela perkara diksi, saling menohok perkara argumen, dan bangun esok hari tanpa dendam yang berarti. Di sana, debat bukan tragedi moral, melainkan cara merawat kewarasan intelektual.\r\n\r\nKerapuhan publik seni di Kudus, Jepara, dan Rembang hari ini lahir bukan dari ruang kosong; ia tumbuh dalam masyarakat yang feodal secara sosial, tetapi dipaksa tampil demokratis. Kita senang pada kata “harmonis” dan “guyub”, tetapi tidak pernah siap menerima gesekan sebagai bagian dari perkembangan gagasan. Seni ingin tampil rapi, padahal ia justru berkembang dari ketegangan.\r\n\r\nSosiolog Randall Collins menulis bahwa konflik adalah energi kebudayaan, ia mencegah stagnasi dan memaksa lahirnya ide baru. Tetapi di era “rezim engagement”, kegagetan berubah menjadi komoditas algoritmik. Reaksi emosional lebih dihargai daripada pemahaman. Akibatnya, pementasan yang keras gagasannya dipuji hanya karena “ramai”, bukan karena ia mengajak kita berpikir.\r\n\r\nFenomena yang muncul belakangan ini menunjukkan ironi: acara budaya berlangsung hampir setiap minggu, tetapi pejabat yang hadir sering tampak seperti tamu yang tidak benar-benar tahu apa yang sedang ditonton. Pameran dianggap seremonial, lokakarya dilihat sebagai pelengkap laporan, dan kritik terhadap minimnya dukungan justru dibaca sebagai ancaman terhadap instansi.\r\n\r\nPadahal di Kudus, Jepara, dan Rembang, pertumbuhan seni hari ini digerakkan oleh energi warga. Komunitas teater bekerja tanpa anggaran, perupa membayar ruang pamer dengan patungan, riset sejarah dilakukan secara mandiri. Kebudayaan berjalan, pemerintah menonton. Poster hadir, pemahaman absen. Dukungan administratif muncul, tetapi visi kebudayaan tak pernah benar-benar dibicarakan.\r\n\r\nDalam sejarah pemikiran, kritik bukanlah barang tabu. Schopenhauer menyebutnya the art of insult, seni memaksa lawan berpikir. Bahkan al-Ghazali, yang sering kita bayangkan lembut, memakai hujjah pedas sebagai alat untuk menyingkap kesalahan. Dialog panas bukan dianggap aib, melainkan metode untuk membersihkan nalar.\r\n\r\nKritik dalam bingkai ini, bukan perilaku primitif. Ia bagian dari mekanisme intelektual untuk menguji keteguhan gagasan: memperkerasnya sampai retak, lalu menemukan bentuk baru. Bahankan hari ini kritik dibaca sebagai kompetisi harga diri, bukan sebagai percakapan gagasan.\r\n\r\nKarena itu, yang kita butuhkan bukan publik seni yang manis, tetapi publik seni yang dewasa. Publik yang mampu merayakan pertengkaran, menjawab kritik dengan argumen, dan tidak mudah tersinggung oleh perbedaan. Sebab kedewasaan budaya lahir bukan dari kehalusan, melainkan dari keberanian menghadapi ketegangan tanpa jatuh pada sentimen personal.\r\n\r\nSeperti kata al-Ghazali, jalan menuju kebenaran sering kali tidak nyaman, dan justru yang perih itulah yang membersihkan. Maka pertanyaannya: apa arti pementasan setiap hari jika kritik dianggap ancaman? Untuk apa pameran bergantian jika gagasan tak boleh disentuh? Kebudayaan tidak tumbuh dari keramaian semata; ia tumbuh dari keberanian berpikir.\r\n\r\nSeni akan mandek jika publiknya rapuh, dan lebih mandek lagi jika pemerintahnya tuli. Yang diperlukan kini adalah keberanian untuk tidak mudah kaget. Sebab kebudayaan hanya dapat maju jika kita berani menatap cermin, meski yang terpampang kadang wajah yang tak ingin kita lihat. Semoga. (*)\r\n', 'uploads/posts/6973826fbee57.jpg', 2, 3, 'published', 25, '2026-01-23 14:15:11', '2026-01-24 04:25:11', '2026-01-23 07:15:11'),
+(10, 'Seni sebagai Bahasa Jiwa Manusia', 'seni-sebagai-bahasa-jiwa-manusia', 'Artikel ini membahas seni sebagai bahasa jiwa manusia yang berperan penting dalam mengekspresikan perasaan, membentuk empati, dan merefleksikan realitas sosial. Seni dipandang sebagai cermin zaman sekaligus sarana pencarian makna bagi penciptanya. Pada akhirnya, seni mengajarkan kepekaan dan menghargai ketidaksempurnaan sebagai bagian dari kemanusiaan.', 'Seni adalah salah satu cara paling jujur manusia berbicara tentang dirinya sendiri. Ia hadir sebelum kata-kata tersusun rapi, sebelum aturan dibuat, dan sebelum logika menjadi alat utama berpikir. Dalam bentuk lukisan, musik, tari, sastra, hingga seni pertunjukan, manusia menuangkan rasa bahagia, marah, rindu, takut ke dalam medium yang mampu melampaui batas bahasa. Seni menjadi bahasa jiwa yang dapat dipahami lintas waktu dan budaya.\r\n\r\nDalam kehidupan sehari-hari, seni sering kali dianggap sebagai pelengkap atau hiburan semata. Padahal, seni memiliki peran penting dalam membentuk cara manusia memandang dunia. Melalui seni, seseorang belajar merasakan empati, memahami perbedaan, dan melihat realitas dari sudut pandang yang tidak biasa. Sebuah karya seni mampu menggugah kesadaran sosial, mengkritik ketidakadilan, bahkan menjadi suara bagi mereka yang tak mampu bersuara.\r\n\r\nSeni juga merupakan cermin zaman. Setiap periode sejarah meninggalkan jejaknya melalui karya seni yang lahir pada masanya. Gaya, tema, dan teknik yang digunakan seniman sering kali mencerminkan kondisi sosial, politik, dan budaya yang sedang terjadi. Oleh karena itu, mempelajari seni berarti juga mempelajari perjalanan peradaban manusia, lengkap dengan konflik, perubahan, dan harapan yang menyertainya.\r\n\r\nBagi penciptanya, seni adalah proses pencarian makna. Seorang seniman tidak hanya menciptakan karya, tetapi juga berdialog dengan dirinya sendiri. Proses kreatif sering kali dipenuhi kegelisahan, percobaan, kegagalan, dan penemuan. Dari proses inilah lahir karya yang autentik karya yang tidak sekadar indah, tetapi memiliki kedalaman dan kejujuran emosional.\r\n\r\nPada akhirnya, seni mengajarkan bahwa keindahan tidak selalu tentang kesempurnaan. Justru dari ketidaksempurnaan, luka, dan ketidakteraturan, seni menemukan kekuatannya. Ia mengingatkan manusia untuk tetap peka, berani berekspresi, dan menghargai keberagaman cara berpikir serta merasakan. Dalam dunia yang terus bergerak cepat, seni hadir sebagai ruang jeda tempat manusia kembali menyentuh sisi paling manusiawinya.\r\n', 'uploads/posts/69742caa1e3d0.webp', 2, 3, 'published', 1, '2026-01-24 02:21:30', '2026-01-24 02:21:33', '2026-01-23 19:21:30');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `post_tags`
+--
+
+CREATE TABLE `post_tags` (
+  `post_id` int NOT NULL,
+  `tag_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `post_tags`
+--
+
+INSERT INTO `post_tags` (`post_id`, `tag_id`) VALUES
+(1, 2),
+(1, 5),
+(1, 8),
+(1, 9),
+(2, 1),
+(2, 7),
+(2, 8),
+(3, 3),
+(3, 4),
+(3, 10),
+(4, 2),
+(4, 6),
+(4, 9),
+(5, 5),
+(5, 8),
+(5, 9),
+(6, 1),
+(6, 4),
+(6, 10),
+(9, 2),
+(9, 11),
+(9, 12),
+(9, 13),
+(9, 14),
+(9, 15),
+(9, 16),
+(9, 17),
+(9, 18),
+(9, 19),
+(10, 20),
+(10, 21),
+(10, 22),
+(10, 23),
+(10, 24),
+(10, 25),
+(10, 26),
+(10, 27),
+(10, 28),
+(10, 29),
+(10, 30),
+(10, 31),
+(10, 32),
+(10, 33),
+(10, 34);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tags`
+--
+
+CREATE TABLE `tags` (
+  `id` int NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tags`
+--
+
+INSERT INTO `tags` (`id`, `name`, `slug`, `created_at`) VALUES
+(1, 'Seni Rupa', 'seni-rupa', '2026-01-23 13:18:37'),
+(2, 'Teater', 'teater', '2026-01-23 13:18:37'),
+(3, 'Musik', 'musik', '2026-01-23 13:18:37'),
+(4, 'Sastra', 'sastra', '2026-01-23 13:18:37'),
+(5, 'Tari', 'tari', '2026-01-23 13:18:37'),
+(6, 'Film', 'film', '2026-01-23 13:18:37'),
+(7, 'Fotografi', 'fotografi', '2026-01-23 13:18:37'),
+(8, 'Budaya Lokal', 'budaya-lokal', '2026-01-23 13:18:37'),
+(9, 'Festival', 'festival', '2026-01-23 13:18:37'),
+(10, 'Workshop', 'workshop', '2026-01-23 13:18:37'),
+(11, 'Adat', 'adat', '2026-01-23 14:15:11'),
+(12, 'Kebudayaan', 'kebudayaan', '2026-01-23 14:15:11'),
+(13, 'Drama', 'drama', '2026-01-23 14:15:11'),
+(14, 'Kudus', 'kudus', '2026-01-23 14:15:11'),
+(15, 'Pati', 'pati', '2026-01-23 14:15:11'),
+(16, 'Jepara', 'jepara', '2026-01-23 14:15:11'),
+(17, 'Rembang', 'rembang', '2026-01-23 14:15:11'),
+(18, 'Riset', 'riset', '2026-01-23 14:15:11'),
+(19, 'Sejarah', 'sejarah', '2026-01-23 14:15:11'),
+(20, 'seni', 'seni', '2026-01-24 02:21:30'),
+(21, 'manusia', 'manusia', '2026-01-24 02:21:30'),
+(22, 'karya', 'karya', '2026-01-24 02:21:30'),
+(23, 'cara', 'cara', '2026-01-24 02:21:30'),
+(24, 'sebelum', 'sebelum', '2026-01-24 02:21:30'),
+(25, 'mampu', 'mampu', '2026-01-24 02:21:30'),
+(26, 'sering', 'sering', '2026-01-24 02:21:30'),
+(27, 'kali', 'kali', '2026-01-24 02:21:30'),
+(28, 'proses', 'proses', '2026-01-24 02:21:30'),
+(29, 'paling', 'paling', '2026-01-24 02:21:30'),
+(30, 'dirinya', 'dirinya', '2026-01-24 02:21:30'),
+(31, 'sendiri', 'sendiri', '2026-01-24 02:21:30'),
+(32, 'hadir', 'hadir', '2026-01-24 02:21:30'),
+(33, 'berpikir', 'berpikir', '2026-01-24 02:21:30'),
+(34, 'bahasa', 'bahasa', '2026-01-24 02:21:30');
 
 -- --------------------------------------------------------
 
@@ -139,7 +274,21 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `bio`, `avatar`, `address`, `social_media`, `role`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Admin Mentas', 'admin@mentas.id', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, NULL, NULL, NULL, 'admin', 'active', '2026-01-18 15:11:13', '2026-01-18 15:11:13');
+(1, 'Admin Mentas', 'admin@mentas.id', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, NULL, NULL, NULL, 'admin', 'active', '2026-01-18 15:11:13', '2026-01-18 15:11:13'),
+(2, 'Daffa Admin', 'daffa@mentas.id', '$2y$10$iCgumZ0BHVutZRXVW99xZeP1LDf1O19aJpOW44p46RhcZwEsDwy96', '08123456789', 'Super admin', NULL, 'Kudus', '[]', 'contributor', 'active', '2026-01-19 17:11:39', '2026-01-20 10:35:50'),
+(3, 'Alwi Sutanto', 'alwi@mentas.id', '$2y$10$6oXrWXjmm4EyDCka9UG40OpE7LI0hPIGuO3fETtFPOB5sGLzjMNXC', '083895189649', 'Saya adalah seorang penulis yang hidup dari imajinasi, sebuah dunia batin yang tak pernah benar-benar diam. Fantasi bagi saya bukan sekadar pelarian, melainkan cara memahami realitas dengan sudut pandang yang lebih luas dan berlapis. Dari hal-hal kecil yang sering luput dari perhatian, saya merangkai kisah tentang dunia alternatif, tokoh-tokoh dengan luka dan harapan, serta konflik yang kerap mencerminkan pergulatan manusia itu sendiri. Menulis menjadi ruang kebebasan, tempat ide-ide liar bertemu dengan refleksi mendalam, lalu menjelma menjadi cerita yang tidak hanya menghibur, tetapi juga mengajak pembaca berpikir dan merasakan.\r\n\r\nDalam setiap karya, saya berusaha menghadirkan imajinasi yang hidup dan bernapas fantasi yang tidak berdiri sendiri, melainkan berpijak pada emosi, nilai, dan pengalaman manusia. Saya percaya bahwa cerita memiliki kekuatan untuk menjembatani kenyataan dan angan-angan, membuka pintu menuju empati, serta menyalakan keberanian untuk bermimpi lebih jauh. Melalui tulisan, saya terus menantang diri untuk mengeksplorasi batas kreativitas, memperkaya bahasa, dan menyampaikan makna, dengan harapan setiap kisah yang lahir dapat meninggalkan jejak di benak pembaca, bahkan setelah halaman terakhir ditutup.', 'uploads/avatars/params_3_6973a0548e1a2.webp', 'Jalan Kudus Raya, Kec. Baru, Kab. Lama', '{\"twitter\": \"https://x.com/?lang=en-id\", \"website\": \"https://www.google.com/\", \"facebook\": \"https://www.facebook.com/\", \"instagram\": \"https://www.instagram.com/jayidzes/\"}', 'contributor', 'active', '2026-01-20 10:39:30', '2026-01-24 00:05:54'),
+(4, 'Test Contributor', 'test@mentas.id', '$2y$10$ZBXXY8bTpjJwJ2Eaql19bO3AYnPXS.sdtWtNs5qQYj7xlV5Rdi6bi', '08123456789', 'I am a test contributor.', NULL, 'Jakarta', '[]', 'contributor', 'pending', '2026-01-23 15:53:19', '2026-01-23 15:53:19'),
+(5, 'Test Contributor', 'test@example.com', '$2y$10$0PsO6WmAgiGYmFAXVmvO3./Ic/eLYmEIwCn6ncZExtKAkHLvSdiyy', '08123456789', '', NULL, '', '[]', 'contributor', 'pending', '2026-01-23 16:14:39', '2026-01-23 16:14:39'),
+(6, 'Budi Santoso', 'budi.santoso1@example.com', '$2y$10$jK23FzdNb6u60rI2jiKY3eayf3aJotTDy0SSucyEz/29HF8YJPrWm', '08123456780', 'Contributor bio for Budi Santoso. Passionate about arts and culture.', NULL, 'Jakarta, Indonesia', '{\"website\": \"https://example.com/budisantoso\", \"facebook\": \"https://facebook.com/budisantoso\"}', 'contributor', 'active', '2026-01-24 03:05:27', '2026-01-24 03:05:27'),
+(7, 'Siti Aminah', 'siti.aminah2@example.com', '$2y$10$p5pD05XTXwgd47OkgL71MuG.KYTKbihfbgNj/QAYb.CJe4mNL5gUy', '08123456781', 'Contributor bio for Siti Aminah. Passionate about arts and culture.', NULL, 'Jakarta, Indonesia', '{\"facebook\": \"https://facebook.com/sitiaminah\"}', 'contributor', 'active', '2026-01-24 03:05:27', '2026-01-24 03:05:27'),
+(8, 'Rizky Pratama', 'rizky.pratama3@example.com', '$2y$10$FhwfhNLtIe8wyZHIwhAr..SmozmstUZab8.GtSjlv8/U9xc/UN2YK', '08123456782', 'Contributor bio for Rizky Pratama. Passionate about arts and culture.', NULL, 'Jakarta, Indonesia', '{\"website\": \"https://example.com/rizkypratama\"}', 'contributor', 'active', '2026-01-24 03:05:27', '2026-01-24 03:05:27'),
+(9, 'Dewi Lestari', 'dewi.lestari4@example.com', '$2y$10$Hskfb10neDE87DEa7HHgwOVtHZ9vomPjSlJ9PY4Bd0WqFM5Kk0HjG', '08123456783', 'Contributor bio for Dewi Lestari. Passionate about arts and culture.', NULL, 'Jakarta, Indonesia', '{\"twitter\": \"https://twitter.com/dewilestari\", \"website\": \"https://example.com/dewilestari\", \"instagram\": \"https://instagram.com/dewilestari\"}', 'contributor', 'active', '2026-01-24 03:05:27', '2026-01-24 03:05:27'),
+(10, 'Agus Wijaya', 'agus.wijaya5@example.com', '$2y$10$FWR72h0TolwVMxrQYt1zZup7LEcsOEvuW2du6M9agQQUxPmHWm8ia', '08123456784', 'Contributor bio for Agus Wijaya. Passionate about arts and culture.', NULL, 'Jakarta, Indonesia', '{\"website\": \"https://example.com/aguswijaya\", \"facebook\": \"https://facebook.com/aguswijaya\"}', 'contributor', 'active', '2026-01-24 03:05:27', '2026-01-24 03:05:27'),
+(11, 'Rina Kurnia', 'rina.kurnia6@example.com', '$2y$10$5ibEM5yyz1N7bWmrmBLxd.1VTTmvJiSvymsxNlbfeG7P6CjjHnWcC', '08123456785', 'Contributor bio for Rina Kurnia. Passionate about arts and culture.', NULL, 'Jakarta, Indonesia', '{\"website\": \"https://example.com/rinakurnia\", \"facebook\": \"https://facebook.com/rinakurnia\", \"instagram\": \"https://instagram.com/rinakurnia\"}', 'contributor', 'active', '2026-01-24 03:05:28', '2026-01-24 03:05:28'),
+(12, 'Eko Prasetyo', 'eko.prasetyo7@example.com', '$2y$10$IgVfJqHNoATMG/cEl0z3gOnLCg2zETpzDJyKWo0mM1WeDiSDZ51j2', '08123456786', 'Contributor bio for Eko Prasetyo. Passionate about arts and culture.', NULL, 'Jakarta, Indonesia', '{\"twitter\": \"https://twitter.com/ekoprasetyo\", \"website\": \"https://example.com/ekoprasetyo\", \"facebook\": \"https://facebook.com/ekoprasetyo\"}', 'contributor', 'active', '2026-01-24 03:05:28', '2026-01-24 03:05:28'),
+(13, 'Maya Putri', 'maya.putri8@example.com', '$2y$10$AP5iFSr8AsUJbrX1HsTKUezL8/doIn1LWtqcdGBoS5B9Tyy9VDvXy', '08123456787', 'Contributor bio for Maya Putri. Passionate about arts and culture.', NULL, 'Jakarta, Indonesia', '{\"twitter\": \"https://twitter.com/mayaputri\", \"website\": \"https://example.com/mayaputri\", \"instagram\": \"https://instagram.com/mayaputri\"}', 'contributor', 'active', '2026-01-24 03:05:28', '2026-01-24 03:05:28'),
+(14, 'Doni Saputra', 'doni.saputra9@example.com', '$2y$10$MxQXQ1B.PmmcbFhi3eYB1eSLr9usFekVQGbc84cArr4gjIsMY/SA6', '08123456788', 'Contributor bio for Doni Saputra. Passionate about arts and culture.', NULL, 'Jakarta, Indonesia', '{\"website\": \"https://example.com/donisaputra\", \"facebook\": \"https://facebook.com/donisaputra\", \"instagram\": \"https://instagram.com/donisaputra\"}', 'contributor', 'active', '2026-01-24 03:05:28', '2026-01-24 03:05:28'),
+(15, 'Nina Herlina', 'nina.herlina10@example.com', '$2y$10$YgEUkOKpuTVju65FHMi.KukU6gMu0ikhv03RxYOh1KPT1wJ/qqlPe', '08123456789', 'Contributor bio for Nina Herlina. Passionate about arts and culture.', NULL, 'Jakarta, Indonesia', '{\"instagram\": \"https://instagram.com/ninaherlina\"}', 'contributor', 'active', '2026-01-24 03:05:28', '2026-01-24 03:05:28');
 
 -- --------------------------------------------------------
 
@@ -179,6 +328,13 @@ ALTER TABLE `categories`
   ADD KEY `idx_categories_slug` (`slug`);
 
 --
+-- Indexes for table `comments`
+--
+ALTER TABLE `comments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `post_id` (`post_id`);
+
+--
 -- Indexes for table `communities`
 --
 ALTER TABLE `communities`
@@ -195,6 +351,22 @@ ALTER TABLE `posts`
   ADD KEY `idx_posts_author` (`author_id`),
   ADD KEY `idx_posts_status` (`status`),
   ADD KEY `idx_posts_slug` (`slug`);
+
+--
+-- Indexes for table `post_tags`
+--
+ALTER TABLE `post_tags`
+  ADD PRIMARY KEY (`post_id`,`tag_id`),
+  ADD KEY `idx_post_tags_post` (`post_id`),
+  ADD KEY `idx_post_tags_tag` (`tag_id`);
+
+--
+-- Indexes for table `tags`
+--
+ALTER TABLE `tags`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `slug` (`slug`),
+  ADD KEY `idx_tags_slug` (`slug`);
 
 --
 -- Indexes for table `users`
@@ -220,7 +392,13 @@ ALTER TABLE `zines`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `comments`
+--
+ALTER TABLE `comments`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `communities`
@@ -232,13 +410,19 @@ ALTER TABLE `communities`
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `tags`
+--
+ALTER TABLE `tags`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `zines`
@@ -251,11 +435,24 @@ ALTER TABLE `zines`
 --
 
 --
+-- Constraints for table `comments`
+--
+ALTER TABLE `comments`
+  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `posts`
 --
 ALTER TABLE `posts`
   ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `post_tags`
+--
+ALTER TABLE `post_tags`
+  ADD CONSTRAINT `post_tags_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `post_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
