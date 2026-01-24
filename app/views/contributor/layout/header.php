@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Contributor - Mentas.id</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/mentas.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/mentas-custom.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         /* Override header untuk contributor - selalu scrolled state (merah) */
@@ -44,9 +45,9 @@
                 </a>
             </div>
             <nav class="navbar">
-                <a href="<?= BASE_URL ?>"><i class="fas fa-globe"></i> Website</a>
                 <a href="<?= BASE_URL ?>/contributor"><i class="fas fa-th-large"></i> Dashboard</a>
                 <a href="<?= BASE_URL ?>/contributor/create"><i class="fas fa-plus-circle"></i> Tulis Artikel</a>
+                <a href="<?= BASE_URL ?>/contributor/editProfile"><i class="fas fa-user-edit"></i> Edit Profil</a>
             </nav>
             <a href="<?= BASE_URL ?>/auth/logout" class="profile-icon" title="Logout">
                 <i class="fas fa-sign-out-alt"></i>

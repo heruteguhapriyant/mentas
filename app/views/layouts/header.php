@@ -20,19 +20,7 @@ $blogCategories = getCategoriesByType('blog');
             </div>
             <nav class="navbar">
                 <a href="<?= BASE_URL ?>">Home</a>
-                <div class="nav-item has-dropdown">
-                    <a href="<?= BASE_URL ?>/blog">Blog</a>
-
-                    <?php if (!empty($blogCategories)): ?>
-                        <div class="dropdown-menu">
-                            <?php foreach ($blogCategories as $cat): ?>
-                                <a href="<?= BASE_URL ?>/blog/<?= $cat['slug']; ?>">
-                                    <?= $cat['name']; ?>
-                                </a>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
+                <a href="<?= BASE_URL ?>/blog">Blog</a>
                 <a href="<?= BASE_URL ?>/zine">Bulletin Sastra</a>
                 <a href="<?= BASE_URL ?>/katalog">Katalog</a>
                 <a href="<?= BASE_URL ?>/page/jual-beli">Jual Beli</a>
@@ -56,23 +44,7 @@ $blogCategories = getCategoriesByType('blog');
             </div>
             <ul>
                 <li><a href="<?= BASE_URL ?>">Home</a></li>
-                <li class="has-sub">
-                    <a href="<?= BASE_URL ?>/blog" class="mobile-toggle">
-                        Blog <span class="icon">></span>
-                    </a>
-
-                    <?php if (!empty($blogCategories)): ?>
-                        <ul class="sub-menu">
-                            <?php foreach ($blogCategories as $cat): ?>
-                                <li>
-                                    <a href="<?= BASE_URL ?>/blog/<?= $cat['slug']; ?>">
-                                        <?= $cat['name']; ?>
-                                    </a>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
-                </li>
+                <li><a href="<?= BASE_URL ?>/blog">Blog</a></li>
                 <li><a href="<?= BASE_URL ?>/zine">Bulletin Sastra</a></li>
                 <li><a href="<?= BASE_URL ?>/katalog">Katalog</a></li>
                 <li><a href="<?= BASE_URL ?>/page/jual-beli">Jual Beli</a></li>

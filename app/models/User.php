@@ -15,7 +15,7 @@ class User
     /**
      * Get all users
      */
-    public function all($role = null, $status = null)
+    public function all($role = null, $status = null, $orderBy = 'created_at DESC')
     {
         $sql = "SELECT * FROM users WHERE 1=1";
         $params = [];
@@ -30,10 +30,12 @@ class User
             $params[] = $status;
         }
 
-        $sql .= " ORDER BY created_at DESC";
+        $sql .= " ORDER BY " . $orderBy;
 
         return $this->db->query($sql, $params);
     }
+
+
 
     /**
      * Find user by ID
@@ -149,8 +151,9 @@ class User
     /**
      * Get active contributors
      */
-    public function getActiveContributors()
+    public function getActiveContributors($sortByName = false)
     {
-        return $this->all('contributor', 'active');
+        $orderBy = $sortByName ? 'name ASC' : 'created_at DESC';
+        return $this->all('contributor', 'active', $orderBy);
     }
 }

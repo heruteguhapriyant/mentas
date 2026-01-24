@@ -56,6 +56,47 @@
                 <textarea id="body" name="body" class="form-control" rows="15" required placeholder="Tulis isi artikel di sini..."><?= htmlspecialchars($post['body'] ?? '') ?></textarea>
             </div>
 
+            <?php 
+            // Get array of current post tag IDs
+            $postTagIds = [];
+            if (!empty($postTags)) {
+                foreach ($postTags as $pt) {
+                    $postTagIds[] = $pt['id'];
+                }
+            }
+            ?>
+
+            <?php if (!empty($allTags)): ?>
+            <div class="form-group">
+                <label>Tags</label>
+                <div class="tags-container">
+                    <?php foreach ($allTags as $tag): ?>
+                        <label class="tag-checkbox">
+                            <input type="checkbox" name="tags[]" value="<?= $tag['id'] ?>" 
+                                   <?= in_array($tag['id'], $postTagIds) ? 'checked' : '' ?>>
+                            <span><?= htmlspecialchars($tag['name']) ?></span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+                </div>
+                <div class="manual-tags-wrapper">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <label style="margin-bottom: 0;">Tambah Tag Lainnya:</label>
+                        <button type="button" class="btn-sm btn-secondary" onclick="autoGenerateTags()" style="background: #28a745; border: none; font-size: 0.8rem; display: flex; align-items: center; gap: 5px;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Tags Otomatis
+                        </button>
+                    </div>
+                    <div class="tag-input-container">
+                        <div id="selected-tags-container"></div>
+                        <input type="text" id="tag-input" class="tag-input-field" placeholder="Ketik tag..." autocomplete="off">
+                    </div>
+                    <ul id="tag-suggestions" class="tag-suggestions" style="display: none;"></ul>
+                    <input type="hidden" name="manual_tags" id="manual_tags_input">
+                </div>
+                <small>Ketik untuk mencari tag yang sudah ada atau tekan Enter untuk membuat tag baru.</small>
+            </div>
+            <?php endif; ?>
+
             <div class="form-actions">
                 <button type="submit" name="status" value="draft" class="btn btn-secondary">
                     <i class="fa-solid fa-save"></i> Simpan Draft
@@ -68,26 +109,149 @@
     </div>
 </main>
 
-<style>
-.contributor-form-page { padding: 2rem 0; }
-.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-.form-card { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-.form-control { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; font-family: inherit; }
-.form-control:focus { outline: none; border-color: #007bff; }
-textarea.form-control { resize: vertical; min-height: 100px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
-.btn { display: inline-block; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; text-decoration: none; cursor: pointer; font-size: 1rem; }
-.btn-primary { background: #007bff; color: #fff; }
-.btn-secondary { background: #6c757d; color: #fff; }
-.alert { padding: 1rem; border-radius: 4px; margin-bottom: 1rem; }
-.alert-error { background: #f8d7da; color: #721c24; }
 
-@media (max-width: 768px) {
-    .form-row { grid-template-columns: 1fr; }
-}
-</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tagInput = document.getElementById('tag-input');
+    const suggestionsList = document.getElementById('tag-suggestions');
+    const selectedTagsContainer = document.getElementById('selected-tags-container');
+    const manualTagsInput = document.getElementById('manual_tags_input');
+    
+    let selectedTags = [];
+    let debounceTimer;
+
+    // Load initial manual tags if editing (optional, strictly user asked for adding)
+    // For now we start empty or parse from existing manual inputs if we had them
+
+    tagInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        clearTimeout(debounceTimer);
+
+        if (query.length < 1) {
+            suggestionsList.style.display = 'none';
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch(`<?= BASE_URL ?>/contributor/searchTags?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(tags => {
+                    suggestionsList.innerHTML = '';
+                    if (tags.length > 0) {
+                        tags.forEach(tag => {
+                            const li = document.createElement('li');
+                            li.className = 'suggestion-item';
+                            li.textContent = tag.name;
+                            li.onclick = () => addTag(tag.name);
+                            suggestionsList.appendChild(li);
+                        });
+                        suggestionsList.style.display = 'block';
+                    } else {
+                        suggestionsList.style.display = 'none'; // Or show "Create new tag..."
+                    }
+                });
+        }, 300);
+    });
+
+    tagInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const value = this.value.trim();
+            if (value) {
+                addTag(value);
+            }
+        }
+    });
+
+    // Close suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.manual-tags-wrapper')) {
+            suggestionsList.style.display = 'none';
+        }
+    });
+
+    window.addTag = function(name) {
+        // Prevent duplicates
+        if (selectedTags.includes(name)) {
+            tagInput.value = '';
+            suggestionsList.style.display = 'none';
+            return;
+        }
+
+        selectedTags.push(name);
+        renderTags();
+        updateHiddenInput();
+        
+        tagInput.value = '';
+        suggestionsList.style.display = 'none';
+        tagInput.focus();
+    }
+
+    window.removeTag = function(name) {
+        selectedTags = selectedTags.filter(tag => tag !== name);
+        renderTags();
+        updateHiddenInput();
+    }
+
+    // Expose for auto-generation
+    window.autoGenerateTags = function() {
+        const title = document.getElementById('title').value;
+        const body = document.getElementById('body').value;
+        
+        if (!title && !body) {
+            alert('Mohon isi Judul atau Konten Artikel terlebih dahulu.');
+            return;
+        }
+
+        const btn = document.querySelector('button[onclick="autoGenerateTags()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('body', body);
+
+        fetch('<?= BASE_URL ?>/contributor/generateTags', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(tags => {
+            if (tags.length > 0) {
+                tags.forEach(tag => {
+                    addTag(tag.name);
+                });
+                alert('Tags berhasil digenerate: ' + tags.map(t => t.name).join(', '));
+            } else {
+                alert('Tidak dapat menemukan kata kunci yang cocok.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan saat generate tags.');
+        })
+        .finally(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+    };
+
+    function renderTags() {
+        selectedTagsContainer.innerHTML = '';
+        selectedTags.forEach(tag => {
+            const chip = document.createElement('div');
+            chip.className = 'tag-chip';
+            chip.innerHTML = `${tag} <span class="remove-tag" onclick="removeTag('${tag}')">&times;</span>`;
+            selectedTagsContainer.appendChild(chip);
+        });
+    }
+
+    function updateHiddenInput() {
+        manualTagsInput.value = selectedTags.join(',');
+    }
+});
+</script>
 
 <?php require_once __DIR__ . '/layout/footer.php'; ?>

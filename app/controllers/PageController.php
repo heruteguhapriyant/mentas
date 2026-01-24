@@ -34,7 +34,12 @@ class PageController extends Controller
 
     private function showContribute()
     {
-        return $this->view('page/contribute');
+        $userModel = new User();
+        $contributors = $userModel->getActiveContributors(true);
+
+        return $this->view('page/contribute', [
+            'contributors' => $contributors
+        ]);
     }
 
     private function showComingSoon($page)

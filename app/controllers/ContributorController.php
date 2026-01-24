@@ -7,12 +7,14 @@ class ContributorController extends Controller
 {
     private $postModel;
     private $categoryModel;
+    private $tagModel;
 
     public function __construct()
     {
         requireContributor();
         $this->postModel = new Post();
         $this->categoryModel = new Category();
+        $this->tagModel = new Tag();
     }
 
     /**
@@ -40,7 +42,13 @@ class ContributorController extends Controller
     public function create()
     {
         $categories = $this->categoryModel->all();
-        return $this->view('contributor/form', ['post' => null, 'categories' => $categories]);
+        $allTags = $this->tagModel->all();
+        return $this->view('contributor/form', [
+            'post' => null, 
+            'categories' => $categories,
+            'allTags' => $allTags,
+            'postTags' => []
+        ]);
     }
 
     /**
@@ -80,7 +88,28 @@ class ContributorController extends Controller
             $data['cover_image'] = 'uploads/posts/' . $filename;
         }
 
-        $this->postModel->create($data);
+        // Handle manual tags
+        $manualTagIds = [];
+        if (!empty($_POST['manual_tags'])) {
+            $tagsArray = explode(',', $_POST['manual_tags']);
+            foreach ($tagsArray as $tagName) {
+                $tagId = $this->tagModel->findOrCreate($tagName);
+                if ($tagId) {
+                    $manualTagIds[] = $tagId;
+                }
+            }
+        }
+
+        $postId = $this->postModel->create($data);
+
+        // Handle tags (merged existing selections + manual input)
+        $tagIds = !empty($_POST['tags']) ? array_map('intval', $_POST['tags']) : [];
+        $tagIds = array_unique(array_merge($tagIds, $manualTagIds));
+        
+        if (!empty($tagIds)) {
+            $this->tagModel->attachToPost($postId, $tagIds);
+        }
+
         setFlash('success', 'Artikel berhasil dibuat');
         header('Location: ' . BASE_URL . '/contributor');
         exit;
@@ -101,7 +130,14 @@ class ContributorController extends Controller
         }
 
         $categories = $this->categoryModel->all();
-        return $this->view('contributor/form', ['post' => $post, 'categories' => $categories]);
+        $allTags = $this->tagModel->all();
+        $postTags = $this->tagModel->getByPost($id);
+        return $this->view('contributor/form', [
+            'post' => $post, 
+            'categories' => $categories,
+            'allTags' => $allTags,
+            'postTags' => $postTags
+        ]);
     }
 
     /**
@@ -144,6 +180,25 @@ class ContributorController extends Controller
         }
 
         $this->postModel->update($id, $data);
+
+        // Handle manual tags
+        $manualTagIds = [];
+        if (!empty($_POST['manual_tags'])) {
+            $tagsArray = explode(',', $_POST['manual_tags']);
+            foreach ($tagsArray as $tagName) {
+                $tagId = $this->tagModel->findOrCreate($tagName);
+                if ($tagId) {
+                    $manualTagIds[] = $tagId;
+                }
+            }
+        }
+
+        // Handle tags
+        $tagIds = !empty($_POST['tags']) ? array_map('intval', $_POST['tags']) : [];
+        $tagIds = array_unique(array_merge($tagIds, $manualTagIds));
+        
+        $this->tagModel->attachToPost($id, $tagIds);
+
         setFlash('success', 'Artikel berhasil diupdate');
         header('Location: ' . BASE_URL . '/contributor');
         exit;
@@ -166,6 +221,168 @@ class ContributorController extends Controller
         $this->postModel->delete($id);
         setFlash('success', 'Artikel berhasil dihapus');
         header('Location: ' . BASE_URL . '/contributor');
+        exit;
+    }
+    /**
+     * Edit Profile Form
+     */
+    public function editProfile()
+    {
+        $userModel = new User();
+        $user = $userModel->find($_SESSION['user_id']);
+        
+        return $this->view('contributor/profile', [
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * Update Profile
+     */
+    public function updateProfile()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/contributor/editProfile');
+            exit;
+        }
+
+        $userModel = new User();
+        $userId = $_SESSION['user_id'];
+        $user = $userModel->find($userId);
+
+        $data = [
+            'name' => trim($_POST['name'] ?? ''),
+            'phone' => trim($_POST['phone'] ?? ''),
+            'address' => trim($_POST['address'] ?? ''),
+            'bio' => trim($_POST['bio'] ?? ''),
+            'social_media' => [
+                'website' => trim($_POST['website'] ?? ''),
+                'instagram' => trim($_POST['instagram'] ?? ''),
+                'facebook' => trim($_POST['facebook'] ?? ''),
+                'twitter' => trim($_POST['twitter'] ?? '')
+            ]
+        ];
+
+        // Handle Avatar Upload
+        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = '../public/uploads/avatars/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            $ext = pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
+            $filename = 'params_' . $userId . '_' . uniqid() . '.' . $ext;
+            
+            if (move_uploaded_file($_FILES['avatar']['tmp_name'], $uploadDir . $filename)) {
+                // Remove old avatar if exists and not default
+                if (!empty($user['avatar']) && file_exists('../public/' . $user['avatar'])) {
+                    unlink('../public/' . $user['avatar']);
+                }
+                $data['avatar'] = 'uploads/avatars/' . $filename;
+            }
+        }
+
+        // Update password if provided
+        if (!empty($_POST['password'])) {
+            if ($_POST['password'] === $_POST['confirm_password']) {
+                $data['password'] = $_POST['password'];
+            } else {
+                setFlash('error', 'Konfirmasi password tidak cocok');
+                header('Location: ' . BASE_URL . '/contributor/editProfile');
+                exit;
+            }
+        }
+
+        $userModel->update($userId, $data);
+        
+        // Update session name if changed
+        $_SESSION['user_name'] = $data['name'];
+
+        setFlash('success', 'Profil berhasil diperbarui');
+        header('Location: ' . BASE_URL . '/contributor');
+        exit;
+    }
+
+    /**
+     * AJAX Search Tags
+     */
+    public function searchTags()
+    {
+        header('Content-Type: application/json');
+        
+        $query = trim($_GET['q'] ?? '');
+        if (empty($query)) {
+            echo json_encode([]);
+            exit;
+        }
+
+        $tags = $this->tagModel->search($query);
+        echo json_encode($tags);
+        exit;
+    }
+
+    /**
+     * AJAX Generate Tags
+     */
+    public function generateTags()
+    {
+        header('Content-Type: application/json');
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode([]);
+            exit;
+        }
+
+        $title = $_POST['title'] ?? '';
+        $body = $_POST['body'] ?? '';
+        $text = $title . ' ' . $body;
+
+        // 1. Clean Text
+        $text = strip_tags($text);
+        $text = strtolower($text);
+        $text = preg_replace('/[^\w\s]/', '', $text); // Remove punctuation
+        $text = preg_replace('/\s+/', ' ', $text); // Collapse spaces
+
+        // 2. Tokenize
+        $words = explode(' ', $text);
+
+        // 3. Stopwords (Indonesian)
+        $stopwords = [
+            'yang', 'di', 'dan', 'itu', 'dengan', 'untuk', 'tidak', 'ini', 'dari', 'dalam', 'akan', 
+            'pada', 'juga', 'saya', 'ke', 'karena', 'tersebut', 'bisa', 'ada', 'mereka', 'lebih', 
+            'atau', 'tapi', 'kita', 'adalah', 'hal', 'sebagai', 'sudah', 'telah', 'saat', 'oleh', 
+            'apakah', 'bagaimana', 'apa', 'jika', 'sebuah', 'namun', 'satu', 'lain', 'maka', 'ia',
+            'dia', 'kamu', 'anda', 'bagi', 'sampai', 'sangat', 'lalu', 'hanya', 'tentang', 'seperti',
+            'mana', 'hari', 'tahun', 'ketika', 'setelah', 'belum', 'kami', 'masih', 'banyak', 'tak',
+            'para', 'harus', 'semua', 'sedang', 'sementara', 'kemudian', 'agar', 'lagi', 'setiap',
+            'menjadi', 'terhadap', 'secara', 'pernah', 'ingin', 'baru', 'mungkin', 'saja', 'ketika',
+            'sejak', 'tanpa', 'atas', 'bawah', 'depan', 'belakang', 'pula', 'pun', 'mengapa', 'sehingga'
+        ];
+
+        // 4. Filter & Count
+        $keywords = [];
+        foreach ($words as $word) {
+            if (strlen($word) > 3 && !in_array($word, $stopwords) && !is_numeric($word)) {
+                if (!isset($keywords[$word])) {
+                    $keywords[$word] = 0;
+                }
+                $keywords[$word]++;
+            }
+        }
+
+        // 5. Sort by Frequency
+        arsort($keywords);
+
+        // 6. Get Top 15
+        $topKeywords = array_keys(array_slice($keywords, 0, 15));
+        
+        // Return structured data like tag objects
+        $results = [];
+        foreach ($topKeywords as $word) {
+            $results[] = ['name' => $word];
+        }
+
+        echo json_encode($results);
         exit;
     }
 }

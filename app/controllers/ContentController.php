@@ -8,11 +8,16 @@ class ContentController extends Controller
 {
     private $postModel;
     private $categoryModel;
+    private $tagModel;
+
+    private $commentModel;
 
     public function __construct()
     {
         $this->postModel = new Post();
         $this->categoryModel = new Category();
+        $this->tagModel = new Tag();
+        $this->commentModel = new Comment();
     }
 
     /**
@@ -23,10 +28,34 @@ class ContentController extends Controller
         $type = $_GET['type'] ?? null;
         $slug = $_GET['slug'] ?? null;
 
-        // Only handle 'blog' type for now
-        if ($type !== 'blog') {
+        // Handle 'blog', 'author', 'contributors' types
+        if (!in_array($type, ['blog', 'author', 'contributors'])) {
             return $this->view('errors/404');
         }
+
+        // Get all categories for sidebar/filter
+        $categories = $this->categoryModel->all(true);
+
+        // 0️⃣ HALAMAN AUTHOR (/author/{id})
+        if ($type === 'author' && $slug) {
+            $userModel = new User();
+            $author = $userModel->find($slug); // $slug here is the ID actually
+
+            if (!$author) {
+                return $this->view('errors/404');
+            }
+
+            $posts = $this->postModel->getByAuthor($author['id'], 'published');
+            
+            return $this->view('content/detail/author', [ // Use dedicated author detail view
+                'type' => ['name' => 'Penulis', 'slug' => 'author'],
+                'content' => $author, // Pass author data as main content
+                'posts' => $posts,
+                'categories' => $categories
+            ]);
+        }
+
+
 
         // Get all categories for sidebar/filter
         $categories = $this->categoryModel->all(true);
@@ -63,15 +92,27 @@ class ContentController extends Controller
             // Increment view count
             $this->postModel->incrementViews($post['id']);
             
+            // Get sidebar data
+            $recentPosts = $this->postModel->getRecent(5);
+            $categoriesWithCount = $this->categoryModel->getWithPostCount();
+            $postTags = $this->tagModel->getByPost($post['id']);
+            $comments = $this->commentModel->getByPost($post['id']);
+            
             return $this->view('content/detail/article', [
                 'type' => ['name' => 'Blog', 'slug' => 'blog'],
                 'content' => $post,
-                'categories' => $categories
+                'categories' => $categories,
+                'recentPosts' => $recentPosts,
+                'categoriesWithCount' => $categoriesWithCount,
+                'postTags' => $postTags,
+                'comments' => $comments
             ]);
         }
 
         return $this->view('errors/404');
     }
+
+
 
     /**
      * Index method (default)
