@@ -78,7 +78,7 @@ class Post
     public function find($id)
     {
         return $this->db->queryOne(
-            "SELECT p.*, c.name as category_name, c.slug as category_slug, u.name as author_name, u.bio as author_bio, u.avatar as author_avatar
+            "SELECT p.*, c.name as category_name, c.slug as category_slug, u.name as author_name, u.bio as author_bio, u.avatar as author_avatar, u.social_media as author_social
              FROM posts p
              LEFT JOIN categories c ON p.category_id = c.id
              LEFT JOIN users u ON p.author_id = u.id
@@ -93,7 +93,7 @@ class Post
     public function findBySlug($slug)
     {
         return $this->db->queryOne(
-            "SELECT p.*, c.name as category_name, c.slug as category_slug, u.name as author_name, u.bio as author_bio, u.avatar as author_avatar
+            "SELECT p.*, c.name as category_name, c.slug as category_slug, u.name as author_name, u.bio as author_bio, u.avatar as author_avatar, u.social_media as author_social
              FROM posts p
              LEFT JOIN categories c ON p.category_id = c.id
              LEFT JOIN users u ON p.author_id = u.id

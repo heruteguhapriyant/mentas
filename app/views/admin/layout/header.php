@@ -212,6 +212,9 @@
                 <li><a href="<?= BASE_URL ?>/admin/categories">
                     <i class="fas fa-folder"></i> Kategori
                 </a></li>
+                <li><a href="<?= BASE_URL ?>/admin/tags">
+                    <i class="fas fa-tags"></i> Tags
+                </a></li>
                 <li><a href="<?= BASE_URL ?>/admin/posts">
                     <i class="fas fa-newspaper"></i> Artikel
                 </a></li>

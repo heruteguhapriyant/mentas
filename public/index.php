@@ -12,8 +12,10 @@ require_once '../app/core/Router.php';
 require_once '../app/models/User.php';
 require_once '../app/models/Category.php';
 require_once '../app/models/Post.php';
+require_once '../app/models/Tag.php';
 require_once '../app/models/Zine.php';
 require_once '../app/models/Community.php';
+require_once '../app/models/Comment.php';
 
 /**
  * LOAD GLOBAL HELPERS

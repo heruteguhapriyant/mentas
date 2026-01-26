@@ -56,6 +56,33 @@
             <textarea id="body" name="body" class="form-control" rows="15" required placeholder="Tulis isi artikel di sini..."><?= htmlspecialchars($post['body'] ?? '') ?></textarea>
         </div>
 
+        <?php 
+        // Get array of current post tag IDs
+        $postTagIds = [];
+        if (!empty($postTags)) {
+            foreach ($postTags as $pt) {
+                $postTagIds[] = $pt['id'];
+            }
+        }
+        ?>
+
+        <?php if (!empty($allTags)): ?>
+        <div class="form-group">
+            <label>Tags</label>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #ddd;">
+                <?php foreach ($allTags as $tag): ?>
+                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; padding: 5px 12px; background: #fff; border-radius: 20px; border: 1px solid #ddd; transition: all 0.2s;">
+                        <input type="checkbox" name="tags[]" value="<?= $tag['id'] ?>" 
+                               <?= in_array($tag['id'], $postTagIds) ? 'checked' : '' ?>
+                               style="margin: 0;">
+                        <span><?= htmlspecialchars($tag['name']) ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+            <small class="form-text">Pilih tags yang relevan dengan artikel</small>
+        </div>
+        <?php endif; ?>
+
         <div style="display: flex; gap: 1rem;">
             <button type="submit" name="status" value="draft" class="btn btn-secondary">
                 <i class="fas fa-save"></i> Simpan Draft

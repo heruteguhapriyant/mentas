@@ -8,6 +8,7 @@ class AdminController extends Controller
     private $userModel;
     private $categoryModel;
     private $postModel;
+    private $tagModel;
 
     public function __construct()
     {
@@ -15,6 +16,7 @@ class AdminController extends Controller
         $this->userModel = new User();
         $this->categoryModel = new Category();
         $this->postModel = new Post();
+        $this->tagModel = new Tag();
     }
 
     /**
@@ -156,6 +158,87 @@ class AdminController extends Controller
     }
 
     // =====================
+    // TAG MANAGEMENT
+    // =====================
+
+    public function tags()
+    {
+        $tags = $this->tagModel->getPopular(100);
+        return $this->view('admin/tags/index', ['tags' => $tags]);
+    }
+
+    public function tagCreate()
+    {
+        return $this->view('admin/tags/form', ['tag' => null]);
+    }
+
+    public function tagStore()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/tags');
+            exit;
+        }
+
+        $data = [
+            'name' => trim($_POST['name'] ?? '')
+        ];
+
+        if (empty($data['name'])) {
+            setFlash('error', 'Nama tag harus diisi');
+            header('Location: ' . BASE_URL . '/admin/tagCreate');
+            exit;
+        }
+
+        $this->tagModel->create($data);
+        setFlash('success', 'Tag berhasil ditambahkan');
+        header('Location: ' . BASE_URL . '/admin/tags');
+        exit;
+    }
+
+    public function tagEdit($id)
+    {
+        $tag = $this->tagModel->find($id);
+        if (!$tag) {
+            setFlash('error', 'Tag tidak ditemukan');
+            header('Location: ' . BASE_URL . '/admin/tags');
+            exit;
+        }
+
+        return $this->view('admin/tags/form', ['tag' => $tag]);
+    }
+
+    public function tagUpdate($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/tags');
+            exit;
+        }
+
+        $data = [
+            'name' => trim($_POST['name'] ?? '')
+        ];
+
+        // Generate slug if name changed
+        $slug = strtolower(trim($data['name']));
+        $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
+        $slug = preg_replace('/-+/', '-', $slug);
+        $data['slug'] = trim($slug, '-');
+
+        $this->tagModel->update($id, $data);
+        setFlash('success', 'Tag berhasil diupdate');
+        header('Location: ' . BASE_URL . '/admin/tags');
+        exit;
+    }
+
+    public function tagDelete($id)
+    {
+        $this->tagModel->delete($id);
+        setFlash('success', 'Tag berhasil dihapus');
+        header('Location: ' . BASE_URL . '/admin/tags');
+        exit;
+    }
+
+    // =====================
     // POST MANAGEMENT
     // =====================
 
@@ -168,7 +251,8 @@ class AdminController extends Controller
     public function postCreate()
     {
         $categories = $this->categoryModel->all();
-        return $this->view('admin/posts/form', ['post' => null, 'categories' => $categories]);
+        $allTags = $this->tagModel->all();
+        return $this->view('admin/posts/form', ['post' => null, 'categories' => $categories, 'allTags' => $allTags, 'postTags' => []]);
     }
 
     public function postStore()
@@ -199,7 +283,14 @@ class AdminController extends Controller
             $data['cover_image'] = 'uploads/posts/' . $filename;
         }
 
-        $this->postModel->create($data);
+        $postId = $this->postModel->create($data);
+
+        // Handle tags
+        if (!empty($_POST['tags'])) {
+            $tagIds = array_map('intval', $_POST['tags']);
+            $this->tagModel->attachToPost($postId, $tagIds);
+        }
+
         setFlash('success', 'Artikel berhasil dibuat');
         header('Location: ' . BASE_URL . '/admin/posts');
         exit;
@@ -209,6 +300,8 @@ class AdminController extends Controller
     {
         $post = $this->postModel->find($id);
         $categories = $this->categoryModel->all();
+        $allTags = $this->tagModel->all();
+        $postTags = $this->tagModel->getByPost($id);
 
         if (!$post) {
             setFlash('error', 'Artikel tidak ditemukan');
@@ -216,7 +309,12 @@ class AdminController extends Controller
             exit;
         }
 
-        return $this->view('admin/posts/form', ['post' => $post, 'categories' => $categories]);
+        return $this->view('admin/posts/form', [
+            'post' => $post, 
+            'categories' => $categories, 
+            'allTags' => $allTags,
+            'postTags' => $postTags
+        ]);
     }
 
     public function postUpdate($id)
@@ -247,6 +345,11 @@ class AdminController extends Controller
         }
 
         $this->postModel->update($id, $data);
+
+        // Handle tags
+        $tagIds = !empty($_POST['tags']) ? array_map('intval', $_POST['tags']) : [];
+        $this->tagModel->attachToPost($id, $tagIds);
+
         setFlash('success', 'Artikel berhasil diupdate');
         header('Location: ' . BASE_URL . '/admin/posts');
         exit;
