@@ -11,6 +11,8 @@
             <tr>
                 <th>Cover</th>
                 <th>Judul</th>
+                <th>Kategori</th>
+                <th>PDF</th>
                 <th>Status</th>
                 <th>Tanggal</th>
                 <th>Aksi</th>
@@ -18,7 +20,7 @@
         </thead>
         <tbody>
             <?php if (empty($zines)): ?>
-                <tr><td colspan="5" style="text-align: center; padding: 2rem;">Belum ada buletin</td></tr>
+                <tr><td colspan="7" style="text-align: center; padding: 2rem;">Belum ada buletin</td></tr>
             <?php else: ?>
                 <?php foreach ($zines as $zine): ?>
                     <tr>
@@ -30,6 +32,18 @@
                             <?php endif; ?>
                         </td>
                         <td><strong><?= htmlspecialchars($zine['title']) ?></strong></td>
+                        <td>
+                            <span class="badge badge-info"><?= Zine::getCategoryLabel($zine['category'] ?? 'esai') ?></span>
+                        </td>
+                        <td>
+                            <?php if (!empty($zine['pdf_file'])): ?>
+                                <a href="<?= BASE_URL ?>/<?= $zine['pdf_file'] ?>" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-file-pdf"></i> Lihat PDF
+                                </a>
+                            <?php else: ?>
+                                <span class="text-muted">-</span>
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <?php if ($zine['is_active']): ?>
                                 <span class="badge badge-success">Aktif</span>

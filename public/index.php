@@ -16,6 +16,9 @@ require_once '../app/models/Tag.php';
 require_once '../app/models/Zine.php';
 require_once '../app/models/Community.php';
 require_once '../app/models/Comment.php';
+require_once '../app/models/Product.php';
+require_once '../app/models/Event.php';
+require_once '../app/models/Ticket.php';
 
 /**
  * LOAD GLOBAL HELPERS

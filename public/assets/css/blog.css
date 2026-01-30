@@ -124,6 +124,204 @@
     color: #333;
 }
 
+/* =========================
+   ARTICLE RICH TEXT CONTENT
+========================= */
+
+.article-content {
+    font-size: 17px;
+    line-height: 1.9;
+    color: #333;
+}
+
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #1a1a1a;
+}
+
+.article-content h1 {
+    font-size: 2.2rem;
+}
+
+.article-content h2 {
+    font-size: 1.8rem;
+    border-bottom: 2px solid #d52c2c;
+    padding-bottom: 10px;
+}
+
+.article-content h3 {
+    font-size: 1.5rem;
+}
+
+.article-content h4 {
+    font-size: 1.25rem;
+}
+
+.article-content h5 {
+    font-size: 1.1rem;
+}
+
+.article-content h6 {
+    font-size: 1rem;
+    color: #555;
+}
+
+.article-content p {
+    margin-bottom: 1.5rem;
+}
+
+.article-content strong,
+.article-content b {
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.article-content em,
+.article-content i {
+    font-style: italic;
+}
+
+.article-content u {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.article-content s,
+.article-content strike {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.article-content a {
+    color: #d52c2c;
+    text-decoration: none;
+    border-bottom: 1px solid #d52c2c;
+    transition: all 0.2s ease;
+}
+
+.article-content a:hover {
+    background: #d52c2c;
+    color: #fff;
+    padding: 0 4px;
+    border-radius: 2px;
+}
+
+.article-content blockquote {
+    margin: 2rem 0;
+    padding: 1.5rem 2rem;
+    background: #fdf8f3;
+    border-left: 5px solid #d52c2c;
+    font-style: italic;
+    color: #555;
+    border-radius: 0 10px 10px 0;
+}
+
+.article-content blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.article-content ul,
+.article-content ol {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+}
+
+.article-content li {
+    margin-bottom: 0.5rem;
+}
+
+.article-content ul li::marker {
+    color: #d52c2c;
+}
+
+.article-content ol li::marker {
+    color: #d52c2c;
+    font-weight: 600;
+}
+
+.article-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin: 1.5rem 0;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.article-content figure {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.article-content figcaption {
+    font-size: 14px;
+    color: #888;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.article-content pre,
+.article-content code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    background: #f5f5f5;
+    border-radius: 6px;
+}
+
+.article-content code {
+    padding: 2px 6px;
+    font-size: 0.9em;
+    color: #d52c2c;
+}
+
+.article-content pre {
+    padding: 1rem 1.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border: 1px solid #ddd;
+}
+
+.article-content pre code {
+    background: none;
+    color: #333;
+    padding: 0;
+}
+
+.article-content hr {
+    margin: 2.5rem 0;
+    border: none;
+    border-top: 2px dashed #ddd;
+}
+
+.article-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.95em;
+}
+
+.article-content th,
+.article-content td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.article-content th {
+    background: #f5f5f5;
+    font-weight: 600;
+}
+
+.article-content tbody tr:hover {
+    background: #fdf8f3;
+}
+
 .blog-footer {
     margin-top: 40px;
     padding-top: 20px;

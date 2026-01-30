@@ -49,8 +49,13 @@
                 </div>
             </div>
 
-            <div class="blog-body">
-                <?= nl2br(htmlspecialchars($content['body'])); ?>
+            <div class="blog-body article-content">
+                <?php
+                    // Allow safe HTML tags for rich text content
+                    $allowedTags = '<h1><h2><h3><h4><h5><h6><p><br><strong><b><em><i><u><s><strike><a><ul><ol><li><blockquote><pre><code><img><table><thead><tbody><tr><th><td><hr><span><div><figure><figcaption>';
+                    $body = strip_tags($content['body'], $allowedTags);
+                    echo $body;
+                ?>
             </div>
 
             <!-- Author Social Media -->
@@ -85,6 +90,66 @@
                 </div>
             </div>
             <?php endif; ?>
+
+            <!-- Share Article Section -->
+            <div class="share-article-section" style="margin-top: 40px; padding: 25px; background: #f8f9fa; border-radius: 10px; border: 2px solid #eee;">
+                <h4 style="font-size: 16px; margin-bottom: 15px; color: #333;">
+                    <i class="fa-solid fa-share-nodes"></i> Bagikan Artikel Ini
+                </h4>
+                <div class="share-buttons" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <?php 
+                        $articleUrl = BASE_URL . '/blog/' . $content['slug'];
+                        $articleTitle = urlencode($content['title']);
+                        $encodedUrl = urlencode($articleUrl);
+                    ?>
+                    
+                    <!-- WhatsApp -->
+                    <a href="https://wa.me/?text=<?= $articleTitle ?>%20<?= $encodedUrl ?>" 
+                       target="_blank" 
+                       class="share-btn share-whatsapp"
+                       style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #25D366; color: white; text-decoration: none; border-radius: 25px; font-size: 14px; font-weight: 500; transition: all 0.3s ease;">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    
+                    <!-- Facebook -->
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=<?= $encodedUrl ?>" 
+                       target="_blank"
+                       class="share-btn share-facebook"
+                       style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #1877F2; color: white; text-decoration: none; border-radius: 25px; font-size: 14px; font-weight: 500; transition: all 0.3s ease;">
+                        <i class="fab fa-facebook-f"></i> Facebook
+                    </a>
+                    
+                    <!-- Twitter/X -->
+                    <a href="https://twitter.com/intent/tweet?text=<?= $articleTitle ?>&url=<?= $encodedUrl ?>" 
+                       target="_blank"
+                       class="share-btn share-twitter"
+                       style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #000; color: white; text-decoration: none; border-radius: 25px; font-size: 14px; font-weight: 500; transition: all 0.3s ease;">
+                        <i class="fab fa-x-twitter"></i> Twitter
+                    </a>
+                    
+                    <!-- Copy Link -->
+                    <button onclick="copyArticleLink('<?= $articleUrl ?>')" 
+                            class="share-btn share-copy"
+                            style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #6c757d; color: white; border: none; border-radius: 25px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fa-solid fa-link"></i> <span id="copy-text">Salin Link</span>
+                    </button>
+                </div>
+            </div>
+
+            <script>
+            function copyArticleLink(url) {
+                navigator.clipboard.writeText(url).then(function() {
+                    var copyText = document.getElementById('copy-text');
+                    var originalText = copyText.innerText;
+                    copyText.innerText = 'Tersalin!';
+                    setTimeout(function() {
+                        copyText.innerText = originalText;
+                    }, 2000);
+                }).catch(function(err) {
+                    alert('Gagal menyalin link');
+                });
+            }
+            </script>
 
             <!-- Comments Section -->
             <div class="comments-section" style="margin-top: 50px;">

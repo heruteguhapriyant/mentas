@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ZineController - Bulletin Sastra (Static View)
+ * ZineController - Bulletin Sastra (PDF Support)
  */
 class ZineController extends Controller
 {
@@ -13,12 +13,25 @@ class ZineController extends Controller
     }
 
     /**
-     * List all zines
+     * List all zines with optional category filter
      */
     public function index()
     {
-        $zines = $this->zineModel->all();
-        return $this->view('zine/index', ['zines' => $zines]);
+        $category = $_GET['category'] ?? null;
+        $categories = Zine::getCategories();
+        
+        if ($category && isset($categories[$category])) {
+            $zines = $this->zineModel->getByCategory($category);
+        } else {
+            $zines = $this->zineModel->all();
+            $category = null; // Reset to show "all" as active
+        }
+        
+        return $this->view('zine/index', [
+            'zines' => $zines,
+            'categories' => $categories,
+            'activeCategory' => $category
+        ]);
     }
 
     /**

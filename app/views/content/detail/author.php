@@ -45,6 +45,26 @@
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
+
+            <!-- QRIS Support Section -->
+            <?php if (!empty($content['qris_image'])): ?>
+            <div class="author-divider"></div>
+            <div class="author-qris-section">
+                <h4 style="font-size: 14px; color: #333; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">
+                    <i class="fa-solid fa-heart" style="color: #e63946;"></i> Dukung Kontributor
+                </h4>
+                <div class="qris-container" style="background: #fff; padding: 15px; border-radius: 10px; border: 2px solid #eee; text-align: center;">
+                    <img 
+                        src="<?= BASE_URL ?>/<?= $content['qris_image'] ?>" 
+                        alt="QRIS <?= htmlspecialchars($content['name']) ?>"
+                        style="max-width: 200px; width: 100%; height: auto; border-radius: 8px;"
+                    >
+                    <p style="margin-top: 10px; font-size: 12px; color: #666;">
+                        Scan QRIS untuk mendukung karya penulis
+                    </p>
+                </div>
+            </div>
+            <?php endif; ?>
         </aside>
 
         <!-- RIGHT COLUMN: Image, Bio, Works -->

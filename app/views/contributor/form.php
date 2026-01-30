@@ -53,8 +53,65 @@
 
             <div class="form-group">
                 <label for="body">Isi Artikel *</label>
-                <textarea id="body" name="body" class="form-control" rows="15" required placeholder="Tulis isi artikel di sini..."><?= htmlspecialchars($post['body'] ?? '') ?></textarea>
+                
+                <!-- Quill Editor Container -->
+                <div id="quill-editor"></div>
+                <input type="hidden" name="body" id="body-input">
             </div>
+
+            <style>
+                /* Quill Editor Container */
+                #quill-editor {
+                    height: 400px;
+                    background: #fff;
+                    margin-bottom: 20px;
+                }
+                /* Quill Editor Styling */
+                .ql-toolbar.ql-snow {
+                    border-radius: 8px 8px 0 0;
+                    background: #f8f9fa;
+                    border: 1px solid #ddd;
+                }
+                .ql-container.ql-snow {
+                    border-radius: 0 0 8px 8px;
+                    border: 1px solid #ddd;
+                    border-top: none;
+                    font-size: 16px;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                }
+                .ql-editor {
+                    min-height: 350px;
+                    line-height: 1.8;
+                }
+                .ql-editor h1, .ql-editor h2, .ql-editor h3 {
+                    margin-top: 1.5rem;
+                    margin-bottom: 0.5rem;
+                }
+                .ql-editor blockquote {
+                    border-left: 4px solid #d52c2c;
+                    padding-left: 1rem;
+                    color: #555;
+                }
+                .ql-editor a {
+                    color: #d52c2c;
+                }
+                .ql-snow .ql-picker.ql-header .ql-picker-label::before,
+                .ql-snow .ql-picker.ql-header .ql-picker-item::before {
+                    content: 'Normal';
+                }
+                .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
+                .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
+                    content: 'Heading 1';
+                }
+                .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
+                .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
+                    content: 'Heading 2';
+                }
+                .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
+                .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
+                    content: 'Heading 3';
+                }
+            </style>
 
             <?php 
             // Get array of current post tag IDs
@@ -252,6 +309,46 @@ document.addEventListener('DOMContentLoaded', function() {
         manualTagsInput.value = selectedTags.join(',');
     }
 });
+</script>
+
+<!-- Quill JS -->
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+    // Initialize Quill Editor after DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        var quill = new Quill('#quill-editor', {
+            theme: 'snow',
+            placeholder: 'Tulis isi artikel di sini...',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    ['blockquote', 'code-block'],
+                    ['link', 'image', 'video'],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Load existing content if editing
+        <?php if (!empty($post['body'])): ?>
+        quill.root.innerHTML = <?= json_encode($post['body']) ?>;
+        <?php endif; ?>
+
+        // Sync content to hidden input on form submit
+        document.querySelector('form').addEventListener('submit', function() {
+            document.getElementById('body-input').value = quill.root.innerHTML;
+        });
+
+        // Also sync on any change for draft saving
+        quill.on('text-change', function() {
+            document.getElementById('body-input').value = quill.root.innerHTML;
+        });
+    });
 </script>
 
 <?php require_once __DIR__ . '/layout/footer.php'; ?>

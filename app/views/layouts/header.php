@@ -1,5 +1,7 @@
 <?php
 $blogCategories = getCategoriesByType('blog');
+// Get cart count for badge
+$cartCount = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
 ?>
 
 <header class="header">
@@ -22,21 +24,30 @@ $blogCategories = getCategoriesByType('blog');
                 <a href="<?= BASE_URL ?>">Home</a>
                 <a href="<?= BASE_URL ?>/blog">Blog</a>
                 <a href="<?= BASE_URL ?>/zine">Bulletin Sastra</a>
-                <a href="<?= BASE_URL ?>/katalog">Katalog</a>
-                <a href="<?= BASE_URL ?>/page/jual-beli">Jual Beli</a>
-                <a href="<?= BASE_URL ?>/page/event">Event</a>
+                <a href="<?= BASE_URL ?>/ekosistem">Ekosistem</a>
+                <a href="<?= BASE_URL ?>/merch">Merch</a>
+                <a href="<?= BASE_URL ?>/pentas">Pentas</a>
                 <a href="<?= BASE_URL ?>/page/about">About</a>
                 <a href="<?= BASE_URL ?>/page/contribute">Contribute</a>
             </nav>
-            <?php if (isLoggedIn()): ?>
-                <a href="<?= BASE_URL ?>/<?= isAdmin() ? 'admin' : 'contributor' ?>" class="profile-icon" title="Dashboard">
-                    <i class="fa-solid fa-user"></i>
+            <div class="header-icons">
+                <!-- Cart Icon -->
+                <a href="<?= BASE_URL ?>/cart" class="cart-icon" title="Keranjang">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge" style="<?= $cartCount > 0 ? '' : 'display:none' ?>"><?= $cartCount ?></span>
                 </a>
-            <?php else: ?>
-                <a href="<?= BASE_URL ?>/auth/login" class="profile-icon" title="Login">
-                    <i class="fa-regular fa-user"></i>
-                </a>
-            <?php endif; ?>
+                
+                <!-- User Icon -->
+                <?php if (isLoggedIn()): ?>
+                    <a href="<?= BASE_URL ?>/<?= isAdmin() ? 'admin' : 'contributor' ?>" class="profile-icon" title="Dashboard">
+                        <i class="fa-solid fa-user"></i>
+                    </a>
+                <?php else: ?>
+                    <a href="<?= BASE_URL ?>/auth/login" class="profile-icon" title="Login">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+                <?php endif; ?>
+            </div>
         </div>
         <div class="mobile-menu">
             <div class="mobile-menu-header">
@@ -46,11 +57,12 @@ $blogCategories = getCategoriesByType('blog');
                 <li><a href="<?= BASE_URL ?>">Home</a></li>
                 <li><a href="<?= BASE_URL ?>/blog">Blog</a></li>
                 <li><a href="<?= BASE_URL ?>/zine">Bulletin Sastra</a></li>
-                <li><a href="<?= BASE_URL ?>/katalog">Katalog</a></li>
-                <li><a href="<?= BASE_URL ?>/page/jual-beli">Jual Beli</a></li>
-                <li><a href="<?= BASE_URL ?>/page/event">Event</a></li>
+                <li><a href="<?= BASE_URL ?>/ekosistem">Ekosistem</a></li>
+                <li><a href="<?= BASE_URL ?>/merch">Merch</a></li>
+                <li><a href="<?= BASE_URL ?>/pentas">Pentas</a></li>
                 <li><a href="<?= BASE_URL ?>/page/about">About</a></li>
                 <li><a href="<?= BASE_URL ?>/page/contribute">Contribute</a></li>
+                <li><a href="<?= BASE_URL ?>/cart"><i class="fas fa-shopping-cart"></i> Keranjang (<?= $cartCount ?>)</a></li>
             </ul>
         </div>
 </header>

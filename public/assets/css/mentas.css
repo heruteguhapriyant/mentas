@@ -5,7 +5,8 @@
     font-family: 'Segoe UI', sans-serif;
 }
 
-html, body {
+html,
+body {
     overflow-x: hidden;
     max-width: 100%;
 }
@@ -127,6 +128,70 @@ body>main {
 .header.scrolled .profile-icon:hover {
     background: #fff;
     color: #d52c2c;
+}
+
+/* ===== HEADER ICONS CONTAINER ===== */
+.header-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Cart Icon */
+.cart-icon {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #d52c2c;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 16px;
+    background: #fff;
+    color: #d52c2c;
+    transition: all 0.25s ease;
+}
+
+.cart-icon:hover {
+    background: #d52c2c;
+    color: #fff;
+}
+
+/* Cart Badge */
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #25d366;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid #fff;
+}
+
+/* Saat sticky - Cart */
+.header.scrolled .cart-icon {
+    border-color: #fff;
+    color: #fff;
+    background: transparent;
+}
+
+.header.scrolled .cart-icon:hover {
+    background: #fff;
+    color: #d52c2c;
+}
+
+.header.scrolled .cart-badge {
+    border-color: #d52c2c;
 }
 
 .navbar {
@@ -464,7 +529,7 @@ body>main {
     background: #d52c2c;
     color: #fff;
     border: 2px solid #000;
-    transition: 
+    transition:
         transform 0.2s ease,
         box-shadow 0.2s ease,
         background 0.2s ease;
@@ -566,7 +631,8 @@ body>main {
 
 .footer-grid {
     display: flex;
-    gap: 48px;              /* desktop aman */
+    gap: 48px;
+    /* desktop aman */
     max-width: 1200px;
     margin: auto;
     width: 100%;
@@ -575,7 +641,7 @@ body>main {
 
 .footer-grid h4 {
     margin-bottom: 10px;
-    color:#fff;
+    color: #fff;
 }
 
 .footer-grid a {
@@ -585,7 +651,7 @@ body>main {
     line-height: 1.8;
 }
 
-.footer-grid a:hover{
+.footer-grid a:hover {
     color: #d52c2c;
 }
 
@@ -692,6 +758,7 @@ body>main {
     .header {
         padding: 20px 24px;
     }
+
     .header.scrolled .logo-sticky {
         transform: scale(1.8);
     }
@@ -714,4 +781,3 @@ body>main {
         padding: 18px 20px;
     }
 }
-

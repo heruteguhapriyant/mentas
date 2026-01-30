@@ -370,13 +370,21 @@ class AdminController extends Controller
     public function zines()
     {
         $zineModel = new Zine();
-        $zines = $zineModel->all();
-        return $this->view('admin/zines/index', ['zines' => $zines]);
+        $zines = $zineModel->all(false); // Get all including inactive
+        $categories = Zine::getCategories();
+        return $this->view('admin/zines/index', [
+            'zines' => $zines,
+            'categories' => $categories
+        ]);
     }
 
     public function zineCreate()
     {
-        return $this->view('admin/zines/form', ['zine' => null]);
+        $categories = Zine::getCategories();
+        return $this->view('admin/zines/form', [
+            'zine' => null,
+            'categories' => $categories
+        ]);
     }
 
     public function zineStore()
@@ -388,7 +396,8 @@ class AdminController extends Controller
 
         $data = [
             'title' => trim($_POST['title'] ?? ''),
-            'content' => $_POST['content'] ?? '',
+            'excerpt' => trim($_POST['excerpt'] ?? ''),
+            'category' => $_POST['category'] ?? 'esai',
             'is_active' => isset($_POST['is_active']) ? 1 : 0
         ];
 
@@ -402,6 +411,33 @@ class AdminController extends Controller
             $filename = uniqid() . '.' . $ext;
             move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
             $data['cover_image'] = 'uploads/zines/' . $filename;
+        }
+
+        // Handle PDF file upload
+        if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK) {
+            $ext = strtolower(pathinfo($_FILES['pdf_file']['name'], PATHINFO_EXTENSION));
+            
+            // Validate PDF file type
+            if ($ext !== 'pdf') {
+                setFlash('error', 'File harus berformat PDF');
+                header('Location: ' . BASE_URL . '/admin/zineCreate');
+                exit;
+            }
+            
+            // Check file size (max 10MB)
+            if ($_FILES['pdf_file']['size'] > 10 * 1024 * 1024) {
+                setFlash('error', 'Ukuran file PDF maksimal 10MB');
+                header('Location: ' . BASE_URL . '/admin/zineCreate');
+                exit;
+            }
+            
+            $uploadDir = '../public/uploads/zines/pdf/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $filename = uniqid() . '.pdf';
+            move_uploaded_file($_FILES['pdf_file']['tmp_name'], $uploadDir . $filename);
+            $data['pdf_file'] = 'uploads/zines/pdf/' . $filename;
         }
 
         $zineModel = new Zine();
@@ -422,7 +458,11 @@ class AdminController extends Controller
             exit;
         }
 
-        return $this->view('admin/zines/form', ['zine' => $zine]);
+        $categories = Zine::getCategories();
+        return $this->view('admin/zines/form', [
+            'zine' => $zine,
+            'categories' => $categories
+        ]);
     }
 
     public function zineUpdate($id)
@@ -434,7 +474,8 @@ class AdminController extends Controller
 
         $data = [
             'title' => trim($_POST['title'] ?? ''),
-            'content' => $_POST['content'] ?? '',
+            'excerpt' => trim($_POST['excerpt'] ?? ''),
+            'category' => $_POST['category'] ?? 'esai',
             'is_active' => isset($_POST['is_active']) ? 1 : 0
         ];
 
@@ -448,6 +489,33 @@ class AdminController extends Controller
             $filename = uniqid() . '.' . $ext;
             move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
             $data['cover_image'] = 'uploads/zines/' . $filename;
+        }
+
+        // Handle PDF file upload
+        if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK) {
+            $ext = strtolower(pathinfo($_FILES['pdf_file']['name'], PATHINFO_EXTENSION));
+            
+            // Validate PDF file type
+            if ($ext !== 'pdf') {
+                setFlash('error', 'File harus berformat PDF');
+                header('Location: ' . BASE_URL . '/admin/zineEdit/' . $id);
+                exit;
+            }
+            
+            // Check file size (max 10MB)
+            if ($_FILES['pdf_file']['size'] > 10 * 1024 * 1024) {
+                setFlash('error', 'Ukuran file PDF maksimal 10MB');
+                header('Location: ' . BASE_URL . '/admin/zineEdit/' . $id);
+                exit;
+            }
+            
+            $uploadDir = '../public/uploads/zines/pdf/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $filename = uniqid() . '.pdf';
+            move_uploaded_file($_FILES['pdf_file']['tmp_name'], $uploadDir . $filename);
+            $data['pdf_file'] = 'uploads/zines/pdf/' . $filename;
         }
 
         $zineModel = new Zine();
@@ -625,5 +693,331 @@ class AdminController extends Controller
         setFlash('success', 'Pengaturan berhasil disimpan');
         header('Location: ' . BASE_URL . '/admin/settings');
         exit;
+    }
+
+    // =====================
+    // PRODUCTS MANAGEMENT (Merch)
+    // =====================
+
+    public function products()
+    {
+        $productModel = new Product();
+        $products = $productModel->getAll();
+        return $this->view('admin/products/index', ['products' => $products]);
+    }
+
+    public function productCreate()
+    {
+        return $this->view('admin/products/form', ['product' => null]);
+    }
+
+    public function productStore()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/products');
+            exit;
+        }
+
+        $data = [
+            'name' => trim($_POST['name'] ?? ''),
+            'category' => $_POST['category'] ?? 'merchandise',
+            'description' => trim($_POST['description'] ?? ''),
+            'price' => intval($_POST['price'] ?? 0),
+            'stock' => intval($_POST['stock'] ?? 0),
+            'whatsapp_number' => trim($_POST['whatsapp_number'] ?? '6283895189649'),
+            'is_active' => isset($_POST['is_active']) ? 1 : 0
+        ];
+
+        // Handle cover image upload
+        if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = '../public/uploads/products/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+            $filename = uniqid() . '.' . $ext;
+            move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
+            $data['cover_image'] = 'uploads/products/' . $filename;
+        }
+
+        $productModel = new Product();
+        $productModel->create($data);
+        setFlash('success', 'Produk berhasil ditambahkan');
+        header('Location: ' . BASE_URL . '/admin/products');
+        exit;
+    }
+
+    public function productEdit($id)
+    {
+        $productModel = new Product();
+        $product = $productModel->find($id);
+
+        if (!$product) {
+            setFlash('error', 'Produk tidak ditemukan');
+            header('Location: ' . BASE_URL . '/admin/products');
+            exit;
+        }
+
+        return $this->view('admin/products/form', ['product' => $product]);
+    }
+
+    public function productUpdate($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/products');
+            exit;
+        }
+
+        $data = [
+            'name' => trim($_POST['name'] ?? ''),
+            'category' => $_POST['category'] ?? 'merchandise',
+            'description' => trim($_POST['description'] ?? ''),
+            'price' => intval($_POST['price'] ?? 0),
+            'stock' => intval($_POST['stock'] ?? 0),
+            'whatsapp_number' => trim($_POST['whatsapp_number'] ?? '6283895189649'),
+            'is_active' => isset($_POST['is_active']) ? 1 : 0
+        ];
+
+        // Handle cover image upload
+        if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = '../public/uploads/products/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+            $filename = uniqid() . '.' . $ext;
+            move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
+            $data['cover_image'] = 'uploads/products/' . $filename;
+        }
+
+        $productModel = new Product();
+        $productModel->update($id, $data);
+        setFlash('success', 'Produk berhasil diupdate');
+        header('Location: ' . BASE_URL . '/admin/products');
+        exit;
+    }
+
+    public function productDelete($id)
+    {
+        $productModel = new Product();
+        $productModel->delete($id);
+        setFlash('success', 'Produk berhasil dihapus');
+        header('Location: ' . BASE_URL . '/admin/products');
+        exit;
+    }
+
+    // =====================
+    // EVENTS MANAGEMENT (Pentas)
+    // =====================
+
+    public function events()
+    {
+        $eventModel = new Event();
+        $events = $eventModel->getAll();
+        return $this->view('admin/events/index', ['events' => $events]);
+    }
+
+    public function eventCreate()
+    {
+        return $this->view('admin/events/form', ['event' => null]);
+    }
+
+    public function eventStore()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/events');
+            exit;
+        }
+
+        // Generate slug from title
+        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $_POST['title'] ?? '')));
+        $slug = preg_replace('/-+/', '-', $slug); // Remove multiple dashes
+        $slug = trim($slug, '-'); // Remove leading/trailing dashes
+        
+        $data = [
+            'title' => trim($_POST['title'] ?? ''),
+            'slug' => $slug,
+            'description' => trim($_POST['description'] ?? ''),
+            'venue' => trim($_POST['venue'] ?? ''),
+            'venue_address' => trim($_POST['venue_address'] ?? ''),
+            'event_date' => $_POST['event_date'] ?? null,
+            'end_date' => $_POST['event_end_date'] ?: null,
+            'ticket_price' => intval($_POST['ticket_price'] ?? 0),
+            'ticket_quota' => intval($_POST['ticket_quota'] ?? 100),
+            'is_active' => isset($_POST['is_active']) ? 1 : 0
+        ];
+
+        // Handle cover image upload
+        if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = '../public/uploads/events/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+            $filename = uniqid() . '.' . $ext;
+            move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
+            $data['cover_image'] = 'uploads/events/' . $filename;
+        }
+
+        $eventModel = new Event();
+        $eventModel->create($data);
+        setFlash('success', 'Event berhasil ditambahkan');
+        header('Location: ' . BASE_URL . '/admin/events');
+        exit;
+    }
+
+    public function eventEdit($id)
+    {
+        $eventModel = new Event();
+        $event = $eventModel->find($id);
+
+        if (!$event) {
+            setFlash('error', 'Event tidak ditemukan');
+            header('Location: ' . BASE_URL . '/admin/events');
+            exit;
+        }
+
+        return $this->view('admin/events/form', ['event' => $event]);
+    }
+
+    public function eventUpdate($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/events');
+            exit;
+        }
+
+        $data = [
+            'title' => trim($_POST['title'] ?? ''),
+            'description' => trim($_POST['description'] ?? ''),
+            'venue' => trim($_POST['venue'] ?? ''),
+            'venue_address' => trim($_POST['venue_address'] ?? ''),
+            'event_date' => $_POST['event_date'] ?? null,
+            'end_date' => $_POST['event_end_date'] ?: null,
+            'ticket_price' => intval($_POST['ticket_price'] ?? 0),
+            'ticket_quota' => intval($_POST['ticket_quota'] ?? 100),
+            'is_active' => isset($_POST['is_active']) ? 1 : 0
+        ];
+
+        // Handle cover image upload
+        if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = '../public/uploads/events/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+            $filename = uniqid() . '.' . $ext;
+            move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
+            $data['cover_image'] = 'uploads/events/' . $filename;
+        }
+
+        $eventModel = new Event();
+        $eventModel->update($id, $data);
+        setFlash('success', 'Event berhasil diupdate');
+        header('Location: ' . BASE_URL . '/admin/events');
+        exit;
+    }
+
+    public function eventDelete($id)
+    {
+        $eventModel = new Event();
+        $eventModel->delete($id);
+        setFlash('success', 'Event berhasil dihapus');
+        header('Location: ' . BASE_URL . '/admin/events');
+        exit;
+    }
+
+    // =====================
+    // TICKETS MANAGEMENT
+    // =====================
+
+    public function tickets()
+    {
+        $ticketModel = new Ticket();
+        $eventModel = new Event();
+        
+        $eventId = isset($_GET['event_id']) ? intval($_GET['event_id']) : null;
+        $status = isset($_GET['status']) ? $_GET['status'] : null;
+        
+        if ($eventId) {
+            $tickets = $ticketModel->getByEvent($eventId);
+            $currentEvent = $eventModel->find($eventId);
+        } else {
+            $tickets = $ticketModel->getAll();
+            $currentEvent = null;
+        }
+        
+        $events = $eventModel->getAll();
+        
+        return $this->view('admin/tickets/index', [
+            'tickets' => $tickets,
+            'events' => $events,
+            'currentEvent' => $currentEvent,
+            'currentStatus' => $status
+        ]);
+    }
+
+    public function ticketConfirm($id)
+    {
+        $ticketModel = new Ticket();
+        $ticket = $ticketModel->find($id);
+        
+        if ($ticket) {
+            $ticketModel->updateStatus($id, 'confirmed');
+            setFlash('success', 'Tiket berhasil dikonfirmasi');
+        }
+        
+        $redirect = BASE_URL . '/admin/tickets';
+        if (isset($_GET['event_id'])) {
+            $redirect .= '?event_id=' . intval($_GET['event_id']);
+        }
+        header('Location: ' . $redirect);
+        exit;
+    }
+
+    public function ticketCancel($id)
+    {
+        $ticketModel = new Ticket();
+        $ticket = $ticketModel->find($id);
+        
+        if ($ticket) {
+            $ticketModel->updateStatus($id, 'cancelled');
+            setFlash('success', 'Tiket dibatalkan');
+        }
+        
+        $redirect = BASE_URL . '/admin/tickets';
+        if (isset($_GET['event_id'])) {
+            $redirect .= '?event_id=' . intval($_GET['event_id']);
+        }
+        header('Location: ' . $redirect);
+        exit;
+    }
+
+    public function ticketDelete($id)
+    {
+        $ticketModel = new Ticket();
+        $ticketModel->delete($id);
+        setFlash('success', 'Tiket berhasil dihapus');
+        
+        $redirect = BASE_URL . '/admin/tickets';
+        if (isset($_GET['event_id'])) {
+            $redirect .= '?event_id=' . intval($_GET['event_id']);
+        }
+        header('Location: ' . $redirect);
+        exit;
+    }
+
+    public function ticketDetail($id)
+    {
+        $ticketModel = new Ticket();
+        $ticket = $ticketModel->find($id);
+        
+        if (!$ticket) {
+            setFlash('error', 'Tiket tidak ditemukan');
+            header('Location: ' . BASE_URL . '/admin/tickets');
+            exit;
+        }
+        
+        return $this->view('admin/tickets/detail', ['ticket' => $ticket]);
     }
 }

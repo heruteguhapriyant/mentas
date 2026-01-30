@@ -230,6 +230,19 @@
                 </a></li>
                 
                 <div class="menu-divider"></div>
+                <li style="padding: 0.5rem 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.75rem; text-transform: uppercase;">Merch & Pentas</li>
+                
+                <li><a href="<?= BASE_URL ?>/admin/products">
+                    <i class="fas fa-box"></i> Produk
+                </a></li>
+                <li><a href="<?= BASE_URL ?>/admin/events">
+                    <i class="fas fa-calendar-alt"></i> Events
+                </a></li>
+                <li><a href="<?= BASE_URL ?>/admin/tickets">
+                    <i class="fas fa-ticket-alt"></i> Tiket
+                </a></li>
+                
+                <div class="menu-divider"></div>
                 <li style="padding: 0.5rem 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.75rem; text-transform: uppercase;">Pengguna</li>
                 
                 <li><a href="<?= BASE_URL ?>/admin/users">

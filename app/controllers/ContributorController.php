@@ -282,6 +282,29 @@ class ContributorController extends Controller
             }
         }
 
+        // Handle QRIS Image Upload
+        if (isset($_FILES['qris_image']) && $_FILES['qris_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = '../public/uploads/qris/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            $ext = strtolower(pathinfo($_FILES['qris_image']['name'], PATHINFO_EXTENSION));
+            
+            // Validate image type
+            if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'])) {
+                $filename = 'qris_' . $userId . '_' . uniqid() . '.' . $ext;
+                
+                if (move_uploaded_file($_FILES['qris_image']['tmp_name'], $uploadDir . $filename)) {
+                    // Remove old QRIS if exists
+                    if (!empty($user['qris_image']) && file_exists('../public/' . $user['qris_image'])) {
+                        unlink('../public/' . $user['qris_image']);
+                    }
+                    $data['qris_image'] = 'uploads/qris/' . $filename;
+                }
+            }
+        }
+
         // Update password if provided
         if (!empty($_POST['password'])) {
             if ($_POST['password'] === $_POST['confirm_password']) {

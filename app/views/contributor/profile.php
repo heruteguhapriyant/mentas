@@ -104,6 +104,27 @@
                         <input type="password" name="confirm_password" class="form-control" placeholder="Ulangi password baru">
                     </div>
                 </div>
+
+                <!-- QRIS Support -->
+                <div class="form-section" style="grid-column: 1 / -1; border-top: 1px solid #f0f0f0;">
+                    <h3 class="section-title"><i class="fa-solid fa-qrcode"></i> QRIS untuk Donasi</h3>
+                    <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
+                        Upload gambar QRIS Anda agar pembaca dapat dengan mudah mendukung karya Anda.
+                    </p>
+                    <div style="display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap;">
+                        <?php if (!empty($user['qris_image'])): ?>
+                            <div style="text-align: center;">
+                                <img src="<?= BASE_URL ?>/<?= $user['qris_image'] ?>" alt="QRIS" style="max-width: 150px; border-radius: 8px; border: 2px solid #eee;">
+                                <p style="font-size: 12px; color: #888; margin-top: 8px;">QRIS saat ini</p>
+                            </div>
+                        <?php endif; ?>
+                        <div class="form-group" style="flex: 1; min-width: 250px;">
+                            <label for="qris_image">Upload QRIS Baru</label>
+                            <input type="file" name="qris_image" id="qris_image" class="form-control" accept="image/*">
+                            <small style="color: #888; display: block; margin-top: 8px;">Format: JPG, PNG (Max 2MB)</small>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="form-actions sticky-actions">

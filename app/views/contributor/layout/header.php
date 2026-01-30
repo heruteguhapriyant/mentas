@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/mentas.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/mentas-custom.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Quill Editor CSS -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
     <style>
         /* Override header untuk contributor - selalu scrolled state (merah) */
         .header {
