@@ -6,6 +6,18 @@
 class PageController extends Controller
 {
     /**
+     * Handle index route /page/{slug}
+     * Router calls this when method {slug} doesn't exist
+     */
+    public function index($page = null)
+    {
+        if ($page) {
+            return $this->__call($page, []);
+        }
+        return $this->view('errors/404');
+    }
+
+    /**
      * Handle page by slug (called as method by Router)
      * Route: /page/jual-beli calls $this->jual-beli() which doesn't work
      * So we use __call magic method
