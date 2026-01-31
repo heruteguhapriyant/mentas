@@ -1,7 +1,7 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <div class="page-header">
-    <h1>Buletin Sastra</h1>
+    <h1>Buletin</h1>
     <a href="<?= BASE_URL ?>/admin/zineCreate" class="btn btn-primary">+ Tambah Buletin</a>
 </div>
 

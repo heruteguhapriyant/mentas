@@ -84,7 +84,7 @@
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="product-actions">
+                <!-- <div class="product-actions">
                     <?php if ($product['stock'] > 0): ?>
                         <div class="qty-selector">
                             <label>Jumlah:</label>
@@ -111,7 +111,7 @@
                             <i class="fas fa-ban"></i> Stok Habis
                         </button>
                     <?php endif; ?>
-                </div>
+                </div> -->
 
                 <div class="order-info">
                     <p><i class="fas fa-info-circle"></i> Tambahkan ke keranjang lalu checkout via WhatsApp</p>

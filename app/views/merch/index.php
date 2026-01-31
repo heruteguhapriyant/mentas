@@ -69,7 +69,7 @@
                         <a href="<?= BASE_URL ?>/merch/detail/<?= $product['id'] ?>" class="btn-outline">
                             <i class="fas fa-eye"></i> Lihat Detail
                         </a>
-                        <?php if ($product['stock'] > 0): ?>
+                        <!-- <?php if ($product['stock'] > 0): ?>
                             <button type="button" class="btn-cart" onclick="addToCart(<?= $product['id'] ?>)" title="Masukkan Keranjang">
                                 <i class="fas fa-cart-plus"></i>
                             </button>
@@ -77,7 +77,7 @@
                             <button type="button" class="btn-cart disabled" disabled title="Stok Habis">
                                 <i class="fas fa-cart-plus"></i>
                             </button>
-                        <?php endif; ?>
+                        <?php endif; ?> -->
                     </div>
                 </div>
             </div>

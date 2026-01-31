@@ -2,7 +2,7 @@
 
 <section class="hero zine-hero">
     <div class="hero-content">
-        <h1>Bulletin Sastra</h1>
+        <h1>Bulletin</h1>
         <p>Kumpulan publikasi sastra dari komunitas Mentas dalam format PDF</p>
     </div>
 </section>
@@ -27,7 +27,7 @@
             <?php if ($activeCategory): ?>
                 Belum ada bulletin untuk kategori <?= Zine::getCategoryLabel($activeCategory) ?>.
             <?php else: ?>
-                Belum ada bulletin sastra.
+                Belum ada bulletin.
             <?php endif; ?>
         </p>
     <?php else: ?>
