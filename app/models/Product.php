@@ -10,23 +10,28 @@ class Product {
     }
 
     /**
+     * Get active merch categories
+     */
+    public function getCategories() {
+        $categoryModel = new Category();
+        return $categoryModel->getByType('merch');
+    }
+
+    /**
      * Get all active products
      */
-    public function getAll($category = null) {
-        $sql = "SELECT * FROM {$this->table} WHERE is_active = 1";
+    public function getAll($activeOnly = true) {
+        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
+                FROM {$this->table} p
+                LEFT JOIN categories c ON p.category_id = c.id";
         
-        if ($category) {
-            $sql .= " AND category = :category";
+        if ($activeOnly) {
+            $sql .= " WHERE p.is_active = 1";
         }
         
-        $sql .= " ORDER BY created_at DESC";
+        $sql .= " ORDER BY p.created_at DESC";
         
         $stmt = $this->db->prepare($sql);
-        
-        if ($category) {
-            $stmt->bindParam(':category', $category);
-        }
-        
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -35,7 +40,12 @@ class Product {
      * Get product by ID
      */
     public function getById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE id = :id");
+        $stmt = $this->db->prepare(
+            "SELECT p.*, c.name as category_name, c.id as category_id
+             FROM {$this->table} p
+             LEFT JOIN categories c ON p.category_id = c.id
+             WHERE p.id = :id"
+        );
         $stmt->bindParam(':id', $id);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -52,20 +62,29 @@ class Product {
      * Get product by slug
      */
     public function getBySlug($slug) {
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE slug = :slug");
+        $stmt = $this->db->prepare(
+            "SELECT p.*, c.name as category_name, c.slug as category_slug
+             FROM {$this->table} p
+             LEFT JOIN categories c ON p.category_id = c.id
+             WHERE p.slug = :slug"
+        );
         $stmt->bindParam(':slug', $slug);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
-     * Get products by category
+     * Get products by category slug
      */
-    public function getByCategory($category) {
+    public function getByCategory($categorySlug) {
         $stmt = $this->db->prepare(
-            "SELECT * FROM {$this->table} WHERE category = :category AND is_active = 1 ORDER BY created_at DESC"
+            "SELECT p.*, c.name as category_name, c.slug as category_slug 
+             FROM {$this->table} p
+             JOIN categories c ON p.category_id = c.id
+             WHERE c.slug = :slug AND p.is_active = 1 
+             ORDER BY p.created_at DESC"
         );
-        $stmt->bindParam(':category', $category);
+        $stmt->bindParam(':slug', $categorySlug);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -74,16 +93,18 @@ class Product {
      * Create new product
      */
     public function create($data) {
+        $data['slug'] = $data['slug'] ?? self::generateSlug($data['name']);
+        
         $sql = "INSERT INTO {$this->table} 
-                (name, slug, category, description, price, stock, cover_image, images, whatsapp_number, is_active) 
+                (name, slug, category_id, description, price, stock, cover_image, images, whatsapp_number, is_active) 
                 VALUES 
-                (:name, :slug, :category, :description, :price, :stock, :cover_image, :images, :whatsapp_number, :is_active)";
+                (:name, :slug, :category_id, :description, :price, :stock, :cover_image, :images, :whatsapp_number, :is_active)";
         
         $stmt = $this->db->prepare($sql);
         
         $stmt->bindParam(':name', $data['name']);
         $stmt->bindParam(':slug', $data['slug']);
-        $stmt->bindParam(':category', $data['category']);
+        $stmt->bindParam(':category_id', $data['category_id']);
         $stmt->bindParam(':description', $data['description']);
         $stmt->bindParam(':price', $data['price']);
         $stmt->bindParam(':stock', $data['stock']);
@@ -147,11 +168,14 @@ class Product {
     /**
      * Count products by category
      */
-    public function countByCategory($category) {
+    public function countByCategory($categorySlug) {
         $stmt = $this->db->prepare(
-            "SELECT COUNT(*) as total FROM {$this->table} WHERE category = :category AND is_active = 1"
+            "SELECT COUNT(*) as total 
+             FROM {$this->table} p
+             JOIN categories c ON p.category_id = c.id
+             WHERE c.slug = :slug AND p.is_active = 1"
         );
-        $stmt->bindParam(':category', $category);
+        $stmt->bindParam(':slug', $categorySlug);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'];

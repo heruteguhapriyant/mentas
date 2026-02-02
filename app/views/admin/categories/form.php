@@ -15,6 +15,19 @@
         </div>
 
         <div class="form-group">
+            <label for="type">Tipe Kategori *</label>
+            <?php 
+            // Get type from category (edit) or query param (create)
+            $selectedType = $category['type'] ?? ($_GET['type'] ?? 'blog'); 
+            ?>
+            <select id="type" name="type" class="form-control" required>
+                <option value="blog" <?= $selectedType == 'blog' ? 'selected' : '' ?>>Blog</option>
+                <option value="zine" <?= $selectedType == 'zine' ? 'selected' : '' ?>>Bulletin Sastra (Zine)</option>
+                <option value="merch" <?= $selectedType == 'merch' ? 'selected' : '' ?>>Merchandise</option>
+            </select>
+        </div>
+
+        <div class="form-group">
             <label for="description">Deskripsi</label>
             <textarea id="description" name="description" class="form-control" rows="3"><?= htmlspecialchars($category['description'] ?? '') ?></textarea>
         </div>

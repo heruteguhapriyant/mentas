@@ -17,20 +17,19 @@ class ZineController extends Controller
      */
     public function index()
     {
-        $category = $_GET['category'] ?? null;
-        $categories = Zine::getCategories();
+        $categorySlug = $_GET['category'] ?? null;
+        $categories = $this->zineModel->getCategories();
         
-        if ($category && isset($categories[$category])) {
-            $zines = $this->zineModel->getByCategory($category);
+        if ($categorySlug) {
+            $zines = $this->zineModel->getByCategory($categorySlug);
         } else {
             $zines = $this->zineModel->all();
-            $category = null; // Reset to show "all" as active
         }
         
         return $this->view('zine/index', [
             'zines' => $zines,
             'categories' => $categories,
-            'activeCategory' => $category
+            'activeCategory' => $categorySlug
         ]);
     }
 

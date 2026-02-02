@@ -24,21 +24,19 @@ class MerchController extends Controller {
             }
         }
         
-        $category = isset($_GET['category']) ? $_GET['category'] : null;
+        $categorySlug = isset($_GET['category']) ? $_GET['category'] : null;
+        $categories = $this->productModel->getCategories();
         
-        if ($category && !in_array($category, ['merchandise', 'buku'])) {
-            $category = null;
+        if ($categorySlug) {
+            $products = $this->productModel->getByCategory($categorySlug);
+        } else {
+            $products = $this->productModel->getAll();
         }
-        
-        $products = $this->productModel->getAll($category);
-        $merchandiseCount = $this->productModel->countByCategory('merchandise');
-        $bukuCount = $this->productModel->countByCategory('buku');
         
         return $this->view('merch/index', [
             'products' => $products,
-            'merchandiseCount' => $merchandiseCount,
-            'bukuCount' => $bukuCount,
-            'activeCategory' => $category
+            'categories' => $categories,
+            'activeCategory' => $categorySlug
         ]);
     }
 
@@ -65,13 +63,16 @@ class MerchController extends Controller {
      */
     private function showDetail($product) {
         // Get related products (same category)
-        $relatedProducts = $this->productModel->getByCategory($product['category']);
-        // Remove current product from related
-        $relatedProducts = array_filter($relatedProducts, function($p) use ($product) {
-            return $p['id'] !== $product['id'];
-        });
-        // Limit to 4
-        $relatedProducts = array_slice($relatedProducts, 0, 4);
+        $relatedProducts = [];
+        if (!empty($product['category_slug'])) {
+            $relatedProducts = $this->productModel->getByCategory($product['category_slug']);
+            // Remove current product from related
+            $relatedProducts = array_filter($relatedProducts, function($p) use ($product) {
+                return $p['id'] !== $product['id'];
+            });
+            // Limit to 4
+            $relatedProducts = array_slice($relatedProducts, 0, 4);
+        }
         
         // Parse images JSON if exists
         $images = [];

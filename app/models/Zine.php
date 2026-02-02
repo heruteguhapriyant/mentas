@@ -7,83 +7,62 @@ class Zine
 {
     private $db;
 
-    // Available categories
-    const CATEGORIES = [
-        'esai' => 'Esai',
-        'prosa' => 'Prosa',
-        'puisi' => 'Puisi',
-        'cerpen' => 'Cerpen',
-        'rupa' => 'Rupa',
-        'zine' => 'Zine'
-    ];
-
     public function __construct()
     {
         $this->db = Database::getInstance();
     }
 
     /**
-     * Get all categories
+     * Get all active zine categories from DB
      */
-    public static function getCategories()
+    public function getCategories()
     {
-        return self::CATEGORIES;
+        $categoryModel = new Category();
+        return $categoryModel->getByType('zine');
     }
 
     /**
-     * Get category label
-     */
-    public static function getCategoryLabel($category)
-    {
-        return self::CATEGORIES[$category] ?? ucfirst($category);
-    }
-
-    /**
-     * Get all active zines
+     * Get all active zines with category info
      */
     public function all($activeOnly = true)
     {
+        $sql = "SELECT z.*, c.name as category_name, c.slug as category_slug 
+                FROM zines z
+                LEFT JOIN categories c ON z.category_id = c.id
+                ";
+        
         if ($activeOnly) {
-            return $this->db->query(
-                "SELECT * FROM zines WHERE is_active = 1 ORDER BY created_at DESC"
-            );
+            $sql .= " WHERE z.is_active = 1";
         }
-        return $this->db->query(
-            "SELECT * FROM zines ORDER BY created_at DESC"
-        );
+        
+        $sql .= " ORDER BY z.created_at DESC";
+
+        return $this->db->query($sql);
     }
 
     /**
-     * Get zines by category
+     * Get zines by category slug
      */
-    public function getByCategory($category)
+    public function getByCategory($categorySlug)
     {
         return $this->db->query(
-            "SELECT * FROM zines WHERE category = ? AND is_active = 1 ORDER BY created_at DESC",
-            [$category]
+            "SELECT z.*, c.name as category_name, c.slug as category_slug 
+             FROM zines z
+             JOIN categories c ON z.category_id = c.id
+             WHERE c.slug = ? AND z.is_active = 1 
+             ORDER BY z.created_at DESC",
+            [$categorySlug]
         );
     }
 
     /**
-     * Get zines grouped by category
+     * Get zines grouped by category (for potential use)
      */
     public function getAllGroupedByCategory()
     {
-        $zines = $this->all();
-        $grouped = [];
-        
-        foreach (self::CATEGORIES as $key => $label) {
-            $grouped[$key] = [];
-        }
-        
-        foreach ($zines as $zine) {
-            $category = $zine['category'] ?? 'esai';
-            if (isset($grouped[$category])) {
-                $grouped[$category][] = $zine;
-            }
-        }
-        
-        return $grouped;
+        // Re-implement if needed based on dynamic cats
+        // For now, simpler to just get all
+        return $this->all();
     }
 
     /**
@@ -92,7 +71,10 @@ class Zine
     public function find($id)
     {
         return $this->db->queryOne(
-            "SELECT * FROM zines WHERE id = ?",
+            "SELECT z.*, c.name as category_name, c.id as category_id
+             FROM zines z
+             LEFT JOIN categories c ON z.category_id = c.id
+             WHERE z.id = ?",
             [$id]
         );
     }
@@ -103,7 +85,10 @@ class Zine
     public function findBySlug($slug)
     {
         return $this->db->queryOne(
-            "SELECT * FROM zines WHERE slug = ?",
+            "SELECT z.*, c.name as category_name, c.slug as category_slug
+             FROM zines z
+             LEFT JOIN categories c ON z.category_id = c.id
+             WHERE z.slug = ?",
             [$slug]
         );
     }
@@ -113,7 +98,7 @@ class Zine
      */
     public function create($data)
     {
-        $sql = "INSERT INTO zines (title, slug, excerpt, content, cover_image, category, pdf_file, is_active) 
+        $sql = "INSERT INTO zines (title, slug, excerpt, content, cover_image, category_id, pdf_file, is_active) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         $this->db->execute($sql, [
@@ -122,7 +107,7 @@ class Zine
             $data['excerpt'] ?? null,
             $data['content'] ?? null,
             $data['cover_image'] ?? null,
-            $data['category'] ?? 'esai',
+            $data['category_id'] ?? null,
             $data['pdf_file'] ?? null,
             $data['is_active'] ?? 1
         ]);
@@ -155,24 +140,6 @@ class Zine
     public function delete($id)
     {
         return $this->db->execute("DELETE FROM zines WHERE id = ?", [$id]);
-    }
-
-    /**
-     * Count zines by category
-     */
-    public function countByCategory($category = null)
-    {
-        if ($category) {
-            $result = $this->db->queryOne(
-                "SELECT COUNT(*) as count FROM zines WHERE category = ? AND is_active = 1",
-                [$category]
-            );
-        } else {
-            $result = $this->db->queryOne(
-                "SELECT COUNT(*) as count FROM zines WHERE is_active = 1"
-            );
-        }
-        return $result['count'] ?? 0;
     }
 
     /**

@@ -2,7 +2,10 @@
 
 <div class="page-header">
     <h1>Produk (Merch)</h1>
-    <a href="<?= BASE_URL ?>/admin/productCreate" class="btn btn-primary">+ Tambah Produk</a>
+    <div class="header-actions">
+        <a href="<?= BASE_URL ?>/admin/categories?type=merch" class="btn btn-secondary">Kelola Kategori</a>
+        <a href="<?= BASE_URL ?>/admin/productCreate" class="btn btn-primary">+ Tambah Produk</a>
+    </div>
 </div>
 
 <div class="card">
@@ -35,11 +38,7 @@
                         </td>
                         <td><strong><?= htmlspecialchars($product['name']) ?></strong></td>
                         <td>
-                            <?php if ($product['category'] === 'buku'): ?>
-                                <span class="badge badge-info">Buku</span>
-                            <?php else: ?>
-                                <span class="badge badge-secondary">Merchandise</span>
-                            <?php endif; ?>
+                            <span class="badge badge-info"><?= htmlspecialchars($product['category_name'] ?? 'Uncategorized') ?></span>
                         </td>
                         <td>Rp <?= number_format($product['price'], 0, ',', '.') ?></td>
                         <td>

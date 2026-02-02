@@ -63,6 +63,7 @@ class AuthController extends Controller
             exit;
         }
 
+        session_regenerate_id(true); // Prevent session fixation & force new cookie
         loginUser($user);
         setFlash('success', 'Selamat datang, ' . $user['name']);
         $this->redirectByRole();

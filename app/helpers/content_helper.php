@@ -44,7 +44,7 @@ function getContentBySlug($slug)
 function getCategoriesByType($typeSlug)
 {
     $categoryModel = new Category();
-    return $categoryModel->all(true);
+    return $categoryModel->all(true, $typeSlug);
 }
 
 /**

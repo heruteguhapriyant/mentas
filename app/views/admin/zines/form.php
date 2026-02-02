@@ -15,10 +15,10 @@
 
         <div class="form-group">
             <label>Kategori *</label>
-            <select name="category" class="form-control" required>
-                <?php foreach ($categories as $key => $label): ?>
-                    <option value="<?= $key ?>" <?= ($zine['category'] ?? 'esai') === $key ? 'selected' : '' ?>>
-                        <?= $label ?>
+            <select name="category_id" class="form-control" required>
+                <?php foreach ($categories as $cat): ?>
+                    <option value="<?= $cat['id'] ?>" <?= ($zine['category_id'] ?? '') == $cat['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($cat['name']) ?>
                     </option>
                 <?php endforeach; ?>
             </select>

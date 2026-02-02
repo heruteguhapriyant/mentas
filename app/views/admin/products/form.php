@@ -14,9 +14,12 @@
 
         <div class="form-group">
             <label>Kategori *</label>
-            <select name="category" class="form-control" required>
-                <option value="merchandise" <?= ($product['category'] ?? '') === 'merchandise' ? 'selected' : '' ?>>Merchandise</option>
-                <option value="buku" <?= ($product['category'] ?? '') === 'buku' ? 'selected' : '' ?>>Buku</option>
+            <select name="category_id" class="form-control" required>
+                <?php foreach ($categories as $cat): ?>
+                    <option value="<?= $cat['id'] ?>" <?= ($product['category_id'] ?? '') == $cat['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($cat['name']) ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
         </div>
 

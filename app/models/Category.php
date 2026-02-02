@@ -13,19 +13,38 @@ class Category
     }
 
     /**
-     * Get all categories
+     * Get all categories, optionally filtered by type
      */
-    public function all($activeOnly = true)
+    public function all($activeOnly = true, $type = null)
     {
         $sql = "SELECT * FROM categories";
-        
+        $params = [];
+        $conditions = [];
+
         if ($activeOnly) {
-            $sql .= " WHERE is_active = 1";
+            $conditions[] = "is_active = 1";
+        }
+
+        if ($type) {
+            $conditions[] = "type = ?";
+            $params[] = $type;
+        }
+        
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $conditions);
         }
         
         $sql .= " ORDER BY sort_order ASC, name ASC";
 
-        return $this->db->query($sql);
+        return $this->db->query($sql, $params);
+    }
+
+    /**
+     * Get categories by type
+     */
+    public function getByType($type)
+    {
+        return $this->all(true, $type);
     }
 
     /**
@@ -55,12 +74,13 @@ class Category
      */
     public function create($data)
     {
-        $sql = "INSERT INTO categories (name, slug, description, is_active, sort_order) 
-                VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO categories (name, slug, type, description, is_active, sort_order) 
+                VALUES (?, ?, ?, ?, ?, ?)";
 
         $this->db->execute($sql, [
             $data['name'],
             $this->generateSlug($data['name']),
+            $data['type'] ?? 'blog', // Default to blog
             $data['description'] ?? null,
             $data['is_active'] ?? 1,
             $data['sort_order'] ?? 0
@@ -114,7 +134,7 @@ class Category
     }
 
     /**
-     * Get post count per category
+     * Get post count per category (BLOG Only)
      */
     public function getWithPostCount()
     {
@@ -122,7 +142,7 @@ class Category
             "SELECT c.*, COUNT(p.id) as post_count 
              FROM categories c 
              LEFT JOIN posts p ON c.id = p.category_id AND p.status = 'published'
-             WHERE c.is_active = 1
+             WHERE c.is_active = 1 AND c.type = 'blog'
              GROUP BY c.id
              ORDER BY c.sort_order ASC"
         );

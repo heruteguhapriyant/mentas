@@ -10,22 +10,21 @@
 <!-- Category Tabs -->
 <section class="zine-category-tabs">
     <div class="category-tabs-container">
-        <a href="<?= BASE_URL ?>/merch" class="category-tab <?= !isset($_GET['category']) ? 'active' : '' ?>">
+        <a href="<?= BASE_URL ?>/merch" class="category-tab <?= !$activeCategory ? 'active' : '' ?>">
             Semua
         </a>
-        <a href="<?= BASE_URL ?>/merch?category=merchandise" class="category-tab <?= (isset($_GET['category']) && $_GET['category'] === 'merchandise') ? 'active' : '' ?>">
-            <i class="fas fa-tshirt"></i> Merchandise
-        </a>
-        <a href="<?= BASE_URL ?>/merch?category=buku" class="category-tab <?= (isset($_GET['category']) && $_GET['category'] === 'buku') ? 'active' : '' ?>">
-            <i class="fas fa-book"></i> Buku
-        </a>
+        <?php foreach ($categories as $cat): ?>
+            <a href="<?= BASE_URL ?>/merch?category=<?= $cat['slug'] ?>" class="category-tab <?= ($activeCategory === $cat['slug']) ? 'active' : '' ?>">
+                <?= htmlspecialchars($cat['name']) ?>
+            </a>
+        <?php endforeach; ?>
     </div>
 </section>
 
 <section class="program-section zine-section">
     <?php if (empty($products)): ?>
         <p class="zine-empty">
-            <?php if (isset($_GET['category'])): ?>
+            <?php if ($activeCategory): ?>
                 Belum ada produk untuk kategori ini.
             <?php else: ?>
                 Belum ada produk tersedia.
@@ -52,7 +51,7 @@
                 
                 <div class="zine-card-content">
                     <span class="zine-card-category">
-                        <?= $product['category'] === 'buku' ? 'Buku' : 'Merchandise' ?>
+                        <?= htmlspecialchars($product['category_name'] ?? 'Merch') ?>
                     </span>
                     
                     <h3><?= htmlspecialchars($product['name']) ?></h3>

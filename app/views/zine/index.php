@@ -13,9 +13,9 @@
         <a href="<?= BASE_URL ?>/zine" class="category-tab <?= $activeCategory === null ? 'active' : '' ?>">
             Semua
         </a>
-        <?php foreach ($categories as $key => $label): ?>
-            <a href="<?= BASE_URL ?>/zine?category=<?= $key ?>" class="category-tab <?= $activeCategory === $key ? 'active' : '' ?>">
-                <?= $label ?>
+        <?php foreach ($categories as $cat): ?>
+            <a href="<?= BASE_URL ?>/zine?category=<?= $cat['slug'] ?>" class="category-tab <?= $activeCategory === $cat['slug'] ? 'active' : '' ?>">
+                <?= htmlspecialchars($cat['name']) ?>
             </a>
         <?php endforeach; ?>
     </div>
@@ -24,8 +24,11 @@
 <section class="program-section zine-section">
     <?php if (empty($zines)): ?>
         <p class="zine-empty">
-            <?php if ($activeCategory): ?>
-                Belum ada bulletin untuk kategori <?= Zine::getCategoryLabel($activeCategory) ?>.
+            <?php if ($activeCategory): 
+                $activeCatName = 'Kategori';
+                foreach($categories as $cat) { if($cat['slug'] === $activeCategory) $activeCatName = $cat['name']; }
+            ?>
+                Belum ada bulletin untuk kategori <?= htmlspecialchars($activeCatName) ?>.
             <?php else: ?>
                 Belum ada bulletin.
             <?php endif; ?>
@@ -40,7 +43,7 @@
                 <?php endif; ?>
                 
                 <div class="zine-card-content">
-                    <span class="zine-card-category"><?= Zine::getCategoryLabel($zine['category'] ?? 'esai') ?></span>
+                    <span class="zine-card-category"><?= htmlspecialchars($zine['category_name'] ?? 'General') ?></span>
                     
                     <h3><?= htmlspecialchars($zine['title']) ?></h3>
 

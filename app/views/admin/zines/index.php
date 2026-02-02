@@ -1,8 +1,11 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <div class="page-header">
-    <h1>Buletin</h1>
-    <a href="<?= BASE_URL ?>/admin/zineCreate" class="btn btn-primary">+ Tambah Buletin</a>
+    <h1>Buletin Sastra</h1>
+    <div class="header-actions">
+        <a href="<?= BASE_URL ?>/admin/categories?type=zine" class="btn btn-secondary">Kelola Kategori</a>
+        <a href="<?= BASE_URL ?>/admin/zineCreate" class="btn btn-primary">+ Tambah Buletin</a>
+    </div>
 </div>
 
 <div class="card">
@@ -33,7 +36,7 @@
                         </td>
                         <td><strong><?= htmlspecialchars($zine['title']) ?></strong></td>
                         <td>
-                            <span class="badge badge-info"><?= Zine::getCategoryLabel($zine['category'] ?? 'esai') ?></span>
+                            <span class="badge badge-info"><?= htmlspecialchars($zine['category_name'] ?? '-') ?></span>
                         </td>
                         <td>
                             <?php if (!empty($zine['pdf_file'])): ?>

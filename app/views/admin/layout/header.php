@@ -205,13 +205,13 @@
                 <li><a href="<?= BASE_URL ?>/admin" class="<?= ($_GET['url'] ?? '') === 'admin' ? 'active' : '' ?>">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a></li>
+                <li><a href="<?= BASE_URL ?>/admin/categories">
+                    <i class="fas fa-folder"></i> Kategori
+                </a></li>
                 
                 <div class="menu-divider"></div>
                 <li style="padding: 0.5rem 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.75rem; text-transform: uppercase;">Blog</li>
                 
-                <li><a href="<?= BASE_URL ?>/admin/categories">
-                    <i class="fas fa-folder"></i> Kategori
-                </a></li>
                 <li><a href="<?= BASE_URL ?>/admin/tags">
                     <i class="fas fa-tags"></i> Tags
                 </a></li>
