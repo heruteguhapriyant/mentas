@@ -23,7 +23,7 @@ $cartCount = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
             <nav class="navbar">
                 <a href="<?= BASE_URL ?>">Home</a>
                 <a href="<?= BASE_URL ?>/blog">Blog</a>
-                <a href="<?= BASE_URL ?>/zine">Bulletin Sastra</a>
+                <a href="<?= BASE_URL ?>/zine">Bulletin</a>
                 <a href="<?= BASE_URL ?>/ekosistem">Ekosistem</a>
                 <a href="<?= BASE_URL ?>/merch">Merch</a>
                 <a href="<?= BASE_URL ?>/pentas">Pentas</a>

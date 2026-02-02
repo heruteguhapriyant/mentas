@@ -348,40 +348,43 @@
 
 .blog-filter {
     display: flex;
-    gap: 12px;
     flex-wrap: wrap;
+    gap: 10px;
     justify-content: center;
-    margin-bottom: 30px;
+    max-width: 1200px;
+    margin: 0 auto 30px;
 }
 
 /* tombol default */
 .blog-filter .filter-btn {
-    padding: 10px 20px;
+    padding: 10px 24px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     text-decoration: none;
 
-    background: #d52c2c;
-    color: #fff;
+    background: #fff;
+    color: #333;
 
-    border: 2px solid #000;
-    border-radius: 10px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
 
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 /* hover */
 .blog-filter .filter-btn:hover {
-    background: #fb4141;
+    border-color: #d52c2c;
+    color: #d52c2c;
     transform: translateY(-2px);
-    box-shadow: 3px 3px 0 #000;
 }
 
 /* active category */
 .blog-filter .filter-btn.is-active {
-    background: #000;
+    background: #d52c2c;
+    border-color: #d52c2c;
     color: #fff;
 }
+
 
 
 /* =========================
