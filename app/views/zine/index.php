@@ -48,7 +48,15 @@
                     <h3><?= htmlspecialchars($zine['title']) ?></h3>
 
                     <p class="zine-card-excerpt">
-                        <?= htmlspecialchars($zine['excerpt'] ?? substr($zine['content'] ?? '', 0, 100)) ?>
+                        <?php 
+                        $excerpt = $zine['excerpt'] ?? '';
+                        if (empty($excerpt) && !empty($zine['content'])) {
+                            $excerpt = generateExcerpt($zine['content'], 120);
+                        } else {
+                            $excerpt = generateExcerpt($excerpt, 120);
+                        }
+                        echo htmlspecialchars($excerpt);
+                        ?>
                     </p>
 
                     <?php if (!empty($zine['pdf_file'])): ?>

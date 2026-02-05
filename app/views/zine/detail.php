@@ -6,7 +6,7 @@
             ← Kembali ke Bulletin Sastra
         </a>
 
-        <span class="zine-detail-category"><?= Zine::getCategoryLabel($zine['category'] ?? 'esai') ?></span>
+        <span class="zine-detail-category"><?= htmlspecialchars($zine['category_name'] ?? 'Bulletin') ?></span>
 
         <h1 class="zine-title">
             <?= htmlspecialchars($zine['title']) ?>
@@ -14,7 +14,7 @@
 
         <?php if (!empty($zine['excerpt'])): ?>
             <p class="zine-excerpt">
-                <?= htmlspecialchars($zine['excerpt']) ?>
+                <?= htmlspecialchars(generateExcerpt($zine['excerpt'], 200)) ?>
             </p>
         <?php endif; ?>
     </div>
@@ -41,9 +41,9 @@
                 </a>
             </div>
         <?php elseif (!empty($zine['content'])): ?>
-            <!-- Legacy text content -->
+            <!-- Legacy text content - cleaned from WordPress blocks -->
             <div class="zine-content-body">
-                <?= $zine['content'] ?>
+                <?= cleanWordPressContent($zine['content']) ?>
             </div>
         <?php endif; ?>
 

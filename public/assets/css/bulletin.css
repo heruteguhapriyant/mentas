@@ -245,9 +245,8 @@
     box-shadow: 5px 5px 0 #000;
 
     font-size: 17px;
-    line-height: 2;
+    line-height: 1.8;
     color: #333;
-    white-space: pre-wrap;
 }
 
 .zine-content-body h1,
@@ -266,6 +265,50 @@
 .zine-content-body em {
     font-style: italic;
     color: #000;
+}
+
+/* Images and figures in content */
+.zine-content-body img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+    border-radius: 8px;
+}
+
+.zine-content-body figure {
+    max-width: 100%;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.zine-content-body figure img {
+    margin: 0 auto 10px;
+}
+
+.zine-content-body figcaption {
+    font-size: 14px;
+    color: #666;
+    font-style: italic;
+}
+
+/* WordPress gallery blocks */
+.zine-content-body .wp-block-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.zine-content-body .wp-block-gallery figure {
+    margin: 0;
+}
+
+/* Embedded videos/iframes */
+.zine-content-body iframe {
+    max-width: 100%;
+    margin: 20px auto;
+    display: block;
 }
 
 /* Footer */

@@ -1,0 +1,75 @@
+# ======================
+# Database Files
+# ======================
+# Full database dumps (large, contain sensitive data)
+*.sql
+!database/*.sql
+
+# Keep schema and migrations in database folder
+# but ignore any backup dumps
+
+# ======================
+# Uploads & User Content
+# ======================
+public/uploads/
+uploads/
+
+# ======================
+# WordPress Migration
+# ======================
+# This folder is only for migration reference, not needed in production
+migration dari wordpress/
+
+# ======================
+# IDE & Editor
+# ======================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+
+# ======================
+# OS Generated
+# ======================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ======================
+# Logs & Cache
+# ======================
+*.log
+logs/
+cache/
+tmp/
+temp/
+
+# ======================
+# Dependencies (if any)
+# ======================
+vendor/
+node_modules/
+
+# ======================
+# Environment
+# ======================
+.env
+.env.local
+.env.*.local
+config.local.php
+
+# ======================
+# Backup files
+# ======================
+*.bak
+*.backup
+*~
+*.swp
+*.swo
