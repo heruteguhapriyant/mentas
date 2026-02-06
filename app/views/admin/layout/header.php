@@ -254,9 +254,7 @@
                 <li><a href="<?= BASE_URL ?>/admin/settings">
                     <i class="fas fa-cog"></i> Pengaturan
                 </a></li>
-                <li><a href="<?= BASE_URL ?>">
-                    <i class="fas fa-globe"></i> Lihat Website
-                </a></li>
+
                 <li><a href="<?= BASE_URL ?>/auth/logout">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a></li>

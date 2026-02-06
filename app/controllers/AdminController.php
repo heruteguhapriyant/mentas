@@ -915,6 +915,63 @@ class AdminController extends Controller
     }
 
     // =====================
+    // SETTINGS MANAGEMENT
+    // =====================
+
+    public function settings()
+    {
+        $userId = $_SESSION['user_id'];
+        $userModel = new User();
+        $user = $userModel->find($userId);
+        
+        return $this->view('admin/settings', ['user' => $user]);
+    }
+
+    public function settingsUpdate()
+    {
+        $userId = $_SESSION['user_id'];
+        $userModel = new User();
+        
+        $data = [
+            'name' => trim($_POST['name']),
+            'email' => trim($_POST['email'])
+        ];
+
+        // Handle password change
+        if (!empty($_POST['password'])) {
+            if ($_POST['password'] !== $_POST['password_confirm']) {
+                setFlash('error', 'Konfirmasi password tidak cocok');
+                header('Location: ' . BASE_URL . '/admin/settings');
+                exit;
+            }
+            $data['password'] = $_POST['password'];
+        }
+
+        // Handle avatar upload
+        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = '../public/uploads/avatars/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            $ext = pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
+            $filename = 'avatar_' . $userId . '_' . time() . '.' . $ext;
+            
+            move_uploaded_file($_FILES['avatar']['tmp_name'], $uploadDir . $filename);
+            $data['avatar'] = 'uploads/avatars/' . $filename;
+        }
+
+        $userModel->update($userId, $data);
+        
+        // Update session name if changed
+        $_SESSION['user_name'] = $data['name'];
+        
+        setFlash('success', 'Profil berhasil diperbarui');
+        header('Location: ' . BASE_URL . '/admin/settings');
+        exit;
+    }
+
+    // =====================
     // TICKETS MANAGEMENT
     // =====================
 
