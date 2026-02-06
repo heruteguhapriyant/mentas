@@ -62,7 +62,7 @@ class ContentController extends Controller
 
         // 1️⃣ HALAMAN LIST SEMUA POST (/blog)
         if (!$slug) {
-            $posts = $this->postModel->all(20);
+            $posts = $this->postModel->all();
             return $this->view('content/list/article', [
                 'type' => ['name' => 'Blog', 'slug' => 'blog'],
                 'contents' => $posts,

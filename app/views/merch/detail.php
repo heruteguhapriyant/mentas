@@ -4,7 +4,7 @@
 <section class="hero zine-hero detail-hero">
     <div class="hero-content">
         <h1><?= htmlspecialchars($product['name']) ?></h1>
-        <p><?= $product['category'] === 'buku' ? 'Buku' : 'Merchandise' ?> dari Mentas.id</p>
+        <p><?= ($product['category_slug'] ?? '') === 'buku' ? 'Buku' : 'Merchandise' ?> dari Mentas.id</p>
     </div>
 </section>
 
@@ -16,8 +16,8 @@
             <span>/</span>
             <a href="<?= BASE_URL ?>/merch">Merch</a>
             <span>/</span>
-            <a href="<?= BASE_URL ?>/merch?category=<?= $product['category'] ?>">
-                <?= $product['category'] === 'buku' ? 'Buku' : 'Merchandise' ?>
+            <a href="<?= BASE_URL ?>/merch?category=<?= $product['category_slug'] ?? '' ?>">
+                <?= ($product['category_slug'] ?? '') === 'buku' ? 'Buku' : 'Merchandise' ?>
             </a>
             <span>/</span>
             <span class="current"><?= htmlspecialchars($product['name']) ?></span>
@@ -54,7 +54,7 @@
             <!-- Product Info -->
             <div class="product-info-detail">
                 <span class="product-category">
-                    <?= $product['category'] === 'buku' ? 'Buku' : 'Merchandise' ?>
+                    <?= ($product['category_slug'] ?? '') === 'buku' ? 'Buku' : 'Merchandise' ?>
                 </span>
                 
                 <h1 class="product-title"><?= htmlspecialchars($product['name']) ?></h1>
