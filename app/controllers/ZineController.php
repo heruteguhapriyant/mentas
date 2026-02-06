@@ -14,15 +14,40 @@ class ZineController extends Controller
     }
 
     /**
-     * List all zines with optional category filter and pagination
+     * List all zines with optional category filter, search, and pagination
      */
     public function index()
     {
         $categorySlug = $_GET['category'] ?? null;
+        $searchQuery = trim($_GET['q'] ?? '');
         $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
         
         // Get categories for filter
         $categories = $this->zineModel->getCategories();
+        
+        // 🔍 SEARCH FUNCTIONALITY (/bulletin?q=keyword)
+        if (!empty($searchQuery)) {
+            // Count search results
+            $totalZines = $this->zineModel->countSearch($searchQuery);
+            
+            // Generate pagination data
+            $pagination = paginate($totalZines, $currentPage, $this->itemsPerPage);
+            
+            // Get search results
+            $zines = $this->zineModel->search(
+                $searchQuery,
+                $pagination['items_per_page'],
+                $pagination['offset']
+            );
+            
+            return $this->view('zine/index', [
+                'zines' => $zines,
+                'categories' => $categories,
+                'activeCategory' => null,
+                'searchQuery' => $searchQuery,
+                'pagination' => $pagination
+            ]);
+        }
         
         // Count total zines
         $totalZines = $this->zineModel->countAll($categorySlug);

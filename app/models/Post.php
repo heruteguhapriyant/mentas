@@ -371,4 +371,52 @@ class Post
         $result = $this->db->queryOne($sql, [$searchTerm, $searchTerm, $searchTerm]);
         return (int)($result['total'] ?? 0);
     }
+
+    /**
+     * Get posts by tag slug
+     * 
+     * @param string $tagSlug Tag slug
+     * @param int $limit Limit results
+     * @param int $offset Offset
+     * @return array
+     */
+    public function getByTag($tagSlug, $limit = 9, $offset = 0)
+    {
+        $sql = "SELECT p.*, 
+                       c.name as category_name, 
+                       c.slug as category_slug, 
+                       u.name as author_name
+                FROM posts p
+                LEFT JOIN categories c ON p.category_id = c.id
+                LEFT JOIN users u ON p.author_id = u.id
+                INNER JOIN post_tags pt ON p.id = pt.post_id
+                INNER JOIN tags t ON pt.tag_id = t.id
+                WHERE p.status = 'published' AND t.slug = ?
+                ORDER BY p.published_at DESC
+                LIMIT ? OFFSET ?";
+
+        return $this->db->query($sql, [
+            $tagSlug,
+            (int)$limit,
+            (int)$offset
+        ]);
+    }
+
+    /**
+     * Count posts by tag slug
+     * 
+     * @param string $tagSlug Tag slug
+     * @return int
+     */
+    public function countByTag($tagSlug)
+    {
+        $sql = "SELECT COUNT(DISTINCT p.id) as total 
+                FROM posts p
+                INNER JOIN post_tags pt ON p.id = pt.post_id
+                INNER JOIN tags t ON pt.tag_id = t.id
+                WHERE p.status = 'published' AND t.slug = ?";
+
+        $result = $this->db->queryOne($sql, [$tagSlug]);
+        return (int)($result['total'] ?? 0);
+    }
 }

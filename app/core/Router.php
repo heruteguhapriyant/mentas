@@ -17,29 +17,36 @@ class Router
             $segment2 = $url[1] ?? null;
             $segment3 = $url[2] ?? null;
 
+            // Controller aliases (map URL to actual controller)
+            $controllerAliases = [
+                'bulletin' => 'Zine',  // /bulletin -> ZineController
+            ];
+
+            // Check if there's an alias
+            $controllerBase = $segment1;
+            if (isset($controllerAliases[strtolower($segment1)])) {
+                $controllerBase = $controllerAliases[strtolower($segment1)];
+            }
+
             // Check if controller exists
-            $possibleController = ucfirst($segment1) . 'Controller';
+            $possibleController = ucfirst($controllerBase) . 'Controller';
             $controllerPath = "../app/controllers/$possibleController.php";
 
             if (file_exists($controllerPath)) {
                 $controllerName = $possibleController;
+                require_once $controllerPath;
+                $controller = new $possibleController;
                 
                 // If second segment exists
                 if ($segment2) {
-                    // Load controller to check if method exists
-                    require_once $controllerPath;
-                    $tempController = new $possibleController;
-                    
-                    // Check if segment2 is a real method in the controller (excluding __call)
-                    $reflectionClass = new ReflectionClass($tempController);
+                    // Check if segment2 is a real method in the controller
+                    $reflectionClass = new ReflectionClass($controller);
                     $hasRealMethod = false;
                     
                     try {
                         $reflectionMethod = $reflectionClass->getMethod($segment2);
-                        // Check if it's a real method (not __call) and is public
                         $hasRealMethod = $reflectionMethod->isPublic() && $reflectionMethod->getName() === $segment2;
                     } catch (ReflectionException $e) {
-                        // Method doesn't exist
                         $hasRealMethod = false;
                     }
                     
@@ -48,24 +55,28 @@ class Router
                         $method = $segment2;
                         $params = array_slice($url, 2);
                     } else {
-                        // Treat segment2 as a slug/parameter for index method
-                        $method = 'index';
-                        $params = array_slice($url, 1);
-                    }
-                    
-                    // Use existing controller instance
-                    $controller = $tempController;
-                    
-                    // Handle method call
-                    if (!method_exists($controller, $method)) {
-                        if (method_exists($controller, '__call')) {
-                            return call_user_func_array([$controller, $method], $params);
+                        // Treat segment2 as a slug/parameter
+                        if (method_exists($controller, 'detail')) {
+                            $method = 'detail';
+                            $params = [$segment2];
+                        } else {
+                            $method = 'index';
+                            $params = array_slice($url, 1);
                         }
-                        die("Method tidak ditemukan: $method di $controllerName");
                     }
-                    
-                    return call_user_func_array([$controller, $method], $params);
                 }
+                // If no segment2, method stays as 'index'
+                
+                // Handle method call
+                if (!method_exists($controller, $method)) {
+                    if (method_exists($controller, '__call')) {
+                        return call_user_func_array([$controller, $method], $params);
+                    }
+                    die("Method tidak ditemukan: $method di $controllerName");
+                }
+                
+                return call_user_func_array([$controller, $method], $params);
+                
             } else {
                 // Fallback to ContentController for blog, etc
                 $controllerName = 'ContentController';
@@ -88,7 +99,6 @@ class Router
 
         // Handle method existence
         if (!method_exists($controller, $method)) {
-            // Try __call magic method
             if (method_exists($controller, '__call')) {
                 return call_user_func_array([$controller, $method], $params);
             }
@@ -98,4 +108,3 @@ class Router
         call_user_func_array([$controller, $method], $params);
     }
 }
-

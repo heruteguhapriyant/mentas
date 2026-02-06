@@ -125,7 +125,12 @@
 
             <?php if (!empty($allTags)): ?>
             <div class="form-group">
-                <label>Tags</label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <label style="margin-bottom: 0;">Tags</label>
+                    <button type="button" class="btn-sm btn-secondary" onclick="clearDatabaseTags()" style="background: #dc3545; border: none; font-size: 0.8rem;">
+                        <i class="fas fa-times"></i> Clear Tags
+                    </button>
+                </div>
                 <div class="tags-container">
                     <?php foreach ($allTags as $tag): ?>
                         <label class="tag-checkbox">
@@ -139,9 +144,14 @@
                 <div class="manual-tags-wrapper">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                         <label style="margin-bottom: 0;">Tambah Tag Lainnya:</label>
-                        <button type="button" class="btn-sm btn-secondary" onclick="autoGenerateTags()" style="background: #28a745; border: none; font-size: 0.8rem; display: flex; align-items: center; gap: 5px;">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Tags Otomatis
-                        </button>
+                        <div style="display: flex; gap: 5px;">
+                            <button type="button" class="btn-sm btn-secondary" onclick="clearGeneratedTags()" style="background: #dc3545; border: none; font-size: 0.8rem;">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                            <button type="button" class="btn-sm btn-secondary" onclick="autoGenerateTags()" style="background: #28a745; border: none; font-size: 0.8rem; display: flex; align-items: center; gap: 5px;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Tags
+                            </button>
+                        </div>
                     </div>
                     <div class="tag-input-container">
                         <div id="selected-tags-container"></div>
@@ -308,6 +318,20 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateHiddenInput() {
         manualTagsInput.value = selectedTags.join(',');
     }
+
+    // Clear all database tags (uncheck all checkboxes)
+    window.clearDatabaseTags = function() {
+        document.querySelectorAll('input[name="tags[]"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    };
+
+    // Clear all generated/manual tags
+    window.clearGeneratedTags = function() {
+        selectedTags = [];
+        renderTags();
+        updateHiddenInput();
+    };
 });
 </script>
 

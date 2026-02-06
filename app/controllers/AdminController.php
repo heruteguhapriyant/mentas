@@ -425,7 +425,7 @@ class AdminController extends Controller
     public function zines()
     {
         $zineModel = new Zine();
-        $zines = $zineModel->all(false); // Get all including inactive
+        $zines = $zineModel->all(null, 0, false); // Get all including inactive
         $categories = $zineModel->getCategories();
         return $this->view('admin/zines/index', [
             'zines' => $zines,
@@ -581,7 +581,103 @@ class AdminController extends Controller
         exit;
     }
 
-    // ... (Community methods unchanged) ...
+    // =====================
+    // COMMUNITIES MANAGEMENT (Katalog Komunitas)
+    // =====================
+
+    public function communities()
+    {
+        $communityModel = new Community();
+        $communities = $communityModel->all();
+        return $this->view('admin/communities/index', ['communities' => $communities]);
+    }
+
+    public function communityCreate()
+    {
+        return $this->view('admin/communities/form', ['community' => null]);
+    }
+
+    public function communityStore()
+    {
+        $communityModel = new Community();
+        
+        // Handle image upload
+        $imagePath = null;
+        if (!empty($_FILES['image']['name'])) {
+            $uploadDir = '../public/uploads/communities/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            $imageName = time() . '_' . $_FILES['image']['name'];
+            move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $imageName);
+            $imagePath = 'uploads/communities/' . $imageName;
+        }
+
+        $communityModel->create([
+            'name' => $_POST['name'],
+            'description' => $_POST['description'] ?? null,
+            'image' => $imagePath,
+            'location' => $_POST['location'] ?? null,
+            'contact' => $_POST['contact'] ?? null,
+            'website' => $_POST['website'] ?? null,
+            'is_active' => isset($_POST['is_active']) ? 1 : 0
+        ]);
+        
+        header('Location: ' . BASE_URL . '/admin/communities');
+        exit;
+    }
+
+    public function communityEdit($id)
+    {
+        $communityModel = new Community();
+        $community = $communityModel->find($id);
+        
+        if (!$community) {
+            header('Location: ' . BASE_URL . '/admin/communities');
+            exit;
+        }
+        
+        return $this->view('admin/communities/form', ['community' => $community]);
+    }
+
+    public function communityUpdate($id)
+    {
+        $communityModel = new Community();
+        
+        $data = [
+            'name' => $_POST['name'],
+            'description' => $_POST['description'] ?? null,
+            'location' => $_POST['location'] ?? null,
+            'contact' => $_POST['contact'] ?? null,
+            'website' => $_POST['website'] ?? null,
+            'is_active' => isset($_POST['is_active']) ? 1 : 0
+        ];
+        
+        // Handle image upload
+        if (!empty($_FILES['image']['name'])) {
+            $uploadDir = '../public/uploads/communities/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            $imageName = time() . '_' . $_FILES['image']['name'];
+            move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $imageName);
+            $data['image'] = 'uploads/communities/' . $imageName;
+        }
+
+        $communityModel->update($id, $data);
+        
+        header('Location: ' . BASE_URL . '/admin/communities');
+        exit;
+    }
+
+    public function communityDelete($id)
+    {
+        $communityModel = new Community();
+        $communityModel->delete($id);
+        
+        header('Location: ' . BASE_URL . '/admin/communities');
+        exit;
+    }
 
     // =====================
     // PRODUCTS MANAGEMENT (Merch)
@@ -590,7 +686,7 @@ class AdminController extends Controller
     public function products()
     {
         $productModel = new Product();
-        $products = $productModel->getAll(false);
+        $products = $productModel->getAll(null, 0, false); // Get all including inactive
         return $this->view('admin/products/index', ['products' => $products]);
     }
 

@@ -8,7 +8,11 @@
 <section class="hero blog-hero">
     <div class="hero-content">
         <h1><?= $type['name'] ?? 'Blog'; ?></h1>
-        <?php if (!empty($categoryName)): ?>
+        <?php if (!empty($searchQuery)): ?>
+            <p>Hasil pencarian: "<?= htmlspecialchars($searchQuery) ?>"</p>
+        <?php elseif (!empty($activeTag)): ?>
+            <p>Artikel dengan tag: <strong><?= htmlspecialchars($activeTag['name']) ?></strong></p>
+        <?php elseif (!empty($categoryName)): ?>
             <p>Kategori: <?= $categoryName; ?></p>
         <?php else: ?>
             <p>Artikel, esai, dan berita seputar seni & budaya</p>

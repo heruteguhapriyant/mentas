@@ -34,8 +34,8 @@ class ContentController extends Controller
             return $this->view('errors/404');
         }
 
-        // Get all categories for sidebar/filter
-        $categories = $this->categoryModel->all(true);
+        // Get only BLOG categories for sidebar/filter
+        $categories = $this->categoryModel->all(true, 'blog');
 
         // 0️⃣ HALAMAN AUTHOR (/author/{id})
         if ($type === 'author' && $slug) {
@@ -65,6 +65,66 @@ class ContentController extends Controller
                 'content' => $author,
                 'posts' => $posts,
                 'categories' => $categories,
+                'pagination' => $pagination
+            ]);
+        }
+
+        // 🔍 SEARCH FUNCTIONALITY (/blog?q=keyword)
+        $searchQuery = trim($_GET['q'] ?? '');
+        if (!empty($searchQuery) && !$slug) {
+            // Count search results
+            $totalPosts = $this->postModel->countSearch($searchQuery);
+            
+            // Generate pagination data
+            $pagination = paginate($totalPosts, $currentPage, $this->itemsPerPage);
+            
+            // Get search results
+            $posts = $this->postModel->search(
+                $searchQuery,
+                $pagination['items_per_page'],
+                $pagination['offset']
+            );
+            
+            return $this->view('content/list/article', [
+                'type' => ['name' => 'Hasil Pencarian', 'slug' => 'blog'],
+                'contents' => $posts,
+                'categories' => $categories,
+                'activeCategory' => null,
+                'searchQuery' => $searchQuery,
+                'pagination' => $pagination
+            ]);
+        }
+
+        // 🏷️ TAG FILTERING (/blog?tag=tag-slug)
+        $tagSlug = trim($_GET['tag'] ?? '');
+        if (!empty($tagSlug) && !$slug) {
+            // Get tag info
+            $tagModel = new Tag();
+            $tag = $tagModel->findBySlug($tagSlug);
+            
+            if (!$tag) {
+                return $this->view('errors/404');
+            }
+            
+            // Count posts with this tag
+            $totalPosts = $this->postModel->countByTag($tagSlug);
+            
+            // Generate pagination data
+            $pagination = paginate($totalPosts, $currentPage, $this->itemsPerPage);
+            
+            // Get posts with this tag
+            $posts = $this->postModel->getByTag(
+                $tagSlug,
+                $pagination['items_per_page'],
+                $pagination['offset']
+            );
+            
+            return $this->view('content/list/article', [
+                'type' => ['name' => 'Tag: ' . $tag['name'], 'slug' => 'blog'],
+                'contents' => $posts,
+                'categories' => $categories,
+                'activeCategory' => null,
+                'activeTag' => $tag,
                 'pagination' => $pagination
             ]);
         }

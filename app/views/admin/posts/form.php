@@ -68,7 +68,12 @@
 
         <?php if (!empty($allTags)): ?>
         <div class="form-group">
-            <label>Tags dari Database</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <label>Tags dari Database</label>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearDatabaseTags()" style="font-size: 0.85rem;">
+                    <i class="fas fa-times"></i> Clear Tags
+                </button>
+            </div>
             <div class="tags-checkbox-container" style="display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #ddd; max-height: 200px; overflow-y: auto;">
                 <?php foreach ($allTags as $tag): ?>
                     <label class="tag-label" style="display: flex; align-items: center; gap: 5px; cursor: pointer; padding: 5px 12px; background: #fff; border-radius: 20px; border: 1px solid #ddd; transition: all 0.2s;">
@@ -88,9 +93,14 @@
         <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <label>Tags Baru (dari Artikel)</label>
-                <button type="button" class="btn btn-sm btn-success" onclick="autoGenerateTags()" style="font-size: 0.85rem;">
-                    <i class="fas fa-wand-magic-sparkles"></i> Generate Tags dari Artikel
-                </button>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearGeneratedTags()" style="font-size: 0.85rem;">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                    <button type="button" class="btn btn-sm btn-success" onclick="autoGenerateTags()" style="font-size: 0.85rem;">
+                        <i class="fas fa-wand-magic-sparkles"></i> Generate Tags
+                    </button>
+                </div>
             </div>
             <div id="generated-tags-container" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 15px; background: #e8f5e9; border-radius: 8px; border: 1px solid #c8e6c9; min-height: 50px;">
                 <span id="no-tags-placeholder" style="color: #666; font-size: 0.9rem;">Klik "Generate Tags" untuk mengekstrak kata kunci dari artikel</span>
@@ -216,6 +226,20 @@ function removeGeneratedTag(tagName) {
 
 function updateManualTagsInput() {
     document.getElementById('manual_tags_input').value = generatedTags.join(',');
+}
+
+// Clear all database tags (uncheck all checkboxes)
+function clearDatabaseTags() {
+    document.querySelectorAll('input[name="tags[]"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+// Clear all generated tags
+function clearGeneratedTags() {
+    generatedTags = [];
+    renderGeneratedTags();
+    updateManualTagsInput();
 }
 </script>
 
