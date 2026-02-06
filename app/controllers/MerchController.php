@@ -1,17 +1,23 @@
 <?php
-// MerchController - Handles Merch (Products) Frontend
 
-class MerchController extends Controller {
+/**
+ * MerchController - Handles Merch (Products) Frontend (Updated dengan Pagination)
+ */
+class MerchController extends Controller 
+{
     private $productModel;
+    private $itemsPerPage = 6; // Jumlah produk per halaman
 
-    public function __construct() {
+    public function __construct() 
+    {
         $this->productModel = new Product();
     }
 
     /**
-     * Display all products
+     * Display all products with pagination
      */
-    public function index($slug = null) {
+    public function index($slug = null) 
+    {
         // If slug is passed, check if it's numeric (ID) or a slug
         if ($slug) {
             if (is_numeric($slug)) {
@@ -25,25 +31,44 @@ class MerchController extends Controller {
         }
         
         $categorySlug = isset($_GET['category']) ? $_GET['category'] : null;
+        $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        
+        // Get categories for filter
         $categories = $this->productModel->getCategories();
         
+        // Count total products
+        $totalProducts = $this->productModel->countAll($categorySlug);
+        
+        // Generate pagination data
+        $pagination = paginate($totalProducts, $currentPage, $this->itemsPerPage);
+        
+        // Get paginated products
         if ($categorySlug) {
-            $products = $this->productModel->getByCategory($categorySlug);
+            $products = $this->productModel->getByCategory(
+                $categorySlug,
+                $pagination['items_per_page'],
+                $pagination['offset']
+            );
         } else {
-            $products = $this->productModel->getAll();
+            $products = $this->productModel->getAll(
+                $pagination['items_per_page'],
+                $pagination['offset']
+            );
         }
         
         return $this->view('merch/index', [
             'products' => $products,
             'categories' => $categories,
-            'activeCategory' => $categorySlug
+            'activeCategory' => $categorySlug,
+            'pagination' => $pagination
         ]);
     }
 
     /**
-     * Display single product detail by ID
+     * Display single product detail by ID or slug
      */
-    public function detail($id) {
+    public function detail($id) 
+    {
         // Check if it's numeric (ID) or string (slug)
         if (is_numeric($id)) {
             $product = $this->productModel->find(intval($id));
@@ -61,11 +86,12 @@ class MerchController extends Controller {
     /**
      * Render product detail view
      */
-    private function showDetail($product) {
+    private function showDetail($product) 
+    {
         // Get related products (same category)
         $relatedProducts = [];
         if (!empty($product['category_slug'])) {
-            $relatedProducts = $this->productModel->getByCategory($product['category_slug']);
+            $relatedProducts = $this->productModel->getByCategory($product['category_slug'], 5);
             // Remove current product from related
             $relatedProducts = array_filter($relatedProducts, function($p) use ($product) {
                 return $p['id'] !== $product['id'];
@@ -90,7 +116,8 @@ class MerchController extends Controller {
     /**
      * Generate WhatsApp order link
      */
-    public function order($slug) {
+    public function order($slug) 
+    {
         $product = $this->productModel->getBySlug($slug);
         
         if (!$product) {
@@ -122,7 +149,8 @@ class MerchController extends Controller {
     /**
      * Magic method to handle /merch/{slug} URLs
      */
-    public function __call($name, $arguments) {
+    public function __call($name, $arguments) 
+    {
         // Check if it's an order URL: /merch/order/{slug}
         if ($name === 'order' && !empty($arguments[0])) {
             return $this->order($arguments[0]);

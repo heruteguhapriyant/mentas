@@ -1,4 +1,4 @@
-<?php // Merch Index Page ?>
+<?php // Merch Index Page - Updated dengan Pagination ?>
 
 <section class="hero zine-hero">
     <div class="hero-content">
@@ -36,15 +36,19 @@
                 <?php if (!empty($product['cover_image'])): ?>
                     <div class="zine-card-cover">
                         <img src="<?= BASE_URL ?>/<?= $product['cover_image'] ?>" alt="<?= htmlspecialchars($product['name']) ?>">
-                        <?php if ($product['stock'] <= 0): ?>
+                        <?php if (isset($product['stock']) && $product['stock'] <= 0): ?>
                             <span class="merch-badge sold-out">Habis</span>
+                        <?php elseif (isset($product['stock']) && $product['stock'] < 5): ?>
+                            <span class="merch-badge low-stock">Stok Terbatas</span>
                         <?php endif; ?>
                     </div>
                 <?php else: ?>
                     <div class="zine-card-cover" style="background: linear-gradient(135deg, #d52c2c 0%, #1a1a2e 100%); display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-box" style="font-size: 48px; color: rgba(255,255,255,0.8);"></i>
-                        <?php if ($product['stock'] <= 0): ?>
+                        <?php if (isset($product['stock']) && $product['stock'] <= 0): ?>
                             <span class="merch-badge sold-out">Habis</span>
+                        <?php elseif (isset($product['stock']) && $product['stock'] < 5): ?>
+                            <span class="merch-badge low-stock">Stok Terbatas</span>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
@@ -60,23 +64,28 @@
                         Rp <?= number_format($product['price'], 0, ',', '.') ?>
                     </p>
 
-                    <p class="zine-card-excerpt">
-                        <?= htmlspecialchars(substr($product['description'] ?? '', 0, 80)) ?>...
-                    </p>
+                    <?php if (!empty($product['description'])): ?>
+                        <p class="zine-card-excerpt">
+                            <?= htmlspecialchars(substr($product['description'], 0, 80)) ?>...
+                        </p>
+                    <?php endif; ?>
 
                     <div class="merch-buttons">
-                        <a href="<?= BASE_URL ?>/merch/detail/<?= $product['id'] ?>" class="btn-outline">
+                        <a href="<?= BASE_URL ?>/merch/<?= $product['slug'] ?? $product['id'] ?>" class="btn-outline">
                             <i class="fas fa-eye"></i> Lihat Detail
                         </a>
-                        <!-- <?php if ($product['stock'] > 0): ?>
-                            <button type="button" class="btn-cart" onclick="addToCart(<?= $product['id'] ?>)" title="Masukkan Keranjang">
-                                <i class="fas fa-cart-plus"></i>
-                            </button>
+                        
+                        <?php if (!isset($product['stock']) || $product['stock'] > 0): ?>
+                            <a href="<?= BASE_URL ?>/merch/order/<?= $product['slug'] ?? $product['id'] ?>" 
+                               class="btn-whatsapp" 
+                               title="Order via WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
                         <?php else: ?>
-                            <button type="button" class="btn-cart disabled" disabled title="Stok Habis">
-                                <i class="fas fa-cart-plus"></i>
+                            <button type="button" class="btn-whatsapp disabled" disabled title="Stok Habis">
+                                <i class="fab fa-whatsapp"></i>
                             </button>
-                        <?php endif; ?> -->
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -84,16 +93,26 @@
     <?php endif; ?>
 </section>
 
+<?php 
+// Tampilkan pagination jika ada data
+if (!empty($pagination) && !empty($products)): 
+    echo renderPagination($pagination);
+endif; 
+?>
+
 <!-- Toast Notification -->
 <div class="toast-container" id="toastContainer"></div>
 
 <style>
+/* Merch Price */
 .merch-price {
     font-size: 1.2rem;
     font-weight: 700;
     color: #d52c2c;
     margin: 10px 0;
 }
+
+/* Badges */
 .merch-badge {
     position: absolute;
     top: 10px;
@@ -103,11 +122,19 @@
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
+    z-index: 2;
 }
+
 .merch-badge.sold-out {
     background: #dc3545;
     color: #fff;
 }
+
+.merch-badge.low-stock {
+    background: #ffc107;
+    color: #000;
+}
+
 .zine-card-cover {
     position: relative;
 }
@@ -121,8 +148,10 @@
 }
 
 .btn-outline {
+    flex: 1;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     padding: 10px 18px;
     border: 2px solid #d52c2c;
@@ -137,9 +166,10 @@
 .btn-outline:hover {
     background: #d52c2c;
     color: #fff;
+    transform: translateY(-2px);
 }
 
-.btn-cart {
+.btn-whatsapp {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -152,19 +182,21 @@
     font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.3s;
+    text-decoration: none;
 }
 
-.btn-cart:hover {
+.btn-whatsapp:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
 }
 
-.btn-cart.disabled {
+.btn-whatsapp.disabled {
     background: #ccc;
     cursor: not-allowed;
+    pointer-events: none;
 }
 
-.btn-cart.disabled:hover {
+.btn-whatsapp.disabled:hover {
     transform: none;
     box-shadow: none;
 }
@@ -223,31 +255,24 @@
         opacity: 0;
     }
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .merch-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-outline {
+        width: 100%;
+    }
+    
+    .btn-whatsapp {
+        width: 100%;
+    }
+}
 </style>
 
 <script>
-function addToCart(productId) {
-    fetch('<?= BASE_URL ?>/cart/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: 'product_id=' + productId + '&quantity=1'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast('success', '<i class="fas fa-check"></i> ' + data.message);
-            updateCartBadge(data.cartCount);
-        } else {
-            showToast('error', '<i class="fas fa-exclamation-circle"></i> ' + data.message);
-        }
-    })
-    .catch(error => {
-        showToast('error', '<i class="fas fa-exclamation-circle"></i> Terjadi kesalahan');
-    });
-}
-
 function showToast(type, message) {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -259,13 +284,5 @@ function showToast(type, message) {
         toast.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => toast.remove(), 300);
     }, 3000);
-}
-
-function updateCartBadge(count) {
-    const badge = document.querySelector('.cart-badge');
-    if (badge) {
-        badge.textContent = count;
-        badge.style.display = count > 0 ? 'flex' : 'none';
-    }
 }
 </script>
