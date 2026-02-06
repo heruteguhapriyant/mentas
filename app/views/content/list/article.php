@@ -1,4 +1,9 @@
-<?php // Blog List Page - Uses existing Mentas design ?>
+<?php 
+/**
+ * Blog List Page - Updated dengan Pagination
+ * File: app/views/content/list/article.php
+ */
+?>
 
 <section class="hero blog-hero">
     <div class="hero-content">
@@ -21,7 +26,9 @@
             <?php foreach ($contents as $item): ?>
                 <article class="program-card blog-card">
                     <?php if (!empty($item['cover_image'])): ?>
-                        <img src="<?= BASE_URL ?>/<?= $item['cover_image']; ?>" alt="<?= htmlspecialchars($item['title']); ?>" class="blog-card-img">
+                        <img src="<?= BASE_URL ?>/<?= $item['cover_image']; ?>" 
+                             alt="<?= htmlspecialchars($item['title']); ?>" 
+                             class="blog-card-img">
                     <?php endif; ?>
                     
                     <?php if (!empty($item['category_name'])): ?>
@@ -52,4 +59,11 @@
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
+
+    <?php 
+    // Tampilkan pagination jika ada data
+    if (!empty($pagination) && !empty($contents)): 
+        echo renderPagination($pagination);
+    endif; 
+    ?>
 </section>

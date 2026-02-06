@@ -60,31 +60,16 @@
     <section class="program-section">
         <div class="program-card">
             <h3>Blog & Wacana</h3>
-            <ul>
-                <li>Berita Seni & Budaya</li>
-                <li>Esai & Opini</li>
-                <li>Tradisi & Ekosistem</li>
-            </ul>
             <a href="<?= BASE_URL ?>/blog" class="btn-outline">Baca Artikel</a>
         </div>
 
         <div class="program-card">
             <h3>Bulletin Sastra</h3>
-            <ul>
-                <li>Puisi</li>
-                <li>Prosa</li>
-                <li>Esai Sastra</li>
-            </ul>
             <a href="<?= BASE_URL ?>/zine" class="btn-outline">Lihat Bulletin</a>
         </div>
 
         <div class="program-card">
             <h3>Agenda & Event</h3>
-            <ul>
-                <li>Diskusi & Pameran</li>
-                <li>Pertunjukan</li>
-                <li>Ticketing Event</li>
-            </ul>
             <a href="<?= BASE_URL ?>/page/event" class="btn-outline">Lihat Event</a>
         </div>
     </section>
@@ -93,21 +78,11 @@
     <section class="program-section" style="padding-top: 0;">
         <div class="program-card">
             <h3>Katalog Komunitas</h3>
-            <ul>
-                <li>Sanggar Seni</li>
-                <li>Komunitas Sastra</li>
-                <li>Teater & Pertunjukan</li>
-            </ul>
             <a href="<?= BASE_URL ?>/katalog" class="btn-outline">Lihat Katalog</a>
         </div>
 
         <div class="program-card">
             <h3>Jual Beli</h3>
-            <ul>
-                <li>Buku & Literatur</li>
-                <li>Merchandise Seni</li>
-                <li>Karya Original</li>
-            </ul>
             <a href="<?= BASE_URL ?>/page/jual-beli" class="btn-outline">Lihat Produk</a>
         </div>
     </section>

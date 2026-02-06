@@ -1066,6 +1066,213 @@
     color: #999;
 }
 
+/* ============================================
+   PAGINATION STYLES - Blog Mentas
+   Mirip dengan design yang diberikan
+   ============================================ */
+
+.pagination-wrapper {
+    margin: 3rem auto;
+    padding: 2rem 0;
+    max-width: 1200px;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Buttons - Previous & Next */
+.pagination-btn {
+    padding: 0.75rem 1.5rem;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+}
+
+.pagination-btn:hover:not(.disabled) {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #f5f5f5;
+    color: #999;
+}
+
+/* Page Numbers Container */
+.pagination-numbers {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Individual Page Numbers */
+.pagination-number {
+    width: 45px;
+    height: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.pagination-number:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+    transform: scale(1.05);
+}
+
+.pagination-number.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+    cursor: default;
+    font-weight: 600;
+}
+
+.pagination-number.active:hover {
+    transform: none;
+}
+
+/* Dots between numbers */
+.pagination-dots {
+    color: #999;
+    padding: 0 0.25rem;
+    font-weight: bold;
+}
+
+/* Pagination Info Text */
+.pagination-info {
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+/* ============================================
+   RESPONSIVE STYLES
+   ============================================ */
+
+@media (max-width: 768px) {
+    .pagination {
+        gap: 0.25rem;
+    }
+
+    .pagination-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+        min-width: 80px;
+    }
+
+    .pagination-number {
+        width: 38px;
+        height: 38px;
+        font-size: 0.85rem;
+    }
+
+    .pagination-info {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination-wrapper {
+        padding: 1rem 0;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .pagination-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        min-width: 70px;
+    }
+
+    .pagination-number {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
+
+    /* Hide some page numbers on very small screens */
+    .pagination-number:not(.active):nth-child(n+4):nth-last-child(n+4) {
+        display: none;
+    }
+}
+
+/* ============================================
+   ALTERNATIVE MINIMAL STYLE
+   (uncomment jika mau style lebih minimalis)
+   ============================================ */
+
+/*
+.pagination-wrapper.minimal .pagination-btn {
+    border-radius: 4px;
+    border: none;
+    background: #f5f5f5;
+}
+
+.pagination-wrapper.minimal .pagination-number {
+    border-radius: 4px;
+}
+
+.pagination-wrapper.minimal .pagination-number.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+*/
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.pagination-btn:focus,
+.pagination-number:focus {
+    outline: 2px solid #4A90E2;
+    outline-offset: 2px;
+}
+
+/* Screen reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
 /* --- Responsive --- */
 @media (max-width: 900px) {
     .author-layout {

@@ -32,10 +32,10 @@ $cartCount = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
             </nav>
             <div class="header-icons">
                 <!-- Cart Icon -->
-                <a href="<?= BASE_URL ?>/cart" class="cart-icon" title="Keranjang">
+                <!-- <a href="<?= BASE_URL ?>/cart" class="cart-icon" title="Keranjang">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-badge" style="<?= $cartCount > 0 ? '' : 'display:none' ?>"><?= $cartCount ?></span>
-                </a>
+                </a> -->
                 
                 <!-- User Icon -->
                 <?php if (isLoggedIn()): ?>
@@ -62,7 +62,7 @@ $cartCount = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
                 <li><a href="<?= BASE_URL ?>/pentas">Pentas</a></li>
                 <li><a href="<?= BASE_URL ?>/page/about">About</a></li>
                 <li><a href="<?= BASE_URL ?>/page/contribute">Contribute</a></li>
-                <li><a href="<?= BASE_URL ?>/cart"><i class="fas fa-shopping-cart"></i> Keranjang (<?= $cartCount ?>)</a></li>
+                <!-- <li><a href="<?= BASE_URL ?>/cart"><i class="fas fa-shopping-cart"></i> Keranjang (<?= $cartCount ?>)</a></li> -->
             </ul>
         </div>
 </header>

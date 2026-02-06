@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Post Model - Blog Articles
+ * Post Model - Blog Articles (Updated with Pagination)
  */
 class Post
 {
@@ -13,28 +13,32 @@ class Post
     }
 
     /**
-     * Get all published posts
+     * Get all published posts (Updated dengan pagination support)
      */
-    public function all($limit = null, $offset = 0)
+    public function all($limit = null, $offset = 0, $status = 'published')
     {
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug, u.name as author_name
                 FROM posts p
                 LEFT JOIN categories c ON p.category_id = c.id
                 LEFT JOIN users u ON p.author_id = u.id
-                WHERE p.status = 'published'
+                WHERE p.status = ?
                 ORDER BY p.published_at DESC, p.created_at DESC";
 
+        $params = [$status];
+
         if ($limit) {
-            $sql .= " LIMIT $limit OFFSET $offset";
+            $sql .= " LIMIT ? OFFSET ?";
+            $params[] = (int)$limit;
+            $params[] = (int)$offset;
         }
 
-        return $this->db->query($sql);
+        return $this->db->query($sql, $params);
     }
 
     /**
-     * Get posts by category
+     * Get posts by category (Updated dengan pagination support)
      */
-    public function getByCategory($categorySlug, $limit = null)
+    public function getByCategory($categorySlug, $limit = null, $offset = 0)
     {
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug, u.name as author_name
                 FROM posts p
@@ -43,17 +47,21 @@ class Post
                 WHERE p.status = 'published' AND c.slug = ?
                 ORDER BY p.published_at DESC, p.created_at DESC";
 
+        $params = [$categorySlug];
+
         if ($limit) {
-            $sql .= " LIMIT $limit";
+            $sql .= " LIMIT ? OFFSET ?";
+            $params[] = (int)$limit;
+            $params[] = (int)$offset;
         }
 
-        return $this->db->query($sql, [$categorySlug]);
+        return $this->db->query($sql, $params);
     }
 
     /**
-     * Get posts by author
+     * Get posts by author (Updated dengan pagination support)
      */
-    public function getByAuthor($authorId, $status = null)
+    public function getByAuthor($authorId, $status = 'published', $limit = null, $offset = 0)
     {
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug
                 FROM posts p
@@ -68,6 +76,99 @@ class Post
         }
 
         $sql .= " ORDER BY p.created_at DESC";
+
+        if ($limit) {
+            $sql .= " LIMIT ? OFFSET ?";
+            $params[] = (int)$limit;
+            $params[] = (int)$offset;
+        }
+
+        return $this->db->query($sql, $params);
+    }
+
+    /**
+     * Count total posts (BARU - untuk pagination)
+     * 
+     * @param string|null $categorySlug Filter by category
+     * @param int|null $authorId Filter by author
+     * @param string $status Status filter
+     * @return int Total count
+     */
+    public function countAll($categorySlug = null, $authorId = null, $status = 'published')
+    {
+        $sql = "SELECT COUNT(DISTINCT p.id) as total 
+                FROM posts p";
+        
+        $params = [];
+        $conditions = ["p.status = ?"];
+        $params[] = $status;
+
+        // Join category jika perlu filter
+        if ($categorySlug) {
+            $sql .= " LEFT JOIN categories c ON p.category_id = c.id";
+            $conditions[] = "c.slug = ?";
+            $params[] = $categorySlug;
+        }
+
+        // Filter by author
+        if ($authorId) {
+            $conditions[] = "p.author_id = ?";
+            $params[] = $authorId;
+        }
+
+        $sql .= " WHERE " . implode(' AND ', $conditions);
+
+        $result = $this->db->queryOne($sql, $params);
+        return (int)($result['total'] ?? 0);
+    }
+
+    /**
+     * Get paginated posts (BARU - method khusus untuk pagination)
+     * 
+     * @param int $limit Items per page
+     * @param int $offset Offset
+     * @param string|null $categorySlug Filter by category
+     * @param int|null $authorId Filter by author
+     * @param string $orderBy Sort column
+     * @param string $orderDir Sort direction
+     * @return array Posts
+     */
+    public function getPaginated($limit = 9, $offset = 0, $categorySlug = null, $authorId = null, $orderBy = 'published_at', $orderDir = 'DESC')
+    {
+        $sql = "SELECT p.*, 
+                       c.name as category_name, 
+                       c.slug as category_slug, 
+                       u.name as author_name
+                FROM posts p
+                LEFT JOIN categories c ON p.category_id = c.id
+                LEFT JOIN users u ON p.author_id = u.id
+                WHERE p.status = 'published'";
+        
+        $params = [];
+
+        // Filter by category
+        if ($categorySlug) {
+            $sql .= " AND c.slug = ?";
+            $params[] = $categorySlug;
+        }
+
+        // Filter by author
+        if ($authorId) {
+            $sql .= " AND p.author_id = ?";
+            $params[] = $authorId;
+        }
+
+        // Order
+        $allowedOrderColumns = ['published_at', 'created_at', 'title', 'views'];
+        $orderBy = in_array($orderBy, $allowedOrderColumns) ? $orderBy : 'published_at';
+        $orderDir = strtoupper($orderDir) === 'ASC' ? 'ASC' : 'DESC';
+        
+        $sql .= " ORDER BY p.$orderBy $orderDir, p.created_at DESC";
+        
+        // Limit and offset
+        $sql .= " LIMIT ? OFFSET ?";
+        $params[] = (int)$limit;
+        $params[] = (int)$offset;
 
         return $this->db->query($sql, $params);
     }
@@ -189,7 +290,7 @@ class Post
     }
 
     /**
-     * Count posts
+     * Count posts (Existing method - tetap dipertahankan untuk backward compatibility)
      */
     public function count($status = 'published')
     {
@@ -219,5 +320,55 @@ class Post
         }
 
         return $slug;
+    }
+
+    /**
+     * Search posts (BONUS - untuk fitur search)
+     * 
+     * @param string $keyword Search keyword
+     * @param int $limit Limit results
+     * @param int $offset Offset
+     * @return array
+     */
+    public function search($keyword, $limit = 9, $offset = 0)
+    {
+        $sql = "SELECT p.*, 
+                       c.name as category_name, 
+                       c.slug as category_slug, 
+                       u.name as author_name
+                FROM posts p
+                LEFT JOIN categories c ON p.category_id = c.id
+                LEFT JOIN users u ON p.author_id = u.id
+                WHERE p.status = 'published' 
+                AND (p.title LIKE ? OR p.excerpt LIKE ? OR p.body LIKE ?)
+                ORDER BY p.published_at DESC
+                LIMIT ? OFFSET ?";
+
+        $searchTerm = "%$keyword%";
+        return $this->db->query($sql, [
+            $searchTerm, 
+            $searchTerm, 
+            $searchTerm,
+            (int)$limit,
+            (int)$offset
+        ]);
+    }
+
+    /**
+     * Count search results (BONUS - untuk pagination search)
+     * 
+     * @param string $keyword Search keyword
+     * @return int
+     */
+    public function countSearch($keyword)
+    {
+        $sql = "SELECT COUNT(*) as total 
+                FROM posts p
+                WHERE p.status = 'published' 
+                AND (p.title LIKE ? OR p.excerpt LIKE ? OR p.body LIKE ?)";
+
+        $searchTerm = "%$keyword%";
+        $result = $this->db->queryOne($sql, [$searchTerm, $searchTerm, $searchTerm]);
+        return (int)($result['total'] ?? 0);
     }
 }

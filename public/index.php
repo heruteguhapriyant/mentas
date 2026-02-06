@@ -32,6 +32,7 @@ require_once '../app/models/Ticket.php';
 /**
  * LOAD GLOBAL HELPERS
  */
+require_once '../app/helpers/pagination_helper.php';
 require_once '../app/helpers/content_helper.php';
 require_once '../app/helpers/url_helper.php';
 require_once '../app/helpers/auth_helper.php';
