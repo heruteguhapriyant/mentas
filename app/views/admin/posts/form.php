@@ -53,48 +53,8 @@
 
         <div class="form-group">
             <label for="body">Isi Artikel *</label>
-            
-            <!-- Quill Editor Container -->
-            <div id="quill-editor"></div>
-            <input type="hidden" name="body" id="body-input">
+            <textarea id="body" name="body" class="form-control" rows="15" required placeholder="Tulis isi artikel di sini..."><?= htmlspecialchars($post['body'] ?? '') ?></textarea>
         </div>
-
-        <style>
-            /* Quill Editor Styling */
-            #quill-editor {
-                height: 400px;
-                background: #fff;
-                margin-bottom: 20px;
-            }
-            .ql-toolbar.ql-snow {
-                border-radius: 8px 8px 0 0;
-                background: #f8f9fa;
-                border: 1px solid #ddd;
-            }
-            .ql-container.ql-snow {
-                border-radius: 0 0 8px 8px;
-                border: 1px solid #ddd;
-                border-top: none;
-                font-size: 16px;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            }
-            .ql-editor {
-                min-height: 350px;
-                line-height: 1.8;
-            }
-            .ql-editor h1, .ql-editor h2, .ql-editor h3 {
-                margin-top: 1.5rem;
-                margin-bottom: 0.5rem;
-            }
-            .ql-editor blockquote {
-                border-left: 4px solid #d52c2c;
-                padding-left: 1rem;
-                color: #555;
-            }
-            .ql-editor a {
-                color: #d52c2c;
-            }
-        </style>
 
         <?php 
         // Get array of current post tag IDs
@@ -108,13 +68,8 @@
 
         <?php if (!empty($allTags)): ?>
         <div class="form-group">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <label>Tags</label>
-                <button type="button" class="btn btn-sm btn-success" onclick="autoGenerateTags()" style="font-size: 0.85rem;">
-                    <i class="fas fa-wand-magic-sparkles"></i> Generate Tags Otomatis
-                </button>
-            </div>
-            <div class="tags-checkbox-container" style="display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #ddd; max-height: 300px; overflow-y: auto;">
+            <label>Tags dari Database</label>
+            <div class="tags-checkbox-container" style="display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #ddd; max-height: 200px; overflow-y: auto;">
                 <?php foreach ($allTags as $tag): ?>
                     <label class="tag-label" style="display: flex; align-items: center; gap: 5px; cursor: pointer; padding: 5px 12px; background: #fff; border-radius: 20px; border: 1px solid #ddd; transition: all 0.2s;">
                         <input type="checkbox" name="tags[]" value="<?= $tag['id'] ?>" 
@@ -125,9 +80,24 @@
                     </label>
                 <?php endforeach; ?>
             </div>
-            <small class="form-text">Pilih tags yang relevan dengan artikel</small>
+            <small class="form-text">Pilih tags yang sudah ada</small>
         </div>
         <?php endif; ?>
+
+        <!-- Manual Tags / Generated Tags -->
+        <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <label>Tags Baru (dari Artikel)</label>
+                <button type="button" class="btn btn-sm btn-success" onclick="autoGenerateTags()" style="font-size: 0.85rem;">
+                    <i class="fas fa-wand-magic-sparkles"></i> Generate Tags dari Artikel
+                </button>
+            </div>
+            <div id="generated-tags-container" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 15px; background: #e8f5e9; border-radius: 8px; border: 1px solid #c8e6c9; min-height: 50px;">
+                <span id="no-tags-placeholder" style="color: #666; font-size: 0.9rem;">Klik "Generate Tags" untuk mengekstrak kata kunci dari artikel</span>
+            </div>
+            <input type="hidden" name="manual_tags" id="manual_tags_input">
+            <small class="form-text">Tags baru akan dibuat otomatis dari kata kunci artikel</small>
+        </div>
 
         <div style="display: flex; gap: 1rem;">
             <button type="submit" name="status" value="draft" class="btn btn-secondary">
@@ -140,7 +110,31 @@
     </form>
 </div>
 
+<style>
+.generated-tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #28a745;
+    color: white;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+.generated-tag-chip .remove-tag {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1rem;
+    line-height: 1;
+}
+.generated-tag-chip .remove-tag:hover {
+    color: #ffcdd2;
+}
+</style>
+
 <script>
+let generatedTags = [];
+
 function autoGenerateTags() {
     const title = document.getElementById('title').value;
     const body = document.getElementById('body').value;
@@ -159,7 +153,6 @@ function autoGenerateTags() {
     formData.append('title', title);
     formData.append('body', body);
 
-    // Use Contributor endpoint since valid for Admin too
     fetch('<?= BASE_URL ?>/contributor/generateTags', {
         method: 'POST',
         body: formData
@@ -167,30 +160,18 @@ function autoGenerateTags() {
     .then(response => response.json())
     .then(tags => {
         if (tags.length > 0) {
-            let matchCount = 0;
-            const checkboxes = document.querySelectorAll('input[name="tags[]"]');
-            
-            tags.forEach(generatedTag => {
-                const searchName = generatedTag.name.toLowerCase();
-                
-                checkboxes.forEach(cb => {
-                    const tagName = cb.getAttribute('data-tag-name');
-                    if (tagName === searchName || tagName.includes(searchName) || searchName.includes(tagName)) {
-                        if (!cb.checked) {
-                            cb.checked = true;
-                            cb.parentNode.style.borderColor = '#28a745'; // Highlight match
-                            matchCount++;
-                        }
-                    }
-                });
+            // Add generated tags (avoid duplicates)
+            tags.forEach(tag => {
+                const tagName = tag.name.charAt(0).toUpperCase() + tag.name.slice(1); // Capitalize
+                if (!generatedTags.includes(tagName)) {
+                    generatedTags.push(tagName);
+                }
             });
-
-            if (matchCount > 0) {
-                alert(`Berhasil menemukan ${matchCount} tags yang cocok dari database!`);
-            } else {
-                alert('Tags digenerate, tapi tidak ada yang cocok dengan database tags saat ini.');
-                console.log('Generated:', tags);
-            }
+            
+            renderGeneratedTags();
+            updateManualTagsInput();
+            
+            alert(`Berhasil mengekstrak ${tags.length} kata kunci dari artikel!`);
         } else {
             alert('Tidak dapat menemukan kata kunci yang cocok.');
         }
@@ -204,49 +185,38 @@ function autoGenerateTags() {
         btn.disabled = false;
     });
 }
-</script>
 
-<!-- Quill CSS -->
-<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
-
-<!-- Quill JS -->
-<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
-<script>
-    // Initialize Quill Editor after DOM is ready
-    document.addEventListener('DOMContentLoaded', function() {
-        var quill = new Quill('#quill-editor', {
-            theme: 'snow',
-            placeholder: 'Tulis isi artikel di sini...',
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'align': [] }],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    [{ 'indent': '-1'}, { 'indent': '+1' }],
-                    ['blockquote', 'code-block'],
-                    ['link', 'image', 'video'],
-                    ['clean']
-                ]
-            }
+function renderGeneratedTags() {
+    const container = document.getElementById('generated-tags-container');
+    const placeholder = document.getElementById('no-tags-placeholder');
+    
+    if (generatedTags.length > 0) {
+        if (placeholder) placeholder.style.display = 'none';
+        
+        // Clear existing chips (except placeholder)
+        container.querySelectorAll('.generated-tag-chip').forEach(el => el.remove());
+        
+        generatedTags.forEach(tag => {
+            const chip = document.createElement('span');
+            chip.className = 'generated-tag-chip';
+            chip.innerHTML = `${tag} <span class="remove-tag" onclick="removeGeneratedTag('${tag}')">&times;</span>`;
+            container.appendChild(chip);
         });
+    } else {
+        if (placeholder) placeholder.style.display = 'inline';
+        container.querySelectorAll('.generated-tag-chip').forEach(el => el.remove());
+    }
+}
 
-        // Load existing content if editing
-        <?php if (!empty($post['body'])): ?>
-        quill.root.innerHTML = <?= json_encode($post['body']) ?>;
-        <?php endif; ?>
+function removeGeneratedTag(tagName) {
+    generatedTags = generatedTags.filter(t => t !== tagName);
+    renderGeneratedTags();
+    updateManualTagsInput();
+}
 
-        // Sync content to hidden input on form submit
-        document.querySelector('form').addEventListener('submit', function() {
-            document.getElementById('body-input').value = quill.root.innerHTML;
-        });
-
-        // Also sync on any change for draft saving
-        quill.on('text-change', function() {
-            document.getElementById('body-input').value = quill.root.innerHTML;
-        });
-    });
+function updateManualTagsInput() {
+    document.getElementById('manual_tags_input').value = generatedTags.join(',');
+}
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

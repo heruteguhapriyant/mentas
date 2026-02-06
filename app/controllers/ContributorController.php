@@ -369,23 +369,73 @@ class ContributorController extends Controller
         // 2. Tokenize
         $words = explode(' ', $text);
 
-        // 3. Stopwords (Indonesian)
+        // 3. Stopwords (Indonesian - kata sambung, preposisi, kata ganti, kata bantu)
         $stopwords = [
-            'yang', 'di', 'dan', 'itu', 'dengan', 'untuk', 'tidak', 'ini', 'dari', 'dalam', 'akan', 
-            'pada', 'juga', 'saya', 'ke', 'karena', 'tersebut', 'bisa', 'ada', 'mereka', 'lebih', 
-            'atau', 'tapi', 'kita', 'adalah', 'hal', 'sebagai', 'sudah', 'telah', 'saat', 'oleh', 
-            'apakah', 'bagaimana', 'apa', 'jika', 'sebuah', 'namun', 'satu', 'lain', 'maka', 'ia',
-            'dia', 'kamu', 'anda', 'bagi', 'sampai', 'sangat', 'lalu', 'hanya', 'tentang', 'seperti',
-            'mana', 'hari', 'tahun', 'ketika', 'setelah', 'belum', 'kami', 'masih', 'banyak', 'tak',
-            'para', 'harus', 'semua', 'sedang', 'sementara', 'kemudian', 'agar', 'lagi', 'setiap',
-            'menjadi', 'terhadap', 'secara', 'pernah', 'ingin', 'baru', 'mungkin', 'saja', 'ketika',
-            'sejak', 'tanpa', 'atas', 'bawah', 'depan', 'belakang', 'pula', 'pun', 'mengapa', 'sehingga'
+            // Kata sambung (konjungsi)
+            'dan', 'atau', 'tetapi', 'tapi', 'namun', 'melainkan', 'sedangkan', 'padahal', 
+            'serta', 'lalu', 'kemudian', 'lantas', 'lagi', 'sebab', 'karena', 'oleh', 
+            'maka', 'sehingga', 'agar', 'supaya', 'kalau', 'jika', 'jikalau', 'bila', 
+            'apabila', 'asal', 'asalkan', 'meski', 'meskipun', 'walau', 'walaupun', 
+            'sekalipun', 'biarpun', 'kendati', 'seakan', 'seolah', 'seperti', 'bagaikan',
+            'laksana', 'ibarat', 'daripada', 'alih', 'ketimbang', 'bahwa', 'yakni', 'yaitu',
+            
+            // Preposisi (kata depan)
+            'di', 'ke', 'dari', 'pada', 'dalam', 'dengan', 'untuk', 'bagi', 'demi', 
+            'tanpa', 'sampai', 'hingga', 'sejak', 'selama', 'sepanjang', 'tentang', 
+            'mengenai', 'terhadap', 'akan', 'atas', 'bawah', 'depan', 'belakang', 
+            'samping', 'antara', 'sekitar', 'seputar', 'lewat', 'melalui', 'oleh',
+            
+            // Kata ganti (pronomina)
+            'saya', 'aku', 'kamu', 'anda', 'engkau', 'dia', 'ia', 'beliau', 'mereka', 
+            'kami', 'kita', 'ini', 'itu', 'tersebut', 'yang', 'siapa', 'apa', 'mana',
+            
+            // Kata bantu / partikel
+            'adalah', 'ialah', 'merupakan', 'yaitu', 'yakni', 'bisa', 'dapat', 'mampu',
+            'boleh', 'harus', 'wajib', 'perlu', 'mesti', 'hendak', 'hendaknya', 'ingin',
+            'mau', 'akan', 'sudah', 'telah', 'pernah', 'belum', 'sedang', 'masih', 'lagi',
+            'tidak', 'tak', 'bukan', 'jangan', 'belum', 'tiada',
+            
+            // Kata keterangan umum
+            'sangat', 'amat', 'sekali', 'paling', 'lebih', 'kurang', 'agak', 'cukup',
+            'terlalu', 'begitu', 'demikian', 'bagaimana', 'mengapa', 'kenapa', 'kapan',
+            'dimana', 'kemana', 'darimana', 'bilamana', 'berapa', 'seberapa',
+            
+            // Kata umum lainnya
+            'hal', 'sebuah', 'suatu', 'satu', 'dua', 'tiga', 'empat', 'lima', 
+            'banyak', 'sedikit', 'beberapa', 'semua', 'seluruh', 'tiap', 'setiap', 
+            'para', 'berbagai', 'macam', 'jenis', 'lain', 'sama', 'sendiri',
+            'saja', 'hanya', 'justru', 'malah', 'bahkan', 'pula', 'pun', 'juga',
+            'lalu', 'kemudian', 'setelah', 'sebelum', 'ketika', 'saat', 'waktu',
+            'hari', 'bulan', 'tahun', 'minggu', 'jam', 'menit', 'detik',
+            'cara', 'tempat', 'orang', 'kali', 'kala', 'masa', 'zaman',
+            'menjadi', 'membuat', 'melakukan', 'memberikan', 'mendapatkan', 
+            'secara', 'menurut', 'berdasarkan', 'sesuai', 'terkait', 'sehubungan',
+            
+            // Kata tambahan (berdasarkan feedback)
+            'kini', 'akhir', 'awal', 'sekian', 'sekedar', 'semoga', 'berharap',
+            'tinggal', 'berusia', 'hidupnya', 'bukanlah', 'tidaklah', 'ataupun',
+            'kecil', 'besar', 'lama', 'baru', 'luas', 'tinggi', 'rendah',
+            'tahunan', 'bulanan', 'harian', 'mingguan',
+            'ditelan', 'dijaganya', 'diwarisi', 'diterima', 'dipanggil', 'digambarkan',
+            'mata', 'tangan', 'kaki', 'kepala', 'badan', 'tubuh',
+            'desa', 'kota', 'dukuh', 'dusun', 'kampung', 'negeri',
+            'ayahnya', 'ibunya', 'anaknya', 'kakeknya', 'neneknya',
+            'energinya', 'hidupnya', 'ceritanya', 'kisahnya',
+            'klasik', 'modern', 'kuno', 'tradisi', 'kesenian',
+            'menggunakan', 'dimengerti', 'menggantungkan', 'mewariskan', 'melestarikan',
+            'pencarian', 'pertunjukkan', 'kesederhanaan', 'kehidupan', 'penokohan',
+            'berdiri', 'terasing', 'dinegerinya', 'tumbang', 'hilang'
         ];
 
-        // 4. Filter & Count
+        // 4. Filter & Count (minimum 4 karakter untuk kata yang bermakna)
         $keywords = [];
         foreach ($words as $word) {
-            if (strlen($word) > 3 && !in_array($word, $stopwords) && !is_numeric($word)) {
+            // Filter: panjang > 4, bukan stopword, bukan angka, bukan kata dengan akhiran 'nya'
+            if (strlen($word) > 4 && 
+                !in_array($word, $stopwords) && 
+                !is_numeric($word) &&
+                !preg_match('/^\d+an$/', $word) && // Filter tahun seperti 1960an
+                !preg_match('/nya$/', $word)) { // Filter kata berakhiran -nya
                 if (!isset($keywords[$word])) {
                     $keywords[$word] = 0;
                 }
@@ -396,8 +446,8 @@ class ContributorController extends Controller
         // 5. Sort by Frequency
         arsort($keywords);
 
-        // 6. Get Top 15
-        $topKeywords = array_keys(array_slice($keywords, 0, 15));
+        // 6. Get Top 30 Keywords (yang paling sering muncul = paling penting)
+        $topKeywords = array_keys(array_slice($keywords, 0, 30));
         
         // Return structured data like tag objects
         $results = [];

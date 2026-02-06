@@ -297,9 +297,29 @@ class AdminController extends Controller
 
         $postId = $this->postModel->create($data);
 
-        // Handle tags
+        // Handle existing tags from checkboxes
+        $tagIds = [];
         if (!empty($_POST['tags'])) {
             $tagIds = array_map('intval', $_POST['tags']);
+        }
+
+        // Handle manual/generated tags
+        if (!empty($_POST['manual_tags'])) {
+            $manualTags = array_filter(array_map('trim', explode(',', $_POST['manual_tags'])));
+            foreach ($manualTags as $tagName) {
+                if (!empty($tagName)) {
+                    // Use findOrCreate - creates tag if not exists
+                    $tagId = $this->tagModel->findOrCreate($tagName);
+                    if ($tagId) {
+                        $tagIds[] = $tagId;
+                    }
+                }
+            }
+        }
+
+        // Attach all tags (remove duplicates)
+        if (!empty($tagIds)) {
+            $tagIds = array_unique($tagIds);
             $this->tagModel->attachToPost($postId, $tagIds);
         }
 
@@ -358,8 +378,30 @@ class AdminController extends Controller
 
         $this->postModel->update($id, $data);
 
-        // Handle tags
-        $tagIds = !empty($_POST['tags']) ? array_map('intval', $_POST['tags']) : [];
+        // Handle existing tags from checkboxes
+        $tagIds = [];
+        if (!empty($_POST['tags'])) {
+            $tagIds = array_map('intval', $_POST['tags']);
+        }
+
+        // Handle manual/generated tags
+        if (!empty($_POST['manual_tags'])) {
+            $manualTags = array_filter(array_map('trim', explode(',', $_POST['manual_tags'])));
+            foreach ($manualTags as $tagName) {
+                if (!empty($tagName)) {
+                    // Use findOrCreate - creates tag if not exists
+                    $tagId = $this->tagModel->findOrCreate($tagName);
+                    if ($tagId) {
+                        $tagIds[] = $tagId;
+                    }
+                }
+            }
+        }
+
+        // Attach all tags (remove duplicates)
+        if (!empty($tagIds)) {
+            $tagIds = array_unique($tagIds);
+        }
         $this->tagModel->attachToPost($id, $tagIds);
 
         setFlash('success', 'Artikel berhasil diupdate');
