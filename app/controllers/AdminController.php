@@ -285,7 +285,7 @@ class AdminController extends Controller
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/posts/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/posts/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -366,7 +366,7 @@ class AdminController extends Controller
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/posts/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/posts/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -459,7 +459,7 @@ class AdminController extends Controller
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/zines/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/zines/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -487,7 +487,7 @@ class AdminController extends Controller
                 exit;
             }
             
-            $uploadDir = '../public/uploads/zines/pdf/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/zines/pdf/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -537,7 +537,7 @@ class AdminController extends Controller
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/zines/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/zines/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -565,7 +565,7 @@ class AdminController extends Controller
                 exit;
             }
             
-            $uploadDir = '../public/uploads/zines/pdf/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/zines/pdf/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -604,7 +604,7 @@ class AdminController extends Controller
         // Handle image upload
         $imagePath = null;
         if (!empty($_FILES['image']['name'])) {
-            $uploadDir = '../public/uploads/communities/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/communities/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
             }
@@ -655,7 +655,7 @@ class AdminController extends Controller
         
         // Handle image upload
         if (!empty($_FILES['image']['name'])) {
-            $uploadDir = '../public/uploads/communities/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/communities/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
             }
@@ -716,7 +716,7 @@ class AdminController extends Controller
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/products/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/products/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -767,7 +767,7 @@ class AdminController extends Controller
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/products/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/products/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -836,7 +836,7 @@ class AdminController extends Controller
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/events/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/events/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -888,7 +888,7 @@ class AdminController extends Controller
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/events/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/events/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -949,7 +949,7 @@ class AdminController extends Controller
 
         // Handle avatar upload
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/avatars/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/avatars/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }

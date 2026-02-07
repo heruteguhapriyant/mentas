@@ -78,7 +78,7 @@ class ContributorController extends Controller
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/posts/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/posts/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -169,7 +169,7 @@ class ContributorController extends Controller
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/posts/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/posts/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -265,7 +265,7 @@ class ContributorController extends Controller
 
         // Handle Avatar Upload
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/avatars/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/avatars/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -275,8 +275,8 @@ class ContributorController extends Controller
             
             if (move_uploaded_file($_FILES['avatar']['tmp_name'], $uploadDir . $filename)) {
                 // Remove old avatar if exists and not default
-                if (!empty($user['avatar']) && file_exists('../public/' . $user['avatar'])) {
-                    unlink('../public/' . $user['avatar']);
+                if (!empty($user['avatar']) && file_exists(dirname(__DIR__, 2) . '/public/' . $user['avatar'])) {
+                    unlink(dirname(__DIR__, 2) . '/public/' . $user['avatar']);
                 }
                 $data['avatar'] = 'uploads/avatars/' . $filename;
             }
@@ -284,7 +284,7 @@ class ContributorController extends Controller
 
         // Handle QRIS Image Upload
         if (isset($_FILES['qris_image']) && $_FILES['qris_image']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/qris/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/qris/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -297,8 +297,8 @@ class ContributorController extends Controller
                 
                 if (move_uploaded_file($_FILES['qris_image']['tmp_name'], $uploadDir . $filename)) {
                     // Remove old QRIS if exists
-                    if (!empty($user['qris_image']) && file_exists('../public/' . $user['qris_image'])) {
-                        unlink('../public/' . $user['qris_image']);
+                    if (!empty($user['qris_image']) && file_exists(dirname(__DIR__, 2) . '/public/' . $user['qris_image'])) {
+                        unlink(dirname(__DIR__, 2) . '/public/' . $user['qris_image']);
                     }
                     $data['qris_image'] = 'uploads/qris/' . $filename;
                 }

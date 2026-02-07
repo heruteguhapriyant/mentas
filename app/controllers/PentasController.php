@@ -118,7 +118,7 @@ class PentasController extends Controller {
         // Handle payment proof upload if price > 0
         $paymentProof = null;
         if ($totalPrice > 0 && isset($_FILES['payment_proof']) && $_FILES['payment_proof']['error'] === 0) {
-            $uploadDir = __DIR__ . '/../../public/uploads/payments/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/payments/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -197,7 +197,7 @@ class PentasController extends Controller {
         // Handle payment proof upload if price > 0
         $paymentProof = null;
         if ($totalPrice > 0 && isset($_FILES['payment_proof']) && $_FILES['payment_proof']['error'] === 0) {
-            $uploadDir = __DIR__ . '/../../public/uploads/payments/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/payments/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }

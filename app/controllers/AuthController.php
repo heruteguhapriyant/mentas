@@ -132,7 +132,7 @@ class AuthController extends Controller
 
         // Handle avatar upload
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../public/uploads/avatars/';
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/avatars/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
