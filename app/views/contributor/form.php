@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Expose for auto-generation
     window.autoGenerateTags = function() {
         const title = document.getElementById('title').value;
-        const body = document.getElementById('body').value;
+        const body = document.getElementById('body-input').value;
         
         if (!title && !body) {
             alert('Mohon isi Judul atau Konten Artikel terlebih dahulu.');
