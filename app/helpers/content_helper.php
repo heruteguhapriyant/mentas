@@ -80,6 +80,10 @@ function cleanWordPressContent($content)
     // Remove empty p tags
     $content = preg_replace('/<p>\s*<\/p>/i', '', $content);
     
+    // Fix relative image paths to absolute BASE_URL
+    // Matches src="uploads/..." or src="/uploads/..." and prepends BASE_URL
+    $content = preg_replace('/src=["\'](?!http)(?:\/)?(uploads\/[^"\']+)["\']/', 'src="' . BASE_URL . '/$1"', $content);
+    
     return trim($content);
 }
 

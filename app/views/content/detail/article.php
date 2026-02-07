@@ -54,6 +54,11 @@
                     // Allow safe HTML tags for rich text content
                     $allowedTags = '<h1><h2><h3><h4><h5><h6><p><br><strong><b><em><i><u><s><strike><a><ul><ol><li><blockquote><pre><code><img><table><thead><tbody><tr><th><td><hr><span><div><figure><figcaption>';
                     $body = strip_tags($content['body'], $allowedTags);
+                    
+                    // Fix relative image paths to absolute BASE_URL
+                    // Matches src="uploads/..." or src="/uploads/..." and prepends BASE_URL
+                    $body = preg_replace('/src=["\'](?!http)(?:\/)?(uploads\/[^"\']+)["\']/', 'src="' . BASE_URL . '/$1"', $body);
+                    
                     echo $body;
                 ?>
             </div>
