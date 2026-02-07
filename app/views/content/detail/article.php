@@ -63,32 +63,32 @@
                 ?>
             </div>
 
-            <!-- Author Social Media -->
+<!-- Author Social Media -->
             <?php 
                 $socials = !empty($content['author_social']) ? json_decode($content['author_social'], true) : [];
                 $hasSocial = !empty(array_filter($socials));
             ?>
             <?php if ($hasSocial): ?>
-            <div class="author-social-links" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-                <h4 style="font-size: 16px; margin-bottom: 15px;">Ikuti Penulis:</h4>
-                <div style="display: flex; gap: 20px;">
+            <div class="author-social-links">
+                <h4>Ikuti Penulis:</h4>
+                <div class="social-icons">
                     <?php if (!empty($socials['website'])): ?>
-                        <a href="<?= $socials['website'] ?>" target="_blank" style="text-decoration: none; color: #333; font-size: 24px;" title="Website">
+                        <a href="<?= $socials['website'] ?>" target="_blank" class="social-website" title="Website">
                             <i class="fas fa-globe"></i>
                         </a>
                     <?php endif; ?>
                     <?php if (!empty($socials['instagram'])): ?>
-                        <a href="<?= $socials['instagram'] ?>" target="_blank" style="text-decoration: none; color: #E1306C; font-size: 24px;" title="Instagram">
+                        <a href="<?= $socials['instagram'] ?>" target="_blank" class="social-instagram" title="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
                     <?php endif; ?>
                     <?php if (!empty($socials['facebook'])): ?>
-                        <a href="<?= $socials['facebook'] ?>" target="_blank" style="text-decoration: none; color: #1877F2; font-size: 24px;" title="Facebook">
+                        <a href="<?= $socials['facebook'] ?>" target="_blank" class="social-facebook" title="Facebook">
                             <i class="fab fa-facebook"></i>
                         </a>
                     <?php endif; ?>
                     <?php if (!empty($socials['twitter'])): ?>
-                        <a href="<?= $socials['twitter'] ?>" target="_blank" style="text-decoration: none; color: #1DA1F2; font-size: 24px;" title="Twitter">
+                        <a href="<?= $socials['twitter'] ?>" target="_blank" class="social-twitter" title="Twitter">
                             <i class="fab fa-twitter"></i>
                         </a>
                     <?php endif; ?>
@@ -97,11 +97,11 @@
             <?php endif; ?>
 
             <!-- Share Article Section -->
-            <div class="share-article-section" style="margin-top: 40px; padding: 25px; background: #f8f9fa; border-radius: 10px; border: 2px solid #eee;">
-                <h4 style="font-size: 16px; margin-bottom: 15px; color: #333;">
+            <div class="share-article-section">
+                <h4>
                     <i class="fa-solid fa-share-nodes"></i> Bagikan Artikel Ini
                 </h4>
-                <div class="share-buttons" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <div class="share-buttons">
                     <?php 
                         $articleUrl = BASE_URL . '/blog/' . $content['slug'];
                         $articleTitle = urlencode($content['title']);
@@ -111,31 +111,27 @@
                     <!-- WhatsApp -->
                     <a href="https://wa.me/?text=<?= $articleTitle ?>%20<?= $encodedUrl ?>" 
                        target="_blank" 
-                       class="share-btn share-whatsapp"
-                       style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #25D366; color: white; text-decoration: none; border-radius: 25px; font-size: 14px; font-weight: 500; transition: all 0.3s ease;">
+                       class="share-btn share-whatsapp">
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </a>
                     
                     <!-- Facebook -->
                     <a href="https://www.facebook.com/sharer/sharer.php?u=<?= $encodedUrl ?>" 
                        target="_blank"
-                       class="share-btn share-facebook"
-                       style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #1877F2; color: white; text-decoration: none; border-radius: 25px; font-size: 14px; font-weight: 500; transition: all 0.3s ease;">
+                       class="share-btn share-facebook">
                         <i class="fab fa-facebook-f"></i> Facebook
                     </a>
                     
                     <!-- Twitter/X -->
                     <a href="https://twitter.com/intent/tweet?text=<?= $articleTitle ?>&url=<?= $encodedUrl ?>" 
                        target="_blank"
-                       class="share-btn share-twitter"
-                       style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #000; color: white; text-decoration: none; border-radius: 25px; font-size: 14px; font-weight: 500; transition: all 0.3s ease;">
+                       class="share-btn share-twitter">
                         <i class="fab fa-x-twitter"></i> Twitter
                     </a>
                     
                     <!-- Copy Link -->
                     <button onclick="copyArticleLink('<?= $articleUrl ?>')" 
-                            class="share-btn share-copy"
-                            style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #6c757d; color: white; border: none; border-radius: 25px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">
+                            class="share-btn share-copy">
                         <i class="fa-solid fa-link"></i> <span id="copy-text">Salin Link</span>
                     </button>
                 </div>
@@ -157,17 +153,17 @@
             </script>
 
             <!-- Comments Section -->
-            <div class="comments-section" style="margin-top: 50px;">
-                <h3 style="margin-bottom: 20px;">Komentar (<?= count($comments ?? []) ?>)</h3>
+            <div class="comments-section">
+                <h3>Komentar (<?= count($comments ?? []) ?>)</h3>
                 
                 <!-- Comment List -->
-                <div class="comments-list" style="margin-bottom: 40px;">
+                <div class="comments-list">
                     <?php if (!empty($comments)): ?>
                         <?php foreach ($comments as $comment): ?>
-                            <div class="comment-item" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
-                                <div class="comment-header" style="display: flex; align-items: center; margin-bottom: 10px;">
-                                    <strong style="margin-right: 10px;"><?= htmlspecialchars($comment['name']) ?></strong>
-                                    <small style="color: #666;"><?= date('d M Y H:i', strtotime($comment['created_at'])) ?></small>
+                            <div class="comment-item">
+                                <div class="comment-header">
+                                    <strong><?= htmlspecialchars($comment['name']) ?></strong>
+                                    <small><?= date('d M Y H:i', strtotime($comment['created_at'])) ?></small>
                                 </div>
                                 <div class="comment-body">
                                     <?= nl2br(htmlspecialchars($comment['body'])) ?>
@@ -175,33 +171,33 @@
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <p style="color: #666;">Belum ada komentar. Jadilah yang pertama berkomentar!</p>
+                        <p>Belum ada komentar. Jadilah yang pertama berkomentar!</p>
                     <?php endif; ?>
                 </div>
 
                 <!-- Comment Form -->
                 <div class="comment-form-wrapper">
-                    <h4 style="margin-bottom: 15px;">Tinggalkan Komentar</h4>
+                    <h4>Tinggalkan Komentar</h4>
                     <form action="<?= BASE_URL ?>/comment/store" method="POST" class="comment-form">
                         <input type="hidden" name="post_id" value="<?= $content['id'] ?>">
                         
                         <?php if (!isset($_SESSION['user_id'])): ?>
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label for="name" style="display: block; margin-bottom: 5px;">Nama</label>
-                                <input type="text" name="name" id="name" class="form-control" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <div class="form-group">
+                                <label for="name">Nama</label>
+                                <input type="text" name="name" id="name" class="form-control" required>
                             </div>
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label for="email" style="display: block; margin-bottom: 5px;">Email</label>
-                                <input type="email" name="email" id="email" class="form-control" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" name="email" id="email" class="form-control" required>
                             </div>
                         <?php endif; ?>
 
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label for="body" style="display: block; margin-bottom: 5px;">Komentar</label>
-                            <textarea name="body" id="body" rows="4" class="form-control" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+                        <div class="form-group">
+                            <label for="body">Komentar</label>
+                            <textarea name="body" id="body" rows="4" class="form-control" required></textarea>
                         </div>
 
-                        <button type="submit" class="btn-primary" style="background: #e63946; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Kirim Komentar</button>
+                        <button type="submit" class="btn-primary">Kirim Komentar</button>
                     </form>
                 </div>
             </div>

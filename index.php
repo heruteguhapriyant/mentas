@@ -27,10 +27,18 @@ if (preg_match('/^\/(assets|uploads|favicon\.ico)/', $requestUri)) {
     }
 }
 
-// Simulate .htaccess for PHP Built-in Server
-// If $_GET['url'] is not set (which happens with php -S), parse it from REQUEST_URI
+// Simulate .htaccess result if $_GET['url'] is not set
 if (!isset($_GET['url'])) {
-    $url = ltrim($requestUri, '/'); // Remove leading slash
+    // Get the directory of the current script (e.g., /mentas-main)
+    $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+    
+    // Remove the script directory from the request URI
+    $url = $requestUri;
+    if ($scriptDir !== '/' && strpos($requestUri, $scriptDir) === 0) {
+        $url = substr($requestUri, strlen($scriptDir));
+    }
+    
+    $url = ltrim($url, '/');
     if (!empty($url)) {
         $_GET['url'] = $url;
     }

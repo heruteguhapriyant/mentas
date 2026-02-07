@@ -50,12 +50,6 @@
     </section>
     <?php endif; ?>
 
-    <section class="stats">
-        <div class="stat-item"><strong>> 100</strong><br />Artikel & Karya sastra</div>
-        <div class="stat-item"><strong>85</strong><br />Komunitas & Mitra</div>
-        <div class="stat-item"><strong>80</strong><br />Agenda & Peristiwa budaya</div>
-    </section>
-
     <!-- PROGRAM CARD -->
     <section class="program-section">
         <div class="program-card">

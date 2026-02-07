@@ -267,24 +267,43 @@ body>main {
 .dropdown-menu a:hover {
     color: #d52c2c;
 }
-
 /* Hamburger */
 .menu-toggle {
     display: none;
     flex-direction: column;
     gap: 6px;
     cursor: pointer;
-
     position: relative;
     z-index: 3000;
-    /* PALING PENTING */
+    width: 26px;
+    height: 20px;
 }
-
 
 .menu-toggle span {
     width: 26px;
     height: 3px;
     background: #d52c2c;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+/* Animasi burger jadi X */
+.menu-toggle.active span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.menu-toggle.active span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Warna X berubah putih saat menu terbuka */
+.menu-toggle.active span {
+    background: #fff;
 }
 
 /* mobile-menu */
@@ -296,9 +315,7 @@ body>main {
     height: 100vh;
     background: #111;
     z-index: 2000;
-
     pointer-events: none;
-    /* ⬅️ ini penting */
     transition: 0.35s ease;
 }
 
@@ -310,32 +327,15 @@ body>main {
 .mobile-menu-header {
     position: relative;
     height: 60px;
-    /* samakan tinggi dengan navbar */
     display: flex;
     align-items: center;
     padding: 0 20px;
-    /* jarak kiri-kanan konsisten */
     margin-bottom: 40px;
 }
 
+/* Hilangkan X di dalam menu */
 .mobile-menu-header .close {
-    position: absolute;
-    left: 20px;
-    /* tidak terlalu pojok */
-    top: 50%;
-    transform: translateY(-50%);
-    color: #fff;
-    /* PUTIH default */
-    font-size: 32px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: color 0.25s ease, transform 0.25s ease;
-}
-
-.mobile-menu-header .close:hover {
-    color: #d52c2c;
-    /* MERAH saat hover */
-    transform: translateY(-50%) rotate(90deg);
+    display: none;
 }
 
 .mobile-menu ul {
@@ -351,9 +351,7 @@ body>main {
 .mobile-menu a {
     display: flex;
     justify-content: center;
-    /* CENTER HORIZONTAL */
     align-items: center;
-    /* CENTER VERTICAL */
     padding: 22px 0;
     text-decoration: none;
     color: #d52c2c;
@@ -380,23 +378,6 @@ body>main {
     padding: 16px 0;
     color: #ccc;
 }
-
-/* Warna Dropdown */
-
-.header.scrolled .dropdown-menu a {
-    color: #d52c2c;
-    /* MERAH */
-}
-
-.header.scrolled .dropdown-menu a:hover {
-    color: #000;
-    /* HITAM */
-}
-
-.header.scrolled .dropdown-menu a::after {
-    display: none;
-}
-
 
 /* =============================
    HERO SECTION
