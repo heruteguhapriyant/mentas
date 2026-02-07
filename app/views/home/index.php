@@ -1,7 +1,7 @@
     <section class="hero">
         <div class="hero-content">
-            <h1>Ruang Arsip, Wacana, dan Ekosistem Seni-Budaya</h1>
-            <p>Mentas.id adalah platform seni dan kebudayaan yang memuat tulisan, bulletin sastra, katalog riset, agenda peristiwa, serta ruang jual beli untuk mendukung ekosistem kreatif.</p>
+            <h1>Art & Culture Enthusiast, where stories unfold</h1>
+            <p>Media, Wacana, dan Ekosistem Seni-Budaya</p>
             <a href="<?= BASE_URL ?>/blog" class="btn-orange">Jelajahi</a>
         </div>
     </section>

@@ -3,7 +3,7 @@
 <section class="hero ekosistem-hero">
     <div class="hero-content">
         <h1>Ekosistem</h1>
-        <p>Jaringan kolaborasi komunitas seni dan budaya yang terhubung dengan Mentas</p>
+        <p>Ruang seni budaya dan kolaborasi</p>
     </div>
 </section>
 

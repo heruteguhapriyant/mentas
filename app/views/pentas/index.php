@@ -3,7 +3,7 @@
 <section class="hero pentas-hero">
     <div class="hero-content">
         <h1 class="page-title">Pentas</h1>
-        <p class="page-subtitle">Event, pertunjukan, dan kegiatan dari Mentas.id</p>
+        <p class="page-subtitle">Art movement</p>
     </div>
 </section>
 

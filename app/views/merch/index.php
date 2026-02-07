@@ -3,7 +3,7 @@
 <section class="hero merch-hero">
     <div class="hero-content">
         <h1 class="page-title">Merch</h1>
-        <p class="page-subtitle">Koleksi merchandise dan buku dari Mentas.id</p>
+        <p class="page-subtitle">Koleksi karya dan merchendise</p>
     </div>
 </section>
 
