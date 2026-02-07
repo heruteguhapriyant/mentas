@@ -1,5 +1,5 @@
 <?php
-require_once "../app/core/Controller.php";
+require_once __DIR__ . '/Controller.php';
 
 class Router
 {
@@ -30,7 +30,7 @@ class Router
 
             // Check if controller exists
             $possibleController = ucfirst($controllerBase) . 'Controller';
-            $controllerPath = "../app/controllers/$possibleController.php";
+            $controllerPath = dirname(__DIR__) . "/controllers/$possibleController.php";
 
             if (file_exists($controllerPath)) {
                 $controllerName = $possibleController;
@@ -88,7 +88,7 @@ class Router
             }
         }
 
-        $controllerPath = "../app/controllers/$controllerName.php";
+        $controllerPath = dirname(__DIR__) . "/controllers/$controllerName.php";
 
         if (!file_exists($controllerPath)) {
             die("Controller tidak ditemukan: $controllerName");
