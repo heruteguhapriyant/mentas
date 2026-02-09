@@ -1,0 +1,218 @@
+/* ===================================
+   CONTRIBUTE PAGE STYLES
+   =================================== */
+
+/* Hero Section */
+.contribute-hero {
+    padding: 120px 60px 60px;
+}
+
+/* Contributors Directory Section */
+.contributors-directory {
+    padding: 60px 20px;
+    background: #fafafa;
+}
+
+.contributors-directory-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.contributors-directory-header h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.contributors-directory-header p {
+    color: #666;
+}
+
+/* Program Cards */
+.program-card h3 i {
+    color: #d52c2c;
+    margin-right: 8px;
+}
+
+.program-card p {
+    margin-top: 15px;
+}
+
+/* Contributors List Container */
+.contributors-list-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Alphabet Navigation */
+.alphabet-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.alphabet-link {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #000000;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    border: 1px solid #ccc;
+}
+
+.alphabet-link:hover {
+    background: #d52c2c;
+    color: #fff;
+    border-color: #d52c2c;
+}
+
+.alphabet-link.disabled {
+    background: #f5f5f5;
+    color: #ccc;
+    pointer-events: none;
+    border-color: #eee;
+}
+
+/* Divider */
+.contributors-divider {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin-bottom: 40px;
+}
+
+/* Contributor Group */
+.contributor-group {
+    margin-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Letter Circle Header */
+.contributor-letter-circle {
+    width: 50px;
+    height: 50px;
+    background: #fceea7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    border: 2px solid #333;
+}
+
+.contributor-letter-circle h2 {
+    font-size: 1.5rem;
+    color: #000;
+    margin: 0;
+    font-weight: 800;
+}
+
+/* 3-Column Simple List */
+.contributor-items-simple {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px 40px;
+}
+
+.contributor-simple-link {
+    display: block;
+    color: #333;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 2px 0;
+    transition: color 0.2s ease;
+}
+
+.contributor-simple-link:hover {
+    color: #d52c2c;
+    text-decoration: underline;
+}
+
+/* Empty State */
+.contributors-empty-state {
+    text-align: center;
+    color: #999;
+}
+
+/* Consult Section */
+.contribute-consult {
+    flex-direction: column;
+    text-align: center;
+}
+
+.contribute-consult-content {
+    text-align: center;
+}
+
+.contribute-btn-icon {
+    margin-right: 8px;
+}
+
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+
+@media (max-width: 768px) {
+    /* Hero adjustments */
+    .contribute-hero {
+        padding: 80px 30px 40px;
+    }
+
+    /* Contributors Directory */
+    .contributors-directory {
+        padding: 40px 15px;
+    }
+
+    .contributors-directory-header h2 {
+        font-size: 24px;
+    }
+
+    /* Alphabet Navigation */
+    .alphabet-link {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+
+    /* Single column on mobile */
+    .contributor-items-simple {
+        grid-template-columns: 1fr;
+    }
+
+    /* Letter circle smaller */
+    .contributor-letter-circle {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 20px;
+    }
+
+    .contributor-letter-circle h2 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .contribute-hero {
+        padding: 60px 20px 30px;
+    }
+
+    .alphabet-nav {
+        gap: 8px;
+    }
+
+    .alphabet-link {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+    }
+}

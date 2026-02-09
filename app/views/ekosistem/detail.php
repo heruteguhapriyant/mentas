@@ -1,53 +1,51 @@
 <?php // Ekosistem Detail Page ?>
 
-<section class="hero zine-hero">
+<section class="hero ekosistem-hero-detail">
     <div class="hero-content">
-        <a href="<?= BASE_URL ?>/ekosistem" class="zine-back-link">
+        <a href="<?= BASE_URL ?>/ekosistem" class="ekosistem-back-link">
             ← Kembali ke Ekosistem
         </a>
         
-        <span class="zine-detail-category" style="background: <?= $item['color'] ?>;"><?= htmlspecialchars($item['tagline']) ?></span>
+        <span class="ekosistem-detail-tagline" style="background: <?= $item['color'] ?>;"><?= htmlspecialchars($item['tagline']) ?></span>
         
-        <h1 class="zine-title">
+        <h1 class="ekosistem-detail-title">
             <?= htmlspecialchars($item['name']) ?>
         </h1>
     </div>
 </section>
 
-<section class="program-section zine-section-detail">
-    <article class="zine-article">
+<section class="ekosistem-detail-section">
+    <article class="ekosistem-article">
         
         <?php if (!empty($item['image']) && file_exists('../public/' . $item['image'])): ?>
             <img 
                 src="<?= BASE_URL ?>/<?= $item['image'] ?>" 
                 alt="<?= htmlspecialchars($item['name']) ?>" 
-                class="zine-cover"
+                class="ekosistem-detail-image"
             >
         <?php else: ?>
-            <div class="zine-cover" style="background: linear-gradient(135deg, <?= $item['color'] ?> 0%, #1a1a2e 100%); display: flex; align-items: center; justify-content: center; height: 300px;">
-                <div style="text-align: center; color: #fff;">
-                    <i class="fa-solid fa-users" style="font-size: 64px; margin-bottom: 15px; display: block;"></i>
-                    <span style="font-size: 24px; font-weight: 600;"><?= htmlspecialchars($item['name']) ?></span>
-                </div>
+            <div class="ekosistem-detail-placeholder" style="background: linear-gradient(135deg, <?= $item['color'] ?> 0%, #1a1a2e 100%);">
+                <i class="fa-solid fa-users"></i>
+                <span><?= htmlspecialchars($item['name']) ?></span>
             </div>
         <?php endif; ?>
 
-        <div class="zine-content-body">
-            <p style="font-size: 16px; line-height: 1.8; color: #333; margin-bottom: 30px;">
+        <div class="ekosistem-detail-body">
+            <p class="ekosistem-description">
                 <?= htmlspecialchars($item['description']) ?>
             </p>
             
             <?php if (!empty($item['instagram'])): ?>
-                <div style="padding-top: 20px; border-top: 1px solid #eee;">
-                    <h4 style="margin-bottom: 15px; font-size: 16px;">Ikuti Kami</h4>
-                    <a href="<?= $item['instagram'] ?>" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; text-decoration: none; border-radius: 25px; font-weight: 500;">
+                <div class="ekosistem-social-links">
+                    <h4>Ikuti Kami</h4>
+                    <a href="<?= $item['instagram'] ?>" target="_blank" class="ekosistem-instagram-btn">
                         <i class="fab fa-instagram"></i> Instagram
                     </a>
                 </div>
             <?php endif; ?>
         </div>
 
-        <div class="zine-footer">
+        <div class="ekosistem-footer">
             <a href="<?= BASE_URL ?>/ekosistem" class="btn-outline">
                 <i class="fa-solid fa-arrow-left"></i> Kembali
             </a>
@@ -56,24 +54,20 @@
     </article>
     
     <!-- Sidebar - Other Ekosistem -->
-    <aside class="blog-sidebar">
-        <div class="sidebar-widget">
-            <h3 class="sidebar-title">Ekosistem Lainnya</h3>
-            <ul class="sidebar-posts">
-                <?php foreach ($allEkosistem as $other): ?>
-                    <?php if ($other['slug'] !== $item['slug']): ?>
-                        <li class="sidebar-post-item">
-                            <div style="width: 12px; height: 12px; border-radius: 50%; background: <?= $other['color'] ?>; flex-shrink: 0;"></div>
-                            <div class="sidebar-post-info">
-                                <a href="<?= BASE_URL ?>/ekosistem/detail/<?= $other['slug'] ?>" class="sidebar-post-title">
-                                    <?= htmlspecialchars($other['name']) ?>
-                                </a>
-                                <span class="sidebar-post-date"><?= htmlspecialchars($other['tagline']) ?></span>
-                            </div>
-                        </li>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            </ul>
+    <aside class="ekosistem-others">
+        <h3>Ekosistem Lainnya</h3>
+        <div class="ekosistem-others-list">
+            <?php foreach ($allEkosistem as $other): ?>
+                <?php if ($other['slug'] !== $item['slug']): ?>
+                    <a href="<?= BASE_URL ?>/ekosistem/detail/<?= $other['slug'] ?>" class="ekosistem-other-item">
+                        <div class="ekosistem-other-dot" style="background: <?= $other['color'] ?>;"></div>
+                        <div>
+                            <div style="font-weight: 500;"><?= htmlspecialchars($other['name']) ?></div>
+                            <small style="color: #666; font-size: 12px;"><?= htmlspecialchars($other['tagline']) ?></small>
+                        </div>
+                    </a>
+                <?php endif; ?>
+            <?php endforeach; ?>
         </div>
     </aside>
 </section>

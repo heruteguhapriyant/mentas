@@ -10,41 +10,35 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    /* ================= MOBILE MENU ================= */
-    const toggle = document.querySelector(".menu-toggle");
-    const mobileMenu = document.querySelector(".mobile-menu");
-    const closeBtn = document.querySelector(".mobile-menu .close");
+    // Toggle Mobile Menu
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const closeMenu = document.querySelector('.mobile-menu .close');
 
-    toggle.addEventListener("click", () => {
-        mobileMenu.classList.add("active");
-        document.body.style.overflow = "hidden";
+    // Buka/tutup menu dengan burger icon
+    menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
     });
 
-    closeBtn.addEventListener("click", () => {
-        mobileMenu.classList.remove("active");
-        document.body.style.overflow = "";
-    });
-
-    window.addEventListener("resize", () => {
-        if (window.innerWidth > 992) {
-            mobileMenu.classList.remove("active");
-            document.body.style.overflow = "";
-        }
-    });
-
-    /* ================= MOBILE DROPDOWN ================= */
-    document.querySelectorAll(".mobile-toggle").forEach(toggle => {
-        toggle.addEventListener("click", function (e) {
-            e.preventDefault();
-
-            const parent = this.closest("li");
-            parent.classList.toggle("open");
-
-            const icon = this.querySelector(".icon");
-            if (icon) {
-                icon.textContent = parent.classList.contains("open") ? "<" : ">";
-            }
+    // Tutup menu saat klik link (opsional, untuk UX lebih baik)
+    const mobileLinks = document.querySelectorAll('.mobile-menu a');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            menuToggle.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = '';
         });
+    });
+
+    // Tutup menu saat klik di luar (opsional)
+    document.addEventListener('click', (e) => {
+        if (!menuToggle.contains(e.target) && !mobileMenu.contains(e.target)) {
+            menuToggle.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        }
     });
 
 });

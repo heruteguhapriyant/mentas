@@ -1,15 +1,15 @@
-/* Pentas Page Styles */
+/* =========================
+   PENTAS PAGE STYLES
+========================= */
 
 /* Hero Section */
 .pentas-hero {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    padding: 80px 0 60px;
+    padding: 80px 60px 60px;
     text-align: center;
-    margin-top: -20px;
 }
 
 .pentas-hero .page-title {
-    color: #fff;
+    color: #000000;
     font-size: 3rem;
     font-weight: 800;
     margin-bottom: 10px;
@@ -18,91 +18,142 @@
 }
 
 .pentas-hero .page-subtitle {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(0, 0, 0, 0.8);
     font-size: 1.2rem;
 }
 
-/* Section Title */
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-size: 1.5rem;
-    color: #333;
-    margin: 40px 0 30px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #eee;
+/* Pentas Section */
+.pentas-section {
+    padding: 60px 20px;
+    background: #fdf8f3;
 }
 
-.section-title .icon {
-    width: 45px;
-    height: 45px;
-    background: linear-gradient(135deg, #d52c2c 0%, #8b0000 100%);
-    border-radius: 50%;
+.pentas-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Past Section Styling */
+.past-section {
+    opacity: 0.85;
+}
+
+/* Section Heading */
+.section-heading {
+    font-size: 1.4rem;
+    margin-bottom: 30px;
+    color: #333;
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: #fff;
+    gap: 10px;
+    font-weight: 700;
+}
+
+.section-heading i {
+    color: #d52c2c;
+    font-size: 1.3rem;
 }
 
 /* Events Grid */
 .events-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
-    padding-bottom: 40px;
 }
 
-.events-grid.past {
-    opacity: 0.85;
-}
-
-.event-card {
+/* Pentas Card - Neobrutalism Design */
+.pentas-card {
     background: #fff;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 3px solid #000;
+    box-shadow: 8px 8px 0 #000;
     transition: all 0.3s ease;
-    text-decoration: none;
-}
-
-.event-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-}
-
-.event-card.past:hover {
-    transform: none;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.event-image {
     position: relative;
-    height: 200px;
-    overflow: hidden;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.event-image img {
+.pentas-card:hover {
+    transform: scale(1) translate(-4px, -4px);
+    box-shadow: 12px 12px 0 #000;
+    z-index: 10;
+    background: #d52c2c;
+}
+
+/* Hover state - change all text to white */
+.pentas-card:hover .pentas-card-content {
+    background: #d52c2c;
+    color: #fff;
+}
+
+.pentas-card:hover .pentas-card-content h3 {
+    color: #fff;
+}
+
+.pentas-card:hover .event-price {
+    color: #fff !important;
+}
+
+.pentas-card:hover .pentas-card-excerpt {
+    color: #fff !important;
+}
+
+.pentas-card:hover .pentas-card-meta {
+    color: #fff;
+}
+
+.pentas-card:hover .pentas-card-meta i {
+    color: #fff;
+}
+
+/* Past Card - Different Hover */
+.past-card:hover {
+    transform: scale(1) translate(-2px, -2px);
+    box-shadow: 10px 10px 0 #000;
+}
+
+/* Card Image */
+.pentas-card-image {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+}
+
+.pentas-card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.3s ease;
 }
 
-.event-card:hover .event-image img {
-    transform: scale(1.1);
+.pentas-card:hover .pentas-card-image img {
+    transform: scale(1.05);
 }
 
-.event-image .no-image {
+/* Past Card Image Grayscale */
+.past-card .pentas-card-image img {
+    filter: grayscale(50%);
+}
+
+/* Cover Placeholder */
+.pentas-cover-placeholder {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 64px;
 }
 
+.pentas-cover-placeholder.past {
+    background: linear-gradient(135deg, #555 0%, #333 100%);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Event Date Badge */
 .event-date-badge {
     position: absolute;
     top: 15px;
@@ -113,6 +164,8 @@
     border-radius: 10px;
     text-align: center;
     line-height: 1.2;
+    z-index: 3;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
 .event-date-badge .day {
@@ -126,67 +179,145 @@
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-weight: 600;
 }
 
-.badge-free {
+/* Event Badges */
+.event-badge {
     position: absolute;
     top: 15px;
     right: 15px;
-    background: #28a745;
-    color: #fff;
-    padding: 6px 12px;
+    padding: 8px 16px;
     border-radius: 20px;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 3;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
-.past-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.past-overlay span {
-    background: #333;
+.event-badge.free {
+    background: #28a745;
     color: #fff;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-weight: 600;
 }
 
-.event-info {
+.event-badge.past {
+    background: #666;
+    color: #fff;
+}
+
+/* Card Content */
+.pentas-card-content {
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    border-top: 3px solid #000;
+    transition: all 0.3s ease;
+    min-height: 280px;
 }
 
-.event-title {
-    font-size: 1.2rem;
-    color: #333;
-    margin-bottom: 12px;
-    font-weight: 600;
-    line-height: 1.4;
-}
-
-.event-meta {
+/* Card Meta */
+.pentas-card-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
-    font-size: 0.9rem;
+    gap: 12px;
+    font-size: 0.85rem;
     color: #666;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    transition: color 0.3s ease;
 }
 
-.event-meta i {
-    margin-right: 5px;
-    color: #d52c2c;
+.pentas-card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.event-price {
-    font-size: 1.1rem;
+.pentas-card-meta i {
     color: #d52c2c;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+/* Title - Rapi 2 baris */
+.pentas-card-content h3 {
+    font-size: 1.05rem;
     font-weight: 700;
+    color: #333;
+    margin-bottom: 12px;
+    line-height: 1.45;
+    transition: color 0.3s ease;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Event Price */
+.event-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #d52c2c;
+    margin: 10px 0;
+    transition: color 0.3s ease;
+}
+
+/* Excerpt - 2 baris saja */
+.pentas-card-excerpt {
+    font-size: 0.88rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: auto;
+    transition: color 0.3s ease;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Button */
+.pentas-card-content .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 20px;
+    border: 3px solid #000;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    background: #d52c2c;
+    transition: all 0.2s ease;
+    box-shadow: 4px 4px 0 #000;
+    margin-top: 15px;
+}
+
+.pentas-card-content .btn-outline:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #000;
+}
+
+.pentas-card-content .btn-outline:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
+}
+
+/* When card is hovered */
+.pentas-card:hover .pentas-card-content .btn-outline {
+    background: #000;
+    color: #fff;
+}
+
+.pentas-card:hover .pentas-card-content .btn-outline:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #fff;
+}
+
+.pentas-card:hover .pentas-card-content .btn-outline:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #fff;
 }
 
 /* Empty State */
@@ -208,1565 +339,302 @@
     margin-bottom: 10px;
 }
 
-/* Past Events Section */
-.past-events-section {
-    margin-top: 40px;
-    padding-top: 40px;
-    border-top: 1px solid #eee;
+.empty-state p {
+    color: #888;
+    font-size: 1rem;
 }
 
-/* ========================================
-   DETAIL PAGE - CLEAN DESIGN
-   ======================================== */
+/* =========================
+   DETAIL PAGE
+========================= */
 
-.pentas-detail-page {
-    padding: 100px 0 60px;
-    background: #f8f9fa;
-    min-height: 100vh;
+.pentas-hero-detail {
+    padding: 80px 60px 60px;
+    text-align: center;
 }
 
-.detail-breadcrumb {
-    margin-bottom: 25px;
+.pentas-back-link {
+    display: inline-block;
+    color: #666;
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.3s ease;
 }
 
-/* Detail Grid Layout */
-.detail-grid {
+.pentas-back-link:hover {
+    color: #d52c2c;
+}
+
+.pentas-detail-title {
+    color: #000;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    line-height: 1.3;
+}
+
+.pentas-detail-meta {
+    color: #666;
+    font-size: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.pentas-detail-meta i {
+    color: #d52c2c;
+    margin-right: 5px;
+}
+
+/* Detail Section */
+.pentas-detail-section {
+    padding: 40px 20px 80px;
+    background: #fdf8f3;
+}
+
+.pentas-detail-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pentas-detail-wrapper {
     display: grid;
     grid-template-columns: 1fr 340px;
-    gap: 30px;
+    gap: 40px;
     align-items: start;
 }
 
 /* Main Content */
-.detail-main {
+.pentas-main-content {
     background: #fff;
     border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+    padding: 30px;
+    border: 3px solid #000;
+    box-shadow: 8px 8px 0 #000;
 }
 
-.event-cover-image {
+.pentas-featured-image {
     width: 100%;
+    height: auto;
     max-height: 400px;
-    overflow: hidden;
-}
-
-.event-cover-image img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
-}
-
-/* Event Header */
-.event-detail-header {
-    display: flex;
-    gap: 20px;
-    padding: 25px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.event-date-label {
-    background: #d52c2c;
-    color: #fff;
-    padding: 15px;
     border-radius: 12px;
-    text-align: center;
-    min-width: 75px;
-    flex-shrink: 0;
-}
-
-.event-date-label .day {
+    margin-bottom: 30px;
     display: block;
-    font-size: 1.8rem;
-    font-weight: 800;
-    line-height: 1;
+    border: 3px solid #000;
 }
 
-.event-date-label .month {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-top: 3px;
-}
-
-.event-date-label .year {
-    display: block;
-    font-size: 0.7rem;
-    opacity: 0.8;
-}
-
-.event-title-section {
-    flex: 1;
-}
-
-.event-title-section h1 {
-    font-size: 1.6rem;
-    color: #333;
-    margin-bottom: 12px;
-    line-height: 1.3;
-}
-
-.event-meta-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.event-meta-row i {
-    color: #d52c2c;
-    margin-right: 5px;
-}
-
-.tag-free {
-    background: #d4edda;
-    color: #28a745;
-    padding: 3px 10px;
-    border-radius: 15px;
-    font-weight: 600;
-    font-size: 0.8rem;
-}
-
-.tag-price {
-    background: #fff0f0;
-    color: #d52c2c;
-    padding: 3px 10px;
-    border-radius: 15px;
-    font-weight: 600;
-    font-size: 0.8rem;
-}
-
-/* Event Sections */
-.event-section {
-    padding: 25px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.event-section:last-child {
-    border-bottom: none;
-}
-
-.event-section h2 {
-    font-size: 1.1rem;
-    color: #333;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.event-section h2 i {
-    color: #d52c2c;
-}
-
-.event-description-text {
-    line-height: 1.8;
-    color: #555;
-}
-
-.venue-name-text {
-    font-size: 1rem;
-    margin-bottom: 5px;
-}
-
-.venue-address-text {
-    color: #666;
-    line-height: 1.6;
-}
-
-/* Sidebar */
-.detail-sidebar {
-    position: sticky;
-    top: 100px;
-}
-
-.sidebar-ticket-card {
-    background: #fff;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-.ticket-header-bar {
-    background: linear-gradient(135deg, #d52c2c 0%, #a01c1c 100%);
-    padding: 18px 20px;
-}
-
-.ticket-header-bar h3 {
-    color: #fff;
-    font-size: 1rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.ticket-content {
-    padding: 25px;
-}
-
-.ticket-price-box {
-    text-align: center;
-    margin-bottom: 20px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 12px;
-}
-
-.price-label-text {
-    display: block;
-    font-size: 0.85rem;
-    color: #888;
-    margin-bottom: 5px;
-}
-
-.price-big {
-    font-size: 1.8rem;
-    font-weight: 800;
-}
-
-.price-big.free {
-    color: #28a745;
-}
-
-.price-big.paid {
-    color: #d52c2c;
-}
-
-.ticket-status-info {
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-.ticket-status-info .status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.9rem;
-}
-
-.ticket-status-info .status.available {
-    color: #28a745;
-}
-
-.ticket-status-info .status.sold-out {
-    color: #dc3545;
-}
-
-.attendee-count {
-    text-align: center;
-    color: #888;
-    font-size: 0.85rem;
-    margin-bottom: 20px;
-}
-
-.attendee-count i {
-    margin-right: 5px;
-}
-
-.btn-daftar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+.pentas-image-placeholder {
     width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, #d52c2c 0%, #a01c1c 100%);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.btn-daftar:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(213, 44, 44, 0.4);
-    color: #fff;
-}
-
-.btn-daftar.disabled {
-    background: #ccc;
-    cursor: not-allowed;
-}
-
-.btn-daftar.disabled:hover {
-    transform: none;
-    box-shadow: none;
-}
-
-/* Share Card */
-.sidebar-share-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
-    text-align: center;
-}
-
-.sidebar-share-card h4 {
-    font-size: 0.95rem;
-    color: #666;
-    margin-bottom: 15px;
+    height: 300px;
+    background: linear-gradient(135deg, #d52c2c 0%, #1a1a2e 100%);
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.placeholder-content {
+    text-align: center;
+    color: #fff;
+}
+
+.placeholder-content i {
+    font-size: 64px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.placeholder-content span {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+/* Content Body */
+.pentas-content-body {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #333;
+}
+
+.pentas-content-body h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
     gap: 8px;
 }
 
-.sidebar-share-card h4 i {
+.pentas-content-body h3 i {
     color: #d52c2c;
 }
 
-.share-buttons-row {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-/* Hero Section */
-.event-hero {
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    min-height: 350px;
-}
-
-.event-hero-overlay {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.85) 100%);
-    padding: 120px 0 50px;
-    min-height: 350px;
-    display: flex;
-    align-items: flex-end;
-}
-
-.event-hero .breadcrumb {
-    margin-bottom: 25px;
-}
-
-.event-hero .breadcrumb a,
-.event-hero .breadcrumb span {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9rem;
-}
-
-.event-hero .breadcrumb a:hover {
-    color: #fff;
-}
-
-.event-hero .breadcrumb .current {
-    color: #fff;
-}
-
-.event-hero-content {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-}
-
-.event-date-badge-big {
-    background: #d52c2c;
-    color: #fff;
-    padding: 15px 20px;
-    border-radius: 12px;
-    text-align: center;
-    min-width: 90px;
-    box-shadow: 0 4px 15px rgba(213, 44, 44, 0.4);
-}
-
-.event-date-badge-big .day {
-    display: block;
-    font-size: 2rem;
-    font-weight: 800;
-    line-height: 1;
-}
-
-.event-date-badge-big .month {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-top: 3px;
-    letter-spacing: 1px;
-}
-
-.event-date-badge-big .year {
-    display: block;
-    font-size: 0.75rem;
-    opacity: 0.8;
-}
-
-.event-hero-info h1 {
-    color: #fff;
-    font-size: 2rem;
-    margin-bottom: 12px;
-    line-height: 1.3;
-}
-
-.event-hero-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.95rem;
-}
-
-.event-hero-meta i {
-    margin-right: 6px;
-}
-
-.badge-free-inline {
-    background: #28a745;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-.badge-price-inline {
-    background: #d52c2c;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-/* Content Grid */
-.event-content-grid {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 30px;
-    margin-top: -30px;
-    position: relative;
-    z-index: 10;
-}
-
-/* Content Cards */
-.content-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 25px;
+.pentas-content-body p {
     margin-bottom: 20px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
-}
-
-.content-card h2 {
-    font-size: 1.2rem;
-    color: #333;
-    margin-bottom: 15px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #f0f0f0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.content-card h2 i {
-    color: #d52c2c;
-}
-
-.content-body {
-    line-height: 1.8;
     color: #555;
 }
 
-.venue-name {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-}
-
-.venue-address {
-    color: #666;
-}
-
-/* Ticket Card Sidebar */
-.ticket-card {
-    background: #fff;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 100px;
-}
-
-.ticket-card-header {
-    background: linear-gradient(135deg, #d52c2c 0%, #a01c1c 100%);
-    padding: 18px 20px;
-}
-
-.ticket-card-header h3 {
-    color: #fff;
-    font-size: 1.1rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.ticket-card-body {
-    padding: 25px;
-}
-
-.ticket-price-display {
-    text-align: center;
-    margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 10px;
-}
-
-.ticket-price-display .price-free {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #28a745;
-}
-
-.ticket-price-display .price-label {
-    display: block;
-    font-size: 0.85rem;
-    color: #888;
-    margin-bottom: 5px;
-}
-
-.ticket-price-display .price-value {
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #d52c2c;
-}
-
-/* Share Card */
-.share-card {
-    background: #fff;
-    border-radius: 16px;
+/* Location Box */
+.event-location-box {
     padding: 20px;
-    margin-top: 15px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
-    text-align: center;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px solid #e0e0e0;
+    margin: 25px 0;
 }
 
-.share-card h4 {
-    font-size: 0.95rem;
-    color: #666;
-    margin-bottom: 15px;
+.event-location-box h4 {
+    margin-bottom: 12px;
+    font-size: 1rem;
+    color: #333;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 8px;
 }
 
-.share-card h4 i {
+.event-location-box h4 i {
     color: #d52c2c;
 }
 
-.event-description h2 {
-    font-size: 1.5rem;
+.event-location-box .venue-name {
+    font-weight: 600;
     color: #333;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #eee;
-}
-
-.description-content {
-    line-height: 1.9;
-    color: #555;
-}
-
-.venue-info {
-    margin-top: 30px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 12px;
-}
-
-.venue-info h3 {
-    color: #d52c2c;
-    margin-bottom: 15px;
-}
-
-/* Sidebar */
-.ticket-box {
-    background: #fff;
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 100px;
-}
-
-.ticket-box h3 {
-    font-size: 1.2rem;
-    color: #333;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #eee;
-}
-
-.ticket-price {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.price-free {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #28a745;
-}
-
-.price-label {
-    display: block;
-    font-size: 0.9rem;
-    color: #888;
     margin-bottom: 5px;
 }
 
-.price-value {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #d52c2c;
+.event-location-box .venue-address {
+    color: #666;
+    font-size: 0.95rem;
 }
 
-.ticket-availability {
-    text-align: center;
+/* Share Section */
+.share-section {
+    padding-top: 25px;
+    border-top: 2px solid #eee;
+    margin-top: 25px;
+}
+
+.share-section h4 {
     margin-bottom: 15px;
-}
-
-.ticket-availability .available {
-    color: #28a745;
-    font-weight: 500;
-}
-
-.ticket-availability .sold-out {
-    color: #dc3545;
-    font-weight: 500;
-}
-
-.ticket-stats {
-    text-align: center;
-    color: #888;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-}
-
-.btn-register {
+    font-size: 1rem;
+    color: #333;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, #d52c2c 0%, #8b0000 100%);
-    color: #fff;
-    text-decoration: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    gap: 8px;
 }
 
-.btn-register:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(213, 44, 44, 0.4);
-}
-
-.btn-register.disabled {
-    background: #ccc;
-    cursor: not-allowed;
-}
-
-.btn-register.disabled:hover {
-    transform: none;
-    box-shadow: none;
-}
-
-/* Share Box */
-.share-box {
-    margin-top: 20px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.share-box h4 {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 15px;
+.share-section h4 i {
+    color: #d52c2c;
 }
 
 .share-buttons {
     display: flex;
-    justify-content: center;
     gap: 10px;
 }
 
 .share-btn {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
+    border: 3px solid #000;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
     text-decoration: none;
-    transition: transform 0.3s ease;
+    box-shadow: 3px 3px 0 #000;
 }
 
 .share-btn:hover {
-    transform: scale(1.1);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 #000;
 }
 
 .share-btn.whatsapp {
-    background: #25d366;
+    background: #25D366;
 }
 
 .share-btn.twitter {
-    background: #1da1f2;
+    background: #1DA1F2;
 }
 
 .share-btn.facebook {
-    background: #1877f2;
+    background: #4267B2;
 }
 
-/* Breadcrumb */
-.breadcrumb {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 30px;
-    font-size: 0.9rem;
-}
-
-.breadcrumb a {
-    color: #888;
-    text-decoration: none;
-}
-
-.breadcrumb a:hover {
-    color: #d52c2c;
-}
-
-.breadcrumb .current {
-    color: #333;
-    font-weight: 500;
-}
-
-/* ========================================
-   REGISTRATION PAGE - NEW DESIGN
-   ======================================== */
-
-.register-page {
-    background: #f8f9fa;
-    min-height: 100vh;
-    padding-top: 80px;
-    padding-bottom: 60px;
-}
-
-.register-header {
-    background: #fff;
-    padding: 20px 0;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 30px;
-}
-
-.register-header .breadcrumb {
-    margin: 0;
-}
-
-.register-grid {
-    display: grid;
-    grid-template-columns: 350px 1fr;
-    gap: 30px;
-    align-items: start;
-}
-
-/* Event Summary Card */
-.event-summary-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
-    position: sticky;
-    top: 100px;
-}
-
-.event-summary-card h2 {
-    font-size: 1.1rem;
-    color: #333;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.event-summary-card h2 i {
-    color: #d52c2c;
-}
-
-.event-cover {
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 15px;
-}
-
-.event-cover img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.event-title-summary {
-    font-size: 1.1rem;
-    color: #333;
-    margin-bottom: 15px;
-    line-height: 1.4;
-}
-
-.event-info-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.event-info-list li {
-    padding: 12px 0;
-    border-bottom: 1px solid #f0f0f0;
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.95rem;
-}
-
-.event-info-list li:last-child {
-    border-bottom: none;
-}
-
-.event-info-list li i {
-    color: #d52c2c;
-    width: 18px;
-    text-align: center;
-}
-
-.price-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-.price-badge.free {
-    background: #d4edda;
-    color: #28a745;
-}
-
-.price-badge.paid {
-    background: #fff0f0;
-    color: #d52c2c;
-}
-
-/* Form Card */
-.form-card {
-    background: #fff;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.form-card-header {
-    background: linear-gradient(135deg, #d52c2c 0%, #a01c1c 100%);
-    padding: 20px 25px;
-}
-
-.form-card-header h2 {
-    color: #fff;
-    font-size: 1.2rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.form-card-body {
-    padding: 30px;
-}
-
-/* Form Styles */
-.register-form .form-group {
-    margin-bottom: 22px;
-}
-
-.register-form .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.register-form label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #333;
-    font-size: 0.95rem;
-}
-
-.register-form label .required {
-    color: #d52c2c;
-}
-
-.register-form .form-control {
-    width: 100%;
-    padding: 14px 16px;
-    border: 2px solid #e8e8e8;
-    border-radius: 10px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background: #fafafa;
-}
-
-.register-form .form-control:focus {
-    outline: none;
-    border-color: #d52c2c;
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(213, 44, 44, 0.1);
-}
-
-.register-form .form-control::placeholder {
-    color: #aaa;
-}
-
-.register-form .form-text {
-    font-size: 0.85rem;
-    color: #888;
-    margin-top: 6px;
-}
-
-/* Payment Section */
-.payment-section {
-    margin-top: 25px;
+/* Footer */
+.pentas-footer {
     padding-top: 25px;
-    border-top: 2px solid #f0f0f0;
+    margin-top: 25px;
+    border-top: 2px solid #eee;
 }
 
-.payment-section h3 {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-    color: #333;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.payment-section h3 i {
-    color: #d52c2c;
-}
-
-.total-display {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px 20px;
-    background: linear-gradient(135deg, #fff5f5 0%, #ffebeb 100%);
-    border-radius: 12px;
-    margin-bottom: 20px;
-    border: 1px solid #ffdddd;
-}
-
-.total-display .total-label {
-    font-weight: 600;
-    color: #666;
-}
-
-.total-display .total-amount {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #d52c2c;
-}
-
-.bank-transfer-info {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-}
-
-.bank-transfer-info h4 {
-    font-size: 0.95rem;
-    color: #666;
-    margin-bottom: 15px;
-    display: flex;
+.pentas-footer .btn-outline {
+    display: inline-flex;
     align-items: center;
     gap: 8px;
-}
-
-.bank-transfer-info h4 i {
-    color: #d52c2c;
-}
-
-.bank-details {
-    text-align: center;
-    padding: 15px;
-    background: #fff;
-    border-radius: 8px;
-}
-
-.bank-details .bank-name {
-    font-weight: 700;
-    color: #333;
-    font-size: 1.1rem;
-    margin-bottom: 5px;
-}
-
-.bank-details .account-number {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #d52c2c;
-    margin: 8px 0;
-    letter-spacing: 2px;
-}
-
-.bank-details .account-name {
-    color: #666;
-    font-size: 0.95rem;
-}
-
-/* Submit Button */
-.btn-submit-form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    padding: 18px;
-    background: linear-gradient(135deg, #d52c2c 0%, #a01c1c 100%);
+    padding: 12px 24px;
+    border: 3px solid #000;
+    text-decoration: none;
     color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
+    font-weight: 700;
+    border-radius: 8px;
+    background: #d52c2c;
+    transition: all 0.2s ease;
+    box-shadow: 4px 4px 0 #000;
 }
 
-.btn-submit-form:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(213, 44, 44, 0.4);
+.pentas-footer .btn-outline:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #000;
 }
 
-/* Legacy support */
-.register-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 40px;
+.pentas-footer .btn-outline:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
 }
 
-.event-summary {
-    background: #f8f9fa;
-    padding: 25px;
-    border-radius: 16px;
+/* Sidebar */
+.pentas-sidebar {
     position: sticky;
     top: 100px;
 }
 
-.event-summary h2 {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-}
-
-.event-summary .event-thumb {
-    width: 100%;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-
-.event-summary h3 {
-    font-size: 1.1rem;
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.event-summary .event-details {
-    list-style: none;
-    padding: 0;
-}
-
-.event-summary .event-details li {
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-    color: #555;
-}
-
-.event-summary .event-details li i {
-    margin-right: 10px;
-    color: #d52c2c;
-    width: 20px;
-}
-
-.event-summary .free {
-    color: #28a745;
-    font-weight: 600;
-}
-
-.register-form-box {
+/* Ticket Widget */
+.sidebar-ticket-widget {
     background: #fff;
-    padding: 30px;
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.register-form-box h2 {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #eee;
-}
-
-.total-price {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background: #fff5f5;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.total-price .amount {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #d52c2c;
-}
-
-.payment-info {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.payment-info h4 {
-    color: #666;
-    margin-bottom: 15px;
-}
-
-.bank-info {
-    text-align: center;
-}
-
-.bank-info .bank-name {
-    font-weight: 700;
-    color: #333;
-    font-size: 1.1rem;
-}
-
-.bank-info .account-number {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #d52c2c;
-    margin: 10px 0;
-    letter-spacing: 2px;
-}
-
-.bank-info .account-name {
-    color: #666;
-}
-
-.btn-submit {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, #d52c2c 0%, #8b0000 100%);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(213, 44, 44, 0.4);
-}
-
-/* Ticket Page */
-.ticket-page {
-    padding: 100px 0 60px;
-    background: #f8f9fa;
-    min-height: calc(100vh - 200px);
-}
-
-.ticket-container {
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.ticket-card {
-    background: #fff;
-    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 3px solid #000;
+    box-shadow: 8px 8px 0 #000;
+    margin-bottom: 25px;
 }
 
-.ticket-header {
-    background: linear-gradient(135deg, #d52c2c 0%, #8b0000 100%);
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.ticket-widget-header {
+    background: linear-gradient(135deg, #d52c2c 0%, #a01c1c 100%);
+    padding: 18px 20px;
 }
 
-.ticket-logo {
-    height: 30px;
-}
-
-.ticket-label {
-    background: rgba(255, 255, 255, 0.2);
+.ticket-widget-header h3 {
     color: #fff;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 2px;
-}
-
-.ticket-body {
-    padding: 30px;
-}
-
-.ticket-event-title {
-    font-size: 1.5rem;
-    color: #333;
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.ticket-info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.info-item {
-    text-align: center;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 10px;
-}
-
-.info-item .label {
-    display: block;
-    font-size: 0.8rem;
-    color: #888;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-}
-
-.info-item .value {
-    font-weight: 600;
-    color: #333;
-}
-
-.ticket-divider {
-    height: 2px;
-    background: repeating-linear-gradient(90deg, #ddd 0, #ddd 10px, transparent 10px, transparent 20px);
-    margin: 25px 0;
-}
-
-.ticket-holder {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.ticket-holder .label {
-    display: block;
-    font-size: 0.8rem;
-    color: #888;
-    margin-bottom: 5px;
-}
-
-.holder-name {
-    display: block;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #333;
-}
-
-.holder-email {
-    display: block;
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.ticket-code-section {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.ticket-code-section .label {
-    display: block;
-    font-size: 0.8rem;
-    color: #888;
-    margin-bottom: 5px;
-}
-
-.ticket-code {
-    display: inline-block;
-    background: #f8f9fa;
-    padding: 10px 25px;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: #d52c2c;
-}
-
-.qr-section {
-    text-align: center;
-}
-
-.qr-code {
-    width: 180px;
-    height: 180px;
-    margin-bottom: 15px;
-}
-
-.qr-instruction {
-    font-size: 0.9rem;
-    color: #888;
-}
-
-.ticket-footer {
-    padding: 20px 30px;
-    background: #f8f9fa;
-    text-align: center;
-}
-
-.ticket-status {
-    display: inline-block;
-    padding: 10px 25px;
-    border-radius: 25px;
-    font-weight: 600;
-}
-
-.status-pending {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.status-confirmed {
-    background: #d4edda;
-    color: #155724;
-}
-
-.status-cancelled {
-    background: #f8d7da;
-    color: #721c24;
-}
-
-.status-checked_in {
-    background: #cce5ff;
-    color: #004085;
-}
-
-/* Instructions */
-.ticket-instructions {
-    margin-top: 30px;
-}
-
-.instruction-box {
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-}
-
-.instruction-box h3 {
-    margin-bottom: 10px;
     font-size: 1rem;
-}
-
-.instruction-box.warning {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.instruction-box.success {
-    background: #d4edda;
-    color: #155724;
-}
-
-.instruction-box.info {
-    background: #cce5ff;
-    color: #004085;
-}
-
-.action-buttons {
+    margin: 0;
     display: flex;
-    gap: 15px;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
 }
 
-.btn-print,
-.btn-back {
-    flex: 1;
-    padding: 14px;
-    border-radius: 10px;
-    text-align: center;
-    text-decoration: none;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.ticket-widget-body {
+    padding: 25px;
 }
-
-.btn-print {
-    background: #333;
-    color: #fff;
-    border: none;
-}
-
-.btn-print:hover {
-    background: #000;
-}
-
-.btn-back {
-    background: #f8f9fa;
-    color: #333;
-    border: 2px solid #ddd;
-}
-
-.btn-back:hover {
-    border-color: #d52c2c;
-    color: #d52c2c;
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-
-    .event-content-wrapper,
-    .event-content-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .ticket-box,
-    .ticket-card {
-        position: static;
-    }
-
-    .register-wrapper,
-    .register-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .event-summary,
-    .event-summary-card {
-        position: static;
-    }
-
-    .register-sidebar {
-        order: 2;
-    }
-}
-
-@media (max-width: 768px) {
-    .pentas-hero {
-        padding: 60px 20px 40px;
-    }
-
-    .pentas-hero .page-title {
-        font-size: 2rem;
-    }
-
-    .events-grid {
-        grid-template-columns: 1fr;
-    }
-
-    /* New Hero Styles */
-    .event-hero {
-        min-height: 280px;
-    }
-
-    .event-hero-overlay {
-        padding: 100px 15px 30px;
-        min-height: 280px;
-    }
-
-    .event-hero-content {
-        flex-direction: column;
-        text-align: center;
-        gap: 15px;
-    }
-
-    .event-date-badge-big {
-        padding: 12px 25px;
-    }
-
-    .event-hero-info h1 {
-        font-size: 1.5rem;
-    }
-
-    .event-hero-meta {
-        justify-content: center;
-        gap: 10px;
-        font-size: 0.85rem;
-    }
-
-    .event-content-grid {
-        grid-template-columns: 1fr;
-        margin-top: 20px;
-        padding: 0 15px;
-    }
-
-    .event-sidebar {
-        order: -1;
-    }
-
-    .content-card {
-        padding: 20px;
-    }
-
-    /* Register page mobile styles */
-    .register-form .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .form-card-body {
-        padding: 20px;
-    }
-
-    /* Legacy support */
-    .header-overlay {
-        padding: 100px 20px 40px;
-    }
-
-    .event-header-content {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .event-header-info h1 {
-        font-size: 1.8rem;
-    }
-
-    .event-header-meta {
-        justify-content: center;
-    }
-
-    .action-buttons {
-        flex-direction: column;
-    }
-}
-
-/* ========================================
-   PENTAS DETAIL - BLOG STYLE ADDITIONS
-   ======================================== */
 
 /* Ticket Price Display */
 .ticket-price-display {
@@ -1775,6 +643,7 @@
     background: #f8f9fa;
     border-radius: 12px;
     margin-bottom: 20px;
+    border: 2px solid #e0e0e0;
 }
 
 .ticket-price-display .price-label {
@@ -1802,15 +671,17 @@
 .ticket-availability {
     text-align: center;
     margin-bottom: 15px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }
 
 .ticket-availability .available {
     color: #28a745;
+    font-weight: 600;
 }
 
 .ticket-availability .sold-out {
     color: #dc3545;
+    font-weight: 600;
 }
 
 .ticket-availability i {
@@ -1836,22 +707,28 @@
     justify-content: center;
     gap: 10px;
     width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, #d52c2c 0%, #a01c1c 100%);
+    padding: 16px 20px;
+    background: #d52c2c;
     color: #fff;
-    border: none;
+    border: 3px solid #000;
     border-radius: 10px;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    box-shadow: 4px 4px 0 #000;
 }
 
 .btn-register:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(213, 44, 44, 0.4);
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #000;
     color: #fff;
+}
+
+.btn-register:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000;
 }
 
 .btn-register.disabled {
@@ -1861,10 +738,27 @@
 
 .btn-register.disabled:hover {
     transform: none;
-    box-shadow: none;
+    box-shadow: 4px 4px 0 #000;
 }
 
-/* Event Details List */
+/* Details Widget */
+.sidebar-details-widget {
+    background: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    border: 3px solid #000;
+    box-shadow: 8px 8px 0 #000;
+}
+
+.sidebar-widget-title {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 700;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
 .event-details-list {
     list-style: none;
     padding: 0;
@@ -1887,245 +781,104 @@
     width: 20px;
     text-align: center;
     margin-top: 3px;
+    font-size: 1rem;
 }
 
 .event-details-list li .label {
     display: block;
     font-size: 0.8rem;
     color: #888;
+    margin-bottom: 2px;
 }
 
 .event-details-list li .value {
     font-weight: 600;
     color: #333;
-}
-
-/* Event Location Box */
-.event-location-box {
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 10px;
-    margin: 25px 0;
-}
-
-.event-location-box h4 {
-    margin-bottom: 12px;
-    font-size: 16px;
-}
-
-.event-location-box .venue-name {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.event-location-box .venue-address {
-    color: #666;
     font-size: 0.95rem;
 }
 
-/* Share Section */
-.share-section {
-    padding-top: 25px;
-    border-top: 1px solid #eee;
-    margin-top: 25px;
-}
+/* =========================
+   RESPONSIVE
+========================= */
 
-.share-section h4 {
-    margin-bottom: 15px;
-    font-size: 16px;
-}
-
-.share-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.share-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 1.1rem;
-    transition: transform 0.3s ease;
-    text-decoration: none;
-}
-
-.share-btn:hover {
-    transform: scale(1.1);
-}
-
-.share-btn.whatsapp {
-    background: #25D366;
-}
-
-.share-btn.twitter {
-    background: #1DA1F2;
-}
-
-.share-btn.facebook {
-    background: #4267B2;
-}
-
-/* Blog Content Body for Pentas */
-.blog-content-body h3 {
-    font-size: 18px;
-    margin-bottom: 15px;
-    color: #333;
-}
-
-.blog-content-body p {
-    font-size: 16px;
-    line-height: 1.8;
-    color: #555;
-    margin-bottom: 20px;
-}
-
-/* Blog Footer for Pentas */
-.blog-footer {
-    padding-top: 25px;
-    margin-top: 25px;
-    border-top: 1px solid #eee;
-}
-
-/* ========================================
-   MISSING LAYOUT CLASSES FIX
-   ======================================== */
-
-.blog-section {
-    padding: 60px 0 80px;
-    background: #f8f9fa;
-    min-height: 100vh;
-}
-
-.blog-content-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 40px;
-    align-items: start;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.blog-main-content {
-    background: #fff;
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    min-width: 0;
-    /* Prevent grid blowout */
-}
-
-.blog-sidebar {
-    position: sticky;
-    top: 100px;
-    min-width: 0;
-}
-
-.sidebar-widget {
-    background: #fff;
-    border-radius: 12px;
-    padding: 25px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-
-.sidebar-title {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-    color: #333;
-    font-weight: 700;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #f0f0f0;
-}
-
-.blog-featured-image {
-    width: 100%;
-    height: auto;
-    max-height: 400px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 25px;
-    display: block;
-}
-
-/* Remove conflicting hero styles if any */
-.hero.zine-hero {
-    background: #faf7ef;
-    padding: 140px 20px 40px;
-    margin-bottom: 0;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.hero-content {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.zine-detail-category {
-    display: inline-block;
-    padding: 6px 16px;
-    background: #d52c2c;
-    color: #fff;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-.zine-title {
-    font-size: 2.2rem;
-    color: #333;
-    margin-bottom: 15px;
-    line-height: 1.3;
-    font-weight: 800;
-}
-
-.zine-excerpt {
-    color: #666;
-    font-size: 1rem;
-    margin-bottom: 0;
-}
-
-.zine-back-link {
-    display: inline-block;
-    margin-bottom: 25px;
-    color: #666;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.2s;
-    font-weight: 600;
-}
-
-.zine-back-link:hover {
-    color: #d52c2c;
-}
-
-/* Responsive */
 @media (max-width: 992px) {
-    .blog-content-wrapper {
+    .pentas-detail-wrapper {
         grid-template-columns: 1fr;
     }
 
-    .blog-sidebar {
+    .pentas-sidebar {
         position: static;
         order: 2;
-        /* Sidebar below content on mobile */
-        margin-top: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pentas-hero {
+        padding: 60px 20px 40px;
     }
 
-    .hero.zine-hero {
-        padding: 120px 20px 30px;
+    .pentas-hero .page-title {
+        font-size: 2rem;
     }
 
-    .zine-title {
+    .pentas-section {
+        padding: 40px 15px;
+    }
+
+    .events-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .section-heading {
+        font-size: 1.2rem;
+    }
+
+    .pentas-hero-detail {
+        padding: 60px 20px 40px;
+    }
+
+    .pentas-detail-title {
         font-size: 1.8rem;
     }
+
+    .pentas-detail-meta {
+        flex-direction: column;
+        gap: 8px;
+        font-size: 0.9rem;
+    }
+
+    .pentas-main-content {
+        padding: 20px;
+    }
+
+    .pentas-content-body h3 {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .pentas-section {
+        padding: 30px 10px;
+    }
+
+    .pentas-card-content {
+        padding: 15px;
+    }
+
+    .pentas-card-meta {
+        flex-direction: column;
+        gap: 6px;
+    }
+}
+
+/* =========================
+   ACCESSIBILITY
+========================= */
+
+.btn-outline:focus,
+.btn-register:focus,
+.share-btn:focus {
+    outline: 3px solid rgba(213, 44, 44, 0.4);
+    outline-offset: 2px;
 }

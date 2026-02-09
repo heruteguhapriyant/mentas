@@ -1,7 +1,7 @@
     <section class="hero">
         <div class="hero-content">
-            <h1>Ruang Arsip, Wacana, dan Ekosistem Seni-Budaya</h1>
-            <p>Mentas.id adalah platform seni dan kebudayaan yang memuat tulisan, bulletin sastra, katalog riset, agenda peristiwa, serta ruang jual beli untuk mendukung ekosistem kreatif.</p>
+            <h1>Art & Culture Enthusiast, where stories unfold</h1>
+            <p>Media, Wacana, dan Ekosistem Seni-Budaya</p>
             <a href="<?= BASE_URL ?>/blog" class="btn-orange">Jelajahi</a>
         </div>
     </section>
@@ -49,12 +49,6 @@
         </div>
     </section>
     <?php endif; ?>
-
-    <section class="stats">
-        <div class="stat-item"><strong>> 100</strong><br />Artikel & Karya sastra</div>
-        <div class="stat-item"><strong>85</strong><br />Komunitas & Mitra</div>
-        <div class="stat-item"><strong>80</strong><br />Agenda & Peristiwa budaya</div>
-    </section>
 
     <!-- PROGRAM CARD -->
     <section class="program-section">
