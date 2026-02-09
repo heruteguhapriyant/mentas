@@ -376,11 +376,25 @@ class Zine
     /**
      * Generate URL-friendly slug
      */
+    /**
+     * Generate URL-friendly slug
+     */
     private function generateSlug($string)
     {
         $slug = strtolower(trim($string));
         $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
         $slug = preg_replace('/-+/', '-', $slug);
-        return trim($slug, '-');
+        $slug = trim($slug, '-');
+        
+        // Ensure uniqueness
+        $originalSlug = $slug;
+        $count = 1;
+        
+        while ($this->findBySlug($slug)) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+        
+        return $slug;
     }
 }

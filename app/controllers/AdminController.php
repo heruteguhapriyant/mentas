@@ -450,6 +450,13 @@ class AdminController extends Controller
             exit;
         }
 
+        // Check for empty POST (likely file upload limit exceeded)
+        if (empty($_POST) && $_SERVER['CONTENT_LENGTH'] > 0) {
+            setFlash('error', 'Ukuran file terlalu besar. Maksimal upload: ' . ini_get('upload_max_filesize'));
+            header('Location: ' . BASE_URL . '/admin/zineCreate');
+            exit;
+        }
+
         $data = [
             'title' => trim($_POST['title'] ?? ''),
             'excerpt' => trim($_POST['excerpt'] ?? ''),
@@ -525,6 +532,13 @@ class AdminController extends Controller
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/admin/zines');
+            exit;
+        }
+
+        // Check for empty POST (likely file upload limit exceeded)
+        if (empty($_POST) && $_SERVER['CONTENT_LENGTH'] > 0) {
+            setFlash('error', 'Ukuran file terlalu besar. Maksimal upload: ' . ini_get('upload_max_filesize'));
+            header('Location: ' . BASE_URL . '/admin/zineEdit/' . $id);
             exit;
         }
 
@@ -911,6 +925,38 @@ class AdminController extends Controller
         $eventModel->delete($id);
         setFlash('success', 'Event berhasil dihapus');
         header('Location: ' . BASE_URL . '/admin/events');
+        exit;
+    }
+
+    public function zineDelete($id)
+    {
+        $zineModel = new Zine();
+        $zine = $zineModel->find($id);
+
+        if ($zine) {
+            // Delete cover image
+            if (!empty($zine['cover_image'])) {
+                $coverPath = dirname(__DIR__, 2) . '/public/' . $zine['cover_image'];
+                if (file_exists($coverPath)) {
+                    unlink($coverPath);
+                }
+            }
+
+            // Delete PDF file
+            if (!empty($zine['pdf_file'])) {
+                $pdfPath = dirname(__DIR__, 2) . '/public/' . $zine['pdf_file'];
+                if (file_exists($pdfPath)) {
+                    unlink($pdfPath);
+                }
+            }
+
+            $zineModel->delete($id);
+            setFlash('success', 'Buletin berhasil dihapus');
+        } else {
+            setFlash('error', 'Buletin tidak ditemukan');
+        }
+
+        header('Location: ' . BASE_URL . '/admin/zines');
         exit;
     }
 
