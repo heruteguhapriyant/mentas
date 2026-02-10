@@ -141,8 +141,14 @@ class AdminController extends Controller
 
     public function users()
     {
-        $users = $this->userModel->all();
-        return $this->view('admin/users/index', ['users' => $users]);
+        $search = $_GET['q'] ?? null;
+        $status = $_GET['status'] ?? null;
+        $users = $this->userModel->all(null, $status, 'created_at DESC', $search);
+        return $this->view('admin/users/index', [
+            'users' => $users, 
+            'search' => $search,
+            'currentStatus' => $status
+        ]);
     }
 
     public function userApprove($id)
@@ -175,8 +181,9 @@ class AdminController extends Controller
 
     public function tags()
     {
-        $tags = $this->tagModel->getPopular(100);
-        return $this->view('admin/tags/index', ['tags' => $tags]);
+        $search = $_GET['q'] ?? null;
+        $tags = $this->tagModel->getPopular(100, $search);
+        return $this->view('admin/tags/index', ['tags' => $tags, 'search' => $search]);
     }
 
     public function tagCreate()
@@ -256,8 +263,14 @@ class AdminController extends Controller
 
     public function posts()
     {
-        $posts = $this->postModel->all(null, 0, 'all'); // Fetch all statuses
-        return $this->view('admin/posts/index', ['posts' => $posts]);
+        $search = $_GET['q'] ?? null;
+        $status = $_GET['status'] ?? 'all';
+        $posts = $this->postModel->all(null, 0, $status, $search);
+        return $this->view('admin/posts/index', [
+            'posts' => $posts, 
+            'search' => $search,
+            'currentStatus' => $status
+        ]);
     }
 
     public function postCreate()
@@ -442,12 +455,14 @@ class AdminController extends Controller
 
     public function zines()
     {
+        $search = $_GET['q'] ?? null;
         $zineModel = new Zine();
-        $zines = $zineModel->all(null, 0, false); // Get all including inactive
+        $zines = $zineModel->all(null, 0, false, $search); // Get all including inactive with search
         $categories = $zineModel->getCategories();
         return $this->view('admin/zines/index', [
             'zines' => $zines,
-            'categories' => $categories
+            'categories' => $categories,
+            'search' => $search
         ]);
     }
 
@@ -571,9 +586,13 @@ class AdminController extends Controller
 
     public function communities()
     {
+        $search = $_GET['q'] ?? null;
         $communityModel = new Community();
-        $communities = $communityModel->all();
-        return $this->view('admin/communities/index', ['communities' => $communities]);
+        $communities = $communityModel->all($search);
+        return $this->view('admin/communities/index', [
+            'communities' => $communities,
+            'search' => $search
+        ]);
     }
 
     public function communityCreate()
@@ -669,9 +688,10 @@ class AdminController extends Controller
 
     public function products()
     {
+        $search = $_GET['q'] ?? null;
         $productModel = new Product();
-        $products = $productModel->getAll(null, 0, false); // Get all including inactive
-        return $this->view('admin/products/index', ['products' => $products]);
+        $products = $productModel->getAll(null, 0, false, $search); // Get all including inactive with search
+        return $this->view('admin/products/index', ['products' => $products, 'search' => $search]);
     }
 
     public function productCreate()
@@ -783,9 +803,10 @@ class AdminController extends Controller
 
     public function events()
     {
+        $search = $_GET['q'] ?? null;
         $eventModel = new Event();
-        $events = $eventModel->getAll();
-        return $this->view('admin/events/index', ['events' => $events]);
+        $events = $eventModel->getAll($search);
+        return $this->view('admin/events/index', ['events' => $events, 'search' => $search]);
     }
 
     public function eventCreate()

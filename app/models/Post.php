@@ -15,7 +15,7 @@ class Post
     /**
      * Get all published posts (Updated dengan pagination support)
      */
-    public function all($limit = null, $offset = 0, $status = 'published')
+    public function all($limit = null, $offset = 0, $status = 'published', $search = null)
     {
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug, u.name as author_name
                 FROM posts p
@@ -31,6 +31,12 @@ class Post
             if ($status === 'published') {
                 $conditions[] = "p.published_at <= NOW()";
             }
+        }
+
+        if ($search) {
+            $conditions[] = "(p.title LIKE ? OR p.body LIKE ?)";
+            $params[] = "%$search%";
+            $params[] = "%$search%";
         }
 
         if (!empty($conditions)) {

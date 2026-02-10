@@ -12,11 +12,21 @@ class Event {
     /**
      * Get all active events
      */
-    public function getAll() {
-        $stmt = $this->db->prepare(
-            "SELECT * FROM {$this->table} WHERE is_active = 1 ORDER BY event_date ASC"
-        );
-        $stmt->execute();
+    public function getAll($search = null) {
+        $sql = "SELECT * FROM {$this->table} WHERE is_active = 1";
+        $params = [];
+
+        if ($search) {
+            $sql .= " AND (title LIKE :search OR description LIKE :search2 OR venue LIKE :search3)";
+            $params[':search'] = "%$search%";
+            $params[':search2'] = "%$search%";
+            $params[':search3'] = "%$search%";
+        }
+
+        $sql .= " ORDER BY event_date ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

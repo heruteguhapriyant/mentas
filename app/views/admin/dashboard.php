@@ -7,27 +7,46 @@
 
 <!-- Stats Grid -->
 <div class="stats-grid">
-    <div class="stat-card primary">
+    <a href="<?= BASE_URL ?>/admin/posts?status=published" class="stat-card primary">
         <h4>Artikel Published</h4>
         <div class="number"><?= $stats['posts'] ?></div>
-    </div>
-    <div class="stat-card warning">
+    </a>
+    <a href="<?= BASE_URL ?>/admin/posts?status=draft" class="stat-card warning">
         <h4>Artikel Draft</h4>
         <div class="number"><?= $stats['drafts'] ?></div>
-    </div>
-    <div class="stat-card success">
+    </a>
+    <a href="<?= BASE_URL ?>/admin/categories" class="stat-card success">
         <h4>Kategori</h4>
         <div class="number"><?= $stats['categories'] ?></div>
-    </div>
-    <div class="stat-card danger">
+    </a>
+    <a href="<?= BASE_URL ?>/admin/users?status=pending" class="stat-card danger">
         <h4>Contributor Pending</h4>
         <div class="number"><?= $stats['pending_contributors'] ?></div>
-    </div>
-    <div class="stat-card">
+    </a>
+    <a href="<?= BASE_URL ?>/admin/users?status=active" class="stat-card">
         <h4>Contributor Aktif</h4>
         <div class="number"><?= $stats['active_contributors'] ?></div>
-    </div>
+    </a>
 </div>
+
+<style>
+.stat-card {
+    text-decoration: none;
+    color: inherit;
+    display: block; /* Ensure it behaves like a block */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: inherit;
+}
+/* Ensure headings inside don't get decorated either */
+.stat-card h4, .stat-card .number {
+    color: inherit;
+}
+</style>
 
 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
     <!-- Recent Posts -->

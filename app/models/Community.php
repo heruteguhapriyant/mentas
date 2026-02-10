@@ -15,11 +15,21 @@ class Community
     /**
      * Get all active communities
      */
-    public function all()
+    public function all($search = null)
     {
-        return $this->db->query(
-            "SELECT * FROM communities WHERE is_active = 1 ORDER BY name ASC"
-        );
+        $sql = "SELECT * FROM communities WHERE is_active = 1";
+        $params = [];
+
+        if ($search) {
+            $sql .= " AND (name LIKE ? OR description LIKE ? OR location LIKE ?)";
+            $params[] = "%$search%";
+            $params[] = "%$search%";
+            $params[] = "%$search%";
+        }
+
+        $sql .= " ORDER BY name ASC";
+
+        return $this->db->query($sql, $params);
     }
 
     /**

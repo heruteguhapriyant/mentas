@@ -24,16 +24,27 @@ class Zine
     /**
      * Get all active zines with category info (Updated dengan pagination support)
      */
-    public function all($limit = null, $offset = 0, $activeOnly = true)
+    public function all($limit = null, $offset = 0, $activeOnly = true, $search = null)
     {
         $sql = "SELECT z.*, c.name as category_name, c.slug as category_slug 
                 FROM zines z
                 LEFT JOIN categories c ON z.category_id = c.id";
         
         $params = [];
+        $conditions = [];
         
         if ($activeOnly) {
-            $sql .= " WHERE z.is_active = 1";
+            $conditions[] = "z.is_active = 1";
+        }
+
+        if ($search) {
+            $conditions[] = "(z.title LIKE ? OR z.content LIKE ?)";
+            $params[] = "%$search%";
+            $params[] = "%$search%";
+        }
+
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $conditions);
         }
         
         $sql .= " ORDER BY z.created_at DESC";

@@ -15,7 +15,7 @@ class User
     /**
      * Get all users
      */
-    public function all($role = null, $status = null, $orderBy = 'created_at DESC')
+    public function all($role = null, $status = null, $orderBy = 'created_at DESC', $search = null)
     {
         $sql = "SELECT * FROM users WHERE 1=1";
         $params = [];
@@ -28,6 +28,12 @@ class User
         if ($status) {
             $sql .= " AND status = ?";
             $params[] = $status;
+        }
+
+        if ($search) {
+            $sql .= " AND (name LIKE ? OR email LIKE ?)";
+            $params[] = "%$search%";
+            $params[] = "%$search%";
         }
 
         $sql .= " ORDER BY " . $orderBy;

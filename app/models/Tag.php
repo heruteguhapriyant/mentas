@@ -59,17 +59,26 @@ class Tag
     /**
      * Get popular tags (most used)
      */
-    public function getPopular($limit = 10)
+    public function getPopular($limit = 10, $search = null)
     {
-        return $this->db->query(
-            "SELECT t.*, COUNT(pt.post_id) as post_count
+        $sql = "SELECT t.*, COUNT(pt.post_id) as post_count
              FROM tags t
-             LEFT JOIN post_tags pt ON t.id = pt.tag_id
-             GROUP BY t.id
+             LEFT JOIN post_tags pt ON t.id = pt.tag_id";
+        
+        $params = [];
+
+        if ($search) {
+            $sql .= " WHERE t.name LIKE ?";
+            $params[] = "%$search%";
+        }
+
+        $sql .= " GROUP BY t.id
              ORDER BY post_count DESC, t.name ASC
-             LIMIT ?",
-            [$limit]
-        );
+             LIMIT ?";
+        
+        $params[] = (int)$limit;
+
+        return $this->db->query($sql, $params);
     }
 
     /**

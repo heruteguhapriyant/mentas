@@ -2,8 +2,31 @@
 
 <div class="page-header">
     <h1>Events (Pentas)</h1>
-    <a href="<?= BASE_URL ?>/admin/eventCreate" class="btn btn-primary">+ Tambah Event</a>
+    <div class="header-actions">
+        <form action="" method="GET" class="search-form">
+            <input type="text" name="q" placeholder="Cari event..." value="<?= htmlspecialchars($search ?? '') ?>">
+            <button type="submit" class="btn btn-secondary"><i class="fas fa-search"></i></button>
+        </form>
+        <a href="<?= BASE_URL ?>/admin/eventCreate" class="btn btn-primary">+ Tambah Event</a>
+    </div>
 </div>
+
+<style>
+.header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.search-form {
+    display: flex;
+    gap: 5px;
+}
+.search-form input {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+</style>
 
 <div class="card">
     <table class="table">

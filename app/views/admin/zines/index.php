@@ -3,10 +3,31 @@
 <div class="page-header">
     <h1>Buletin Sastra</h1>
     <div class="header-actions">
+        <form action="" method="GET" class="search-form">
+            <input type="text" name="q" placeholder="Cari buletin..." value="<?= htmlspecialchars($search ?? '') ?>">
+            <button type="submit" class="btn btn-secondary"><i class="fas fa-search"></i></button>
+        </form>
         <a href="<?= BASE_URL ?>/admin/categories?type=zine" class="btn btn-secondary">Kelola Kategori</a>
         <a href="<?= BASE_URL ?>/admin/zineCreate" class="btn btn-primary">+ Tambah Buletin</a>
     </div>
 </div>
+
+<style>
+.header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.search-form {
+    display: flex;
+    gap: 5px;
+}
+.search-form input {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+</style>
 
 <div class="card">
     <table class="table">

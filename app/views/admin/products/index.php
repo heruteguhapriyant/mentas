@@ -3,10 +3,31 @@
 <div class="page-header">
     <h1>Produk (Merch)</h1>
     <div class="header-actions">
+        <form action="" method="GET" class="search-form">
+            <input type="text" name="q" placeholder="Cari produk..." value="<?= htmlspecialchars($search ?? '') ?>">
+            <button type="submit" class="btn btn-secondary"><i class="fas fa-search"></i></button>
+        </form>
         <a href="<?= BASE_URL ?>/admin/categories?type=merch" class="btn btn-secondary">Kelola Kategori</a>
         <a href="<?= BASE_URL ?>/admin/productCreate" class="btn btn-primary">+ Tambah Produk</a>
     </div>
 </div>
+
+<style>
+.header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.search-form {
+    display: flex;
+    gap: 5px;
+}
+.search-form input {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+</style>
 
 <div class="card">
     <table class="table">

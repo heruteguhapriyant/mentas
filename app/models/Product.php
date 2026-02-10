@@ -20,7 +20,7 @@ class Product {
     /**
      * Get all active products (Updated dengan pagination support)
      */
-    public function getAll($limit = null, $offset = 0, $activeOnly = true) {
+    public function getAll($limit = null, $offset = 0, $activeOnly = true, $search = null) {
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
                 FROM {$this->table} p
                 LEFT JOIN categories c ON p.category_id = c.id";
@@ -28,7 +28,17 @@ class Product {
         $params = [];
         
         if ($activeOnly) {
-            $sql .= " WHERE p.is_active = 1";
+            $conditions[] = "p.is_active = 1";
+        }
+
+        if ($search) {
+            $conditions[] = "(p.name LIKE :search OR p.description LIKE :search2)";
+            $params[':search'] = "%$search%";
+            $params[':search2'] = "%$search%";
+        }
+
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $conditions);
         }
         
         $sql .= " ORDER BY p.created_at DESC";
