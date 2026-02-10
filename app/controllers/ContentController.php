@@ -182,7 +182,11 @@ class ContentController extends Controller
         // 3️⃣ SLUG = POST DETAIL (/blog/judul-artikel)
         $post = $this->postModel->findBySlug($slug);
         
-        if ($post && $post['status'] === 'published') {
+        // Check if post exists and is viewable
+        $isPublished = $post && $post['status'] === 'published';
+        $canView = $isPublished || isAdmin() || (isLoggedIn() && $post['author_id'] == $_SESSION['user_id']);
+
+        if ($post && $canView) {
             // Increment view count
             $this->postModel->incrementViews($post['id']);
             

@@ -111,26 +111,17 @@ class ZineController extends Controller
     {
         $zine = $this->zineModel->findBySlug($slug);
         
-        if (!$zine || empty($zine['pdf_file'])) {
+        if (!$zine || empty($zine['pdf_link'])) {
             return $this->view('errors/404');
         }
 
-        // Increment download count (jika ada field di database)
+        // Increment download count
         if (method_exists($this->zineModel, 'incrementDownloads')) {
             $this->zineModel->incrementDownloads($zine['id']);
         }
 
-        // Redirect to PDF file atau serve file
-        $pdfPath = BASE_PATH . '/public/' . $zine['pdf_file'];
-        
-        if (file_exists($pdfPath)) {
-            header('Content-Type: application/pdf');
-            header('Content-Disposition: inline; filename="' . basename($pdfPath) . '"');
-            header('Content-Length: ' . filesize($pdfPath));
-            readfile($pdfPath);
-            exit;
-        } else {
-            return $this->view('errors/404');
-        }
+        // Redirect to Google Drive Link
+        header('Location: ' . $zine['pdf_link']);
+        exit;
     }
 }

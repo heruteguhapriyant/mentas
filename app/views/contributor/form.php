@@ -47,6 +47,13 @@
             </div>
 
             <div class="form-group">
+                <label for="published_at">Rencana Tanggal Publish (Opsional)</label>
+                <input type="datetime-local" id="published_at" name="published_at" class="form-control" 
+                       value="<?= !empty($post['published_at']) ? date('Y-m-d\TH:i', strtotime($post['published_at'])) : '' ?>">
+                <small class="text-muted" style="color: #6c757d; font-size: 0.85em;">Jika dikosongkan, akan dipublish segera saat disetujui admin.</small>
+            </div>
+
+            <div class="form-group">
                 <label for="excerpt">Ringkasan</label>
                 <textarea id="excerpt" name="excerpt" class="form-control" rows="2" placeholder="Ringkasan singkat artikel..."><?= htmlspecialchars($post['excerpt'] ?? '') ?></textarea>
             </div>

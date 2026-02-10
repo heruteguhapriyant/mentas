@@ -128,16 +128,15 @@
 
                     <!-- Action Buttons -->
                     <div class="zine-buttons">
-                        <?php if (!empty($zine['pdf_file'])): ?>
+                        <?php if (!empty($zine['pdf_link'])): ?>
                             <a href="<?= BASE_URL ?>/bulletin/<?= $zine['slug'] ?>" 
                                class="btn-outline btn-secondary">
                                 <i class="fa-solid fa-eye"></i> Detail
                             </a>
-                            <a href="<?= BASE_URL ?>/<?= $zine['pdf_file'] ?>" 
+                            <a href="<?= htmlspecialchars($zine['pdf_link']) ?>" 
                                target="_blank"
-                               class="btn-outline btn-primary"
-                               download>
-                                <i class="fas fa-file-pdf"></i> Download
+                               class="btn-outline btn-primary">
+                                <i class="fas fa-external-link-alt"></i> Baca / Download
                             </a>
                         <?php else: ?>
                             <a href="<?= BASE_URL ?>/bulletin/<?= $zine['slug'] ?>" 

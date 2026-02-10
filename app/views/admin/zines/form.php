@@ -41,16 +41,9 @@
         </div>
 
         <div class="form-group">
-            <label>File PDF *</label>
-            <?php if ($zine && !empty($zine['pdf_file'])): ?>
-                <div style="margin-bottom: 0.5rem;">
-                    <a href="<?= BASE_URL ?>/<?= $zine['pdf_file'] ?>" target="_blank" class="btn btn-sm btn-outline-primary">
-                        <i class="fa-solid fa-file-pdf"></i> Lihat PDF Saat Ini
-                    </a>
-                </div>
-            <?php endif; ?>
-            <input type="file" name="pdf_file" class="form-control" accept=".pdf" <?= !$zine ? 'required' : '' ?>>
-            <small class="form-text text-muted">Format: PDF. Ukuran maksimal: 10MB</small>
+            <label>Link Google Drive (PDF) *</label>
+            <input type="text" name="pdf_link" class="form-control" value="<?= htmlspecialchars($zine['pdf_link'] ?? '') ?>" placeholder="https://drive.google.com/..." required>
+            <small class="form-text text-muted">Masukkan link sharing Google Drive untuk file PDF buletin.</small>
         </div>
 
         <div class="form-group">

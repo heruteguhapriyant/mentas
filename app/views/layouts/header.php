@@ -1,12 +1,14 @@
 <header class="header">
     <div class="header-container">
         <div class="logo">
-            <img src="<?= BASE_URL ?>/assets/images/Mentas-logo.png" 
-                alt="Mentas Logo" 
-                class="logo-default">
-            <img src="<?= BASE_URL ?>/assets/images/mentas-putih.png" 
-                alt="Mentas Logo White" 
-                class="logo-sticky">
+            <a href="<?= BASE_URL ?>">
+                <img src="<?= BASE_URL ?>/assets/images/Mentas-logo.png" 
+                    alt="Mentas Logo" 
+                    class="logo-default">
+                <img src="<?= BASE_URL ?>/assets/images/mentas-putih.png" 
+                    alt="Mentas Logo White" 
+                    class="logo-sticky">
+            </a>
         </div>
         
         <nav class="navbar">

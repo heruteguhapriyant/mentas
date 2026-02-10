@@ -37,6 +37,16 @@
         </div>
 
         <div class="form-group">
+            <label for="published_at">Tanggal Publish (Opsional)</label>
+            <input type="datetime-local" id="published_at" name="published_at" class="form-control" 
+                   value="<?= !empty($post['published_at']) ? date('Y-m-d\TH:i', strtotime($post['published_at'])) : '' ?>">
+            <small class="text-muted" style="color: #6c757d; font-size: 0.85em;">
+                Jika status <b>Published</b> dan tanggal ini diisi masa depan, artikel akan "Terjadwal".<br>
+                Jika kosong, menggunakan waktu sekarang.
+            </small>
+        </div>
+
+        <div class="form-group">
             <label for="cover_image">Cover Image</label>
             <?php if (!empty($post['cover_image'])): ?>
                 <div style="margin-bottom: 0.5rem;">
@@ -53,7 +63,9 @@
 
         <div class="form-group">
             <label for="body">Isi Artikel *</label>
-            <textarea id="body" name="body" class="form-control" rows="15" required placeholder="Tulis isi artikel di sini..."><?= htmlspecialchars($post['body'] ?? '') ?></textarea>
+            <!-- Quill Editor Container -->
+            <div id="quill-editor" style="min-height: 300px; background: white;"></div>
+            <input type="hidden" name="body" id="body" required value="<?= htmlspecialchars($post['body'] ?? '') ?>">
         </div>
 
         <?php 
@@ -120,6 +132,8 @@
     </form>
 </div>
 
+<!-- Quill Styles -->
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 <style>
 .generated-tag-chip {
     display: inline-flex;
@@ -139,6 +153,17 @@
 }
 .generated-tag-chip .remove-tag:hover {
     color: #ffcdd2;
+}
+
+/* Quill Overrides */
+.ql-toolbar.ql-snow {
+    border-radius: 4px 4px 0 0;
+    margin-top: 0.5rem;
+}
+.ql-container.ql-snow {
+    border-radius: 0 0 4px 4px;
+    font-family: inherit;
+    font-size: 1rem;
 }
 </style>
 
@@ -241,6 +266,45 @@ function clearGeneratedTags() {
     renderGeneratedTags();
     updateManualTagsInput();
 }
+</script>
+
+<!-- Quill JS -->
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+    // Initialize Quill Editor after DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        var quill = new Quill('#quill-editor', {
+            theme: 'snow',
+            placeholder: 'Tulis isi artikel di sini...',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    ['blockquote', 'code-block'],
+                    ['link', 'image', 'video'],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Load existing content if editing
+        <?php if (!empty($post['body'])): ?>
+        // Use clipboard to paste HTML correctly
+        quill.clipboard.dangerouslyPasteHTML(<?= json_encode($post['body']) ?>);
+        <?php endif; ?>
+
+        // Sync content into hidden input on change
+        quill.on('text-change', function() {
+            document.getElementById('body').value = quill.root.innerHTML;
+        });
+        
+        // Initial sync ensures field has value if untouched
+        document.getElementById('body').value = quill.root.innerHTML;
+    });
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

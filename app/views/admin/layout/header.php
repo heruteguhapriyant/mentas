@@ -217,6 +217,19 @@
                 </a></li>
                 <li><a href="<?= BASE_URL ?>/admin/posts">
                     <i class="fas fa-newspaper"></i> Artikel
+                    <?php 
+                    // Fetch pending posts count
+                    $pendingCount = 0;
+                    if (class_exists('Post')) {
+                        $hPostModel = new Post();
+                        $pendingCount = $hPostModel->count('pending');
+                    }
+                    ?>
+                    <?php if ($pendingCount > 0): ?>
+                        <span class="badge badge-warning" style="margin-left: auto; font-size: 10px; padding: 2px 6px; border-radius: 10px;">
+                            <?= $pendingCount ?>
+                        </span>
+                    <?php endif; ?>
                 </a></li>
                 
                 <div class="menu-divider"></div>

@@ -20,11 +20,24 @@ class Post
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug, u.name as author_name
                 FROM posts p
                 LEFT JOIN categories c ON p.category_id = c.id
-                LEFT JOIN users u ON p.author_id = u.id
-                WHERE p.status = ?
-                ORDER BY p.published_at DESC, p.created_at DESC";
+                LEFT JOIN users u ON p.author_id = u.id";
+        
+        $params = [];
+        $conditions = [];
 
-        $params = [$status];
+        if ($status !== 'all') {
+            $conditions[] = "p.status = ?";
+            $params[] = $status;
+            if ($status === 'published') {
+                $conditions[] = "p.published_at <= NOW()";
+            }
+        }
+
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $conditions);
+        }
+
+        $sql .= " ORDER BY p.created_at DESC"; // Admin cares about creation time more generally
 
         if ($limit) {
             $sql .= " LIMIT ? OFFSET ?";
@@ -44,7 +57,9 @@ class Post
                 FROM posts p
                 LEFT JOIN categories c ON p.category_id = c.id
                 LEFT JOIN users u ON p.author_id = u.id
-                WHERE p.status = 'published' AND c.slug = ?
+                WHERE p.status = 'published' 
+                AND p.published_at <= NOW()
+                AND c.slug = ?
                 ORDER BY p.published_at DESC, p.created_at DESC";
 
         $params = [$categorySlug];
@@ -73,6 +88,9 @@ class Post
         if ($status) {
             $sql .= " AND p.status = ?";
             $params[] = $status;
+            if ($status === 'published') {
+                $sql .= " AND p.published_at <= NOW()";
+            }
         }
 
         $sql .= " ORDER BY p.created_at DESC";
@@ -102,6 +120,10 @@ class Post
         $params = [];
         $conditions = ["p.status = ?"];
         $params[] = $status;
+
+        if ($status === 'published') {
+            $conditions[] = "p.published_at <= NOW()";
+        }
 
         // Join category jika perlu filter
         if ($categorySlug) {
@@ -142,7 +164,8 @@ class Post
                 FROM posts p
                 LEFT JOIN categories c ON p.category_id = c.id
                 LEFT JOIN users u ON p.author_id = u.id
-                WHERE p.status = 'published'";
+                WHERE p.status = 'published'
+                AND p.published_at <= NOW()";
         
         $params = [];
 
@@ -211,7 +234,11 @@ class Post
         $sql = "INSERT INTO posts (title, slug, excerpt, body, cover_image, category_id, author_id, status, published_at) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        $publishedAt = ($data['status'] ?? 'draft') === 'published' ? date('Y-m-d H:i:s') : null;
+        // Use provided published_at or NOW() if published immediately
+        $publishedAt = $data['published_at'] ?? null;
+        if (!$publishedAt && ($data['status'] ?? 'draft') === 'published') {
+            $publishedAt = date('Y-m-d H:i:s');
+        }
 
         $this->db->execute($sql, [
             $data['title'],
@@ -241,12 +268,18 @@ class Post
             $params[] = $value;
         }
 
-        // Set published_at if status changed to published
-        if (isset($data['status']) && $data['status'] === 'published') {
-            $post = $this->find($id);
-            if (!$post['published_at']) {
-                $fields[] = "published_at = ?";
-                $params[] = date('Y-m-d H:i:s');
+        // Handle published_at if provided
+        if (isset($data['published_at'])) {
+            // Already handled in loop above if keys align, but to be safe:
+            // logic is typically handled by controller passing it in $data
+        } else {
+            // If strictly publishing now and no date set
+            if (isset($data['status']) && $data['status'] === 'published') {
+                $post = $this->find($id);
+                if (!$post['published_at']) {
+                    $fields[] = "published_at = ?";
+                    $params[] = date('Y-m-d H:i:s');
+                }
             }
         }
 
@@ -268,6 +301,23 @@ class Post
     public function delete($id)
     {
         return $this->db->execute("DELETE FROM posts WHERE id = ?", [$id]);
+    }
+
+    /**
+     * Update post status (BARU)
+     */
+    public function updateStatus($id, $status)
+    {
+        $publishedAt = ($status === 'published') ? date('Y-m-d H:i:s') : null;
+        
+        if ($publishedAt) {
+            // Only set published_at if it's currently NULL
+            $sql = "UPDATE posts SET status = ?, published_at = IFNULL(published_at, ?) WHERE id = ?";
+            return $this->db->execute($sql, [$status, $publishedAt, $id]);
+        } else {
+            $sql = "UPDATE posts SET status = ? WHERE id = ?";
+            return $this->db->execute($sql, [$status, $id]);
+        }
     }
 
     /**
@@ -294,10 +344,11 @@ class Post
      */
     public function count($status = 'published')
     {
-        $result = $this->db->queryOne(
-            "SELECT COUNT(*) as total FROM posts WHERE status = ?",
-            [$status]
-        );
+        $sql = "SELECT COUNT(*) as total FROM posts WHERE status = ?";
+        if ($status === 'published') {
+            $sql .= " AND published_at <= NOW()";
+        }
+        $result = $this->db->queryOne($sql, [$status]);
         return $result['total'];
     }
 
@@ -340,6 +391,7 @@ class Post
                 LEFT JOIN categories c ON p.category_id = c.id
                 LEFT JOIN users u ON p.author_id = u.id
                 WHERE p.status = 'published' 
+                AND p.published_at <= NOW()
                 AND (p.title LIKE ? OR p.excerpt LIKE ? OR p.body LIKE ?)
                 ORDER BY p.published_at DESC
                 LIMIT ? OFFSET ?";
@@ -365,6 +417,7 @@ class Post
         $sql = "SELECT COUNT(*) as total 
                 FROM posts p
                 WHERE p.status = 'published' 
+                AND p.published_at <= NOW()
                 AND (p.title LIKE ? OR p.excerpt LIKE ? OR p.body LIKE ?)";
 
         $searchTerm = "%$keyword%";
@@ -391,7 +444,9 @@ class Post
                 LEFT JOIN users u ON p.author_id = u.id
                 INNER JOIN post_tags pt ON p.id = pt.post_id
                 INNER JOIN tags t ON pt.tag_id = t.id
-                WHERE p.status = 'published' AND t.slug = ?
+                WHERE p.status = 'published' 
+                AND p.published_at <= NOW()
+                AND t.slug = ?
                 ORDER BY p.published_at DESC
                 LIMIT ? OFFSET ?";
 
@@ -414,7 +469,9 @@ class Post
                 FROM posts p
                 INNER JOIN post_tags pt ON p.id = pt.post_id
                 INNER JOIN tags t ON pt.tag_id = t.id
-                WHERE p.status = 'published' AND t.slug = ?";
+                WHERE p.status = 'published' 
+                AND p.published_at <= NOW()
+                AND t.slug = ?";
 
         $result = $this->db->queryOne($sql, [$tagSlug]);
         return (int)($result['total'] ?? 0);

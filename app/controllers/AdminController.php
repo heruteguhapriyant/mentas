@@ -256,13 +256,13 @@ class AdminController extends Controller
 
     public function posts()
     {
-        $posts = $this->postModel->all();
+        $posts = $this->postModel->all(null, 0, 'all'); // Fetch all statuses
         return $this->view('admin/posts/index', ['posts' => $posts]);
     }
 
     public function postCreate()
     {
-        $categories = $this->categoryModel->all();
+        $categories = $this->categoryModel->all(false, 'blog'); // Filter by blog type
         $allTags = $this->tagModel->all();
         return $this->view('admin/posts/form', ['post' => null, 'categories' => $categories, 'allTags' => $allTags, 'postTags' => []]);
     }
@@ -280,7 +280,8 @@ class AdminController extends Controller
             'body' => $_POST['body'] ?? '',
             'category_id' => $_POST['category_id'] ?: null,
             'author_id' => $_SESSION['user_id'],
-            'status' => $_POST['status'] ?? 'draft'
+            'status' => $_POST['status'] ?? 'draft',
+            'published_at' => !empty($_POST['published_at']) ? $_POST['published_at'] : null
         ];
 
         // Handle cover image upload
@@ -331,7 +332,7 @@ class AdminController extends Controller
     public function postEdit($id)
     {
         $post = $this->postModel->find($id);
-        $categories = $this->categoryModel->all();
+        $categories = $this->categoryModel->all(false, 'blog'); // Filter by blog type
         $allTags = $this->tagModel->all();
         $postTags = $this->tagModel->getByPost($id);
 
@@ -361,7 +362,8 @@ class AdminController extends Controller
             'excerpt' => trim($_POST['excerpt'] ?? ''),
             'body' => $_POST['body'] ?? '',
             'category_id' => $_POST['category_id'] ?: null,
-            'status' => $_POST['status'] ?? 'draft'
+            'status' => $_POST['status'] ?? 'draft',
+            'published_at' => !empty($_POST['published_at']) ? $_POST['published_at'] : null
         ];
 
         // Handle cover image upload
@@ -413,6 +415,22 @@ class AdminController extends Controller
     {
         $this->postModel->delete($id);
         setFlash('success', 'Artikel berhasil dihapus');
+        header('Location: ' . BASE_URL . '/admin/posts');
+        exit;
+    }
+
+    public function postApprove($id)
+    {
+        $this->postModel->updateStatus($id, 'published');
+        setFlash('success', 'Artikel berhasil dipublish');
+        header('Location: ' . BASE_URL . '/admin/posts');
+        exit;
+    }
+
+    public function postReject($id)
+    {
+        $this->postModel->updateStatus($id, 'draft'); // Revert to draft
+        setFlash('success', 'Artikel dikembalikan ke draft');
         header('Location: ' . BASE_URL . '/admin/posts');
         exit;
     }
@@ -476,32 +494,8 @@ class AdminController extends Controller
             $data['cover_image'] = 'uploads/zines/' . $filename;
         }
 
-        // Handle PDF file upload
-        if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK) {
-            $ext = strtolower(pathinfo($_FILES['pdf_file']['name'], PATHINFO_EXTENSION));
-            
-            // Validate PDF file type
-            if ($ext !== 'pdf') {
-                setFlash('error', 'File harus berformat PDF');
-                header('Location: ' . BASE_URL . '/admin/zineCreate');
-                exit;
-            }
-            
-            // Check file size (max 10MB)
-            if ($_FILES['pdf_file']['size'] > 10 * 1024 * 1024) {
-                setFlash('error', 'Ukuran file PDF maksimal 10MB');
-                header('Location: ' . BASE_URL . '/admin/zineCreate');
-                exit;
-            }
-            
-            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/zines/pdf/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $filename = uniqid() . '.pdf';
-            move_uploaded_file($_FILES['pdf_file']['tmp_name'], $uploadDir . $filename);
-            $data['pdf_file'] = 'uploads/zines/pdf/' . $filename;
-        }
+        // Handle PDF Link
+        $data['pdf_link'] = trim($_POST['pdf_link'] ?? '');
 
         $zineModel = new Zine();
         $zineModel->create($data);
@@ -561,32 +555,8 @@ class AdminController extends Controller
             $data['cover_image'] = 'uploads/zines/' . $filename;
         }
 
-        // Handle PDF file upload
-        if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK) {
-            $ext = strtolower(pathinfo($_FILES['pdf_file']['name'], PATHINFO_EXTENSION));
-            
-            // Validate PDF file type
-            if ($ext !== 'pdf') {
-                setFlash('error', 'File harus berformat PDF');
-                header('Location: ' . BASE_URL . '/admin/zineEdit/' . $id);
-                exit;
-            }
-            
-            // Check file size (max 10MB)
-            if ($_FILES['pdf_file']['size'] > 10 * 1024 * 1024) {
-                setFlash('error', 'Ukuran file PDF maksimal 10MB');
-                header('Location: ' . BASE_URL . '/admin/zineEdit/' . $id);
-                exit;
-            }
-            
-            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/zines/pdf/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $filename = uniqid() . '.pdf';
-            move_uploaded_file($_FILES['pdf_file']['tmp_name'], $uploadDir . $filename);
-            $data['pdf_file'] = 'uploads/zines/pdf/' . $filename;
-        }
+        // Handle PDF Link
+        $data['pdf_link'] = trim($_POST['pdf_link'] ?? '');
 
         $zineModel = new Zine();
         $zineModel->update($id, $data);

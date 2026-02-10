@@ -23,7 +23,7 @@ class ContributorController extends Controller
     public function index()
     {
         $userId = $_SESSION['user_id'];
-        $posts = $this->postModel->getByAuthor($userId);
+        $posts = $this->postModel->getByAuthor($userId, null); // Fetch all statuses
         
         $stats = [
             'published' => count(array_filter($posts, fn($p) => $p['status'] === 'published')),
@@ -41,7 +41,7 @@ class ContributorController extends Controller
      */
     public function create()
     {
-        $categories = $this->categoryModel->all();
+        $categories = $this->categoryModel->all(false, 'blog'); // Filter by blog type
         $allTags = $this->tagModel->all();
         return $this->view('contributor/form', [
             'post' => null, 
@@ -67,7 +67,8 @@ class ContributorController extends Controller
             'body' => $_POST['body'] ?? '',
             'category_id' => $_POST['category_id'] ?: null,
             'author_id' => $_SESSION['user_id'],
-            'status' => $_POST['status'] ?? 'draft'
+            'status' => 'pending',
+            'published_at' => !empty($_POST['published_at']) ? $_POST['published_at'] : null
         ];
 
         if (empty($data['title'])) {
@@ -129,7 +130,7 @@ class ContributorController extends Controller
             exit;
         }
 
-        $categories = $this->categoryModel->all();
+        $categories = $this->categoryModel->all(false, 'blog'); // Filter by blog type
         $allTags = $this->tagModel->all();
         $postTags = $this->tagModel->getByPost($id);
         return $this->view('contributor/form', [
@@ -164,7 +165,8 @@ class ContributorController extends Controller
             'excerpt' => trim($_POST['excerpt'] ?? ''),
             'body' => $_POST['body'] ?? '',
             'category_id' => $_POST['category_id'] ?: null,
-            'status' => $_POST['status'] ?? 'draft'
+            'status' => 'pending', // Contributor edits reset to pending validation
+            'published_at' => !empty($_POST['published_at']) ? $_POST['published_at'] : null
         ];
 
         // Handle cover image upload

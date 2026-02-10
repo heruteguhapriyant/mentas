@@ -149,7 +149,7 @@ class Zine
      */
     public function create($data)
     {
-        $sql = "INSERT INTO zines (title, slug, excerpt, content, cover_image, category_id, pdf_file, is_active) 
+        $sql = "INSERT INTO zines (title, slug, excerpt, content, cover_image, category_id, pdf_link, is_active) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         $this->db->execute($sql, [
@@ -159,7 +159,7 @@ class Zine
             $data['content'] ?? null,
             $data['cover_image'] ?? null,
             $data['category_id'] ?? null,
-            $data['pdf_file'] ?? null,
+            $data['pdf_link'] ?? null,
             $data['is_active'] ?? 1
         ]);
 
