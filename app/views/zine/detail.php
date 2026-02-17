@@ -31,6 +31,27 @@
             >
         <?php endif; ?>
 
+        <!-- Contributor Info -->
+        <div class="article-contributor" style="margin-bottom: 30px;">
+            <div class="contributor-avatar">
+               <?php 
+                    $authorName = $zine['author_name'] ?? 'Admin';
+                    $avatar = !empty($zine['author_avatar']) ? BASE_URL . '/' . $zine['author_avatar'] : 'https://ui-avatars.com/api/?name=' . urlencode($authorName) . '&background=random';
+                ?>
+                <img src="<?= $avatar ?>" alt="<?= htmlspecialchars($authorName) ?>">
+            </div>
+            <div class="contributor-details">
+                <p class="contributor-by">
+                    Oleh <a href="<?= BASE_URL ?>/author/<?= $zine['author_id'] ?? '#' ?>"><?= htmlspecialchars($authorName) ?></a>
+                </p>
+                <?php if (!empty($zine['author_bio'])): ?>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 2px;">
+                        <?= htmlspecialchars(substr($zine['author_bio'], 0, 100)) . (strlen($zine['author_bio']) > 100 ? '...' : '') ?>
+                    </p>
+                <?php endif; ?>
+            </div>
+        </div>
+
         <?php if (!empty($zine['pdf_link'])): ?>
             <!-- PDF Link -->
             <div class="zine-pdf-link">

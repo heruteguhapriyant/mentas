@@ -156,9 +156,11 @@ class Zine
     public function find($id)
     {
         return $this->db->queryOne(
-            "SELECT z.*, c.name as category_name, c.id as category_id
+            "SELECT z.*, c.name as category_name, c.id as category_id,
+                    u.name as author_name, u.avatar as author_avatar, u.bio as author_bio, u.id as author_id
              FROM zines z
              LEFT JOIN categories c ON z.category_id = c.id
+             LEFT JOIN users u ON z.author_id = u.id
              WHERE z.id = ?",
             [$id]
         );
@@ -170,9 +172,11 @@ class Zine
     public function findBySlug($slug)
     {
         return $this->db->queryOne(
-            "SELECT z.*, c.name as category_name, c.slug as category_slug
+            "SELECT z.*, c.name as category_name, c.slug as category_slug,
+                    u.name as author_name, u.avatar as author_avatar, u.bio as author_bio, u.id as author_id
              FROM zines z
              LEFT JOIN categories c ON z.category_id = c.id
+             LEFT JOIN users u ON z.author_id = u.id
              WHERE z.slug = ?",
             [$slug]
         );

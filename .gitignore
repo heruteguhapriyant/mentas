@@ -73,3 +73,9 @@ config.local.php
 *~
 *.swp
 *.swo
+
+# ======================
+# Large Data Files
+# ======================
+data2/
+data2.zip
