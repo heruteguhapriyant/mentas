@@ -14,8 +14,8 @@
         <nav class="navbar">
             <a href="<?= BASE_URL ?>">Home</a>
             <a href="<?= BASE_URL ?>/blog">Blog</a>
-            <a href="<?= BASE_URL ?>/zine">Bulletin</a>
-            <a href="<?= BASE_URL ?>/ekosistem">Ekosistem</a>
+            <a href="<?= BASE_URL ?>/bulletin">Bulletin</a>
+            <a href="<?= BASE_URL ?>/kolaborasi">Kolaborasi</a>
             <a href="<?= BASE_URL ?>/merch">Merch</a>
             <a href="<?= BASE_URL ?>/pentas">Pentas</a>
             <a href="<?= BASE_URL ?>/page/about">About</a>
@@ -50,8 +50,8 @@
         <ul>
             <li><a href="<?= BASE_URL ?>">Home</a></li>
             <li><a href="<?= BASE_URL ?>/blog">Blog</a></li>
-            <li><a href="<?= BASE_URL ?>/zine">Bulletin Sastra</a></li>
-            <li><a href="<?= BASE_URL ?>/ekosistem">Ekosistem</a></li>
+            <li><a href="<?= BASE_URL ?>/bulletin">Bulletin</a></li>
+            <li><a href="<?= BASE_URL ?>/kolaborasi">Kolaborasi</a></li>
             <li><a href="<?= BASE_URL ?>/merch">Merch</a></li>
             <li><a href="<?= BASE_URL ?>/pentas">Pentas</a></li>
             <li><a href="<?= BASE_URL ?>/page/about">About</a></li>

@@ -3,7 +3,7 @@
 <?php
 $typeLabels = [
     'blog' => 'Blog',
-    'zine' => 'Bulletin Sastra',
+    'zine' => 'Bulletin',
     'merch' => 'Merchandise'
 ];
 $pageTitle = isset($activeType) && $activeType ? 'Kelola Kategori ' . ($typeLabels[$activeType] ?? ucfirst($activeType)) : 'Kelola Semua Kategori';
@@ -88,7 +88,7 @@ $pageTitle = isset($activeType) && $activeType ? 'Kelola Kategori ' . ($typeLabe
         <i class="fas fa-newspaper"></i> Blog
     </a>
     <a href="<?= BASE_URL ?>/admin/categories?type=zine" class="filter-tab zine <?= ($activeType ?? '') === 'zine' ? 'active' : '' ?>">
-        <i class="fas fa-book-open"></i> Bulletin Sastra
+        <i class="fas fa-book-open"></i> Bulletin
     </a>
     <a href="<?= BASE_URL ?>/admin/categories?type=merch" class="filter-tab merch <?= ($activeType ?? '') === 'merch' ? 'active' : '' ?>">
         <i class="fas fa-shopping-bag"></i> Merchandise

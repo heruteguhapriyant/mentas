@@ -1,5 +1,11 @@
 <?php // Article Detail Page - Split Layout with Sidebar ?>
 
+<?php if ($content['status'] !== 'published'): ?>
+<div style="background: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 12px 20px; text-align: center; font-weight: 600; font-size: 0.95rem;">
+    <i class="fas fa-eye-slash"></i> Artikel ini masih berstatus <strong><?= ucfirst($content['status']) ?></strong> — belum terlihat oleh publik
+</div>
+<?php endif; ?>
+
 <section class="hero blog-hero-detail">
     <div class="hero-content">
         <?php if (!empty($content['category_name'])): ?>
@@ -234,12 +240,12 @@
                     <?php foreach ($recentPosts as $post): ?>
                         <li class="sidebar-post-item">
                             <?php if (!empty($post['cover_image'])): ?>
-                                <a href="<?= BASE_URL ?>/blog/<?= $post['slug']; ?>" class="sidebar-post-thumb">
+                                <a href="<?= BASE_URL ?>/blog/<?= $post['slug']; ?>" class="sidebar-post-thumb" target="_blank">
                                     <img src="<?= BASE_URL ?>/<?= $post['cover_image']; ?>" alt="<?= htmlspecialchars($post['title']); ?>">
                                 </a>
                             <?php endif; ?>
                             <div class="sidebar-post-info">
-                                <a href="<?= BASE_URL ?>/blog/<?= $post['slug']; ?>" class="sidebar-post-title">
+                                <a href="<?= BASE_URL ?>/blog/<?= $post['slug']; ?>" class="sidebar-post-title" target="_blank">
                                     <?= htmlspecialchars($post['title']); ?>
                                 </a>
                                 <span class="sidebar-post-date">

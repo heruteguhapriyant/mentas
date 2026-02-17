@@ -41,7 +41,7 @@
                     </p>
                 <?php endif; ?>
 
-                <a href="<?= BASE_URL ?>/katalog/detail/<?= $community['slug'] ?>" class="btn-outline">
+                <a href="<?= BASE_URL ?>/katalog/detail/<?= $community['slug'] ?>" class="btn-outline" target="_blank">
                     Lihat Detail
                 </a>
 

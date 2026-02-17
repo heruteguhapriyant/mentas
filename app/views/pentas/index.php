@@ -29,10 +29,12 @@
                                 
                                 <div class="event-date-badge">
                                     <span class="day"><?= date('d', strtotime($event['event_date'])) ?></span>
-                                    <span class="month"><?= date('M', strtotime($event['event_date'])) ?></span>
+                                    <span class="month"><?= date('M Y', strtotime($event['event_date'])) ?></span>
                                 </div>
                                 
-                                <?php if ($event['ticket_price'] == 0): ?>
+                                <?php if (strtotime($event['event_date']) > time()): ?>
+                                    <span class="event-badge upcoming">Akan Datang</span>
+                                <?php elseif ($event['ticket_price'] == 0): ?>
                                     <span class="event-badge free">GRATIS</span>
                                 <?php endif; ?>
                             </div>
@@ -42,10 +44,12 @@
                                 
                                 <div class="event-date-badge">
                                     <span class="day"><?= date('d', strtotime($event['event_date'])) ?></span>
-                                    <span class="month"><?= date('M', strtotime($event['event_date'])) ?></span>
+                                    <span class="month"><?= date('M Y', strtotime($event['event_date'])) ?></span>
                                 </div>
                                 
-                                <?php if ($event['ticket_price'] == 0): ?>
+                                <?php if (strtotime($event['event_date']) > time()): ?>
+                                    <span class="event-badge upcoming">Akan Datang</span>
+                                <?php elseif ($event['ticket_price'] == 0): ?>
                                     <span class="event-badge free">GRATIS</span>
                                 <?php endif; ?>
                             </div>
@@ -73,7 +77,7 @@
                                 <?= htmlspecialchars(substr($event['description'] ?? '', 0, 100)) ?>...
                             </p>
 
-                            <a href="<?= BASE_URL ?>/pentas/<?= !empty($event['slug']) ? $event['slug'] : $event['id'] ?>" class="btn-outline">
+                            <a href="<?= BASE_URL ?>/pentas/<?= !empty($event['slug']) ? $event['slug'] : $event['id'] ?>" class="btn-outline" target="_blank">
                                 <i class="fa-regular fa-eye"></i> Lihat Detail
                             </a>
                         </div>
@@ -115,7 +119,7 @@
                         
                         <h3><?= htmlspecialchars($event['title']) ?></h3>
 
-                        <a href="<?= BASE_URL ?>/pentas/<?= !empty($event['slug']) ? $event['slug'] : $event['id'] ?>" class="btn-outline">
+                        <a href="<?= BASE_URL ?>/pentas/<?= !empty($event['slug']) ? $event['slug'] : $event['id'] ?>" class="btn-outline" target="_blank">
                             <i class="fa-regular fa-eye"></i> Lihat Detail
                         </a>
                     </div>

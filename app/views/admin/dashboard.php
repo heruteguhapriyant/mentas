@@ -11,8 +11,8 @@
         <h4>Artikel Published</h4>
         <div class="number"><?= $stats['posts'] ?></div>
     </a>
-    <a href="<?= BASE_URL ?>/admin/posts?status=draft" class="stat-card warning">
-        <h4>Artikel Draft</h4>
+    <a href="<?= BASE_URL ?>/admin/posts?status=unpublished" class="stat-card warning">
+        <h4>Artikel Draft/Pending</h4>
         <div class="number"><?= $stats['drafts'] ?></div>
     </a>
     <a href="<?= BASE_URL ?>/admin/categories" class="stat-card success">
@@ -84,22 +84,45 @@
         <?php endif; ?>
     </div>
 
-    <!-- Pending Contributors -->
+    <!-- Pending Approvals -->
     <div class="card">
         <div class="card-header">
             <h3>Menunggu Persetujuan</h3>
         </div>
         
-        <?php if (empty($pendingContributors)): ?>
-            <p style="color: #666;">Tidak ada contributor pending.</p>
-        <?php else: ?>
+        <?php if (!empty($pendingPosts)): ?>
+            <div style="padding: 0.5rem 1rem;">
+                <small style="color: #856404; font-weight: 600;"><i class="fas fa-newspaper"></i> Artikel</small>
+            </div>
+            <?php foreach ($pendingPosts as $pp): ?>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; border-bottom: 1px solid #eee;">
+                    <div style="flex: 1; min-width: 0;">
+                        <strong style="font-size: 0.9rem;"><?= htmlspecialchars($pp['title']) ?></strong>
+                        <br><small style="color: #666;"><?= $pp['author_name'] ?? 'Admin' ?> · <?= ucfirst($pp['status']) ?></small>
+                    </div>
+                    <div style="display: flex; gap: 4px; flex-shrink: 0;">
+                        <a href="<?= BASE_URL ?>/admin/postApprove/<?= $pp['id'] ?>" class="btn btn-sm btn-success" title="Approve">
+                            <i class="fas fa-check"></i>
+                        </a>
+                        <a href="<?= BASE_URL ?>/admin/postReject/<?= $pp['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Tolak artikel ini?')" title="Reject">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+        <?php if (!empty($pendingContributors)): ?>
+            <div style="padding: 0.5rem 1rem; <?= !empty($pendingPosts) ? 'border-top: 2px solid #eee;' : '' ?>">
+                <small style="color: #856404; font-weight: 600;"><i class="fas fa-user"></i> Contributor</small>
+            </div>
             <?php foreach ($pendingContributors as $contributor): ?>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #eee;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; border-bottom: 1px solid #eee;">
                     <div>
                         <strong><?= htmlspecialchars($contributor['name']) ?></strong>
                         <br><small style="color: #666;"><?= $contributor['email'] ?></small>
                     </div>
-                    <div>
+                    <div style="display: flex; gap: 4px;">
                         <a href="<?= BASE_URL ?>/admin/userApprove/<?= $contributor['id'] ?>" class="btn btn-sm btn-success">
                             <i class="fas fa-check"></i>
                         </a>
@@ -109,6 +132,10 @@
                     </div>
                 </div>
             <?php endforeach; ?>
+        <?php endif; ?>
+
+        <?php if (empty($pendingPosts) && empty($pendingContributors)): ?>
+            <p style="color: #666; padding: 1rem;">Tidak ada yang menunggu persetujuan.</p>
         <?php endif; ?>
     </div>
 </div>

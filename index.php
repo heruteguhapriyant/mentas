@@ -64,6 +64,7 @@ require_once 'app/models/Comment.php';
 require_once 'app/models/Product.php';
 require_once 'app/models/Event.php';
 require_once 'app/models/Ticket.php';
+require_once 'app/models/Collaboration.php';
 
 /**
  * LOAD GLOBAL HELPERS

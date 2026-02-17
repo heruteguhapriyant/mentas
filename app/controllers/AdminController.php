@@ -17,6 +17,7 @@ class AdminController extends Controller
         $this->categoryModel = new Category();
         $this->postModel = new Post();
         $this->tagModel = new Tag();
+        $this->collaborationModel = new Collaboration();
     }
 
     /**
@@ -26,7 +27,7 @@ class AdminController extends Controller
     {
         $stats = [
             'posts' => $this->postModel->count('published'),
-            'drafts' => $this->postModel->count('draft'),
+            'drafts' => $this->postModel->count('draft') + $this->postModel->count('pending'),
             'categories' => count($this->categoryModel->all(false)),
             'pending_contributors' => count($this->userModel->getPendingContributors()),
             'active_contributors' => count($this->userModel->getActiveContributors()),
@@ -34,11 +35,13 @@ class AdminController extends Controller
 
         $recentPosts = $this->postModel->getRecent(5);
         $pendingContributors = $this->userModel->getPendingContributors();
+        $pendingPosts = $this->postModel->getPendingPosts();
 
         return $this->view('admin/dashboard', [
             'stats' => $stats,
             'recentPosts' => $recentPosts,
-            'pendingContributors' => $pendingContributors
+            'pendingContributors' => $pendingContributors,
+            'pendingPosts' => $pendingPosts
         ]);
     }
 
@@ -379,6 +382,18 @@ class AdminController extends Controller
             'published_at' => !empty($_POST['published_at']) ? $_POST['published_at'] : null
         ];
 
+        // Handle cover image removal
+        if (isset($_POST['remove_cover_image']) && $_POST['remove_cover_image'] === '1') {
+            $existingPost = $this->postModel->find($id);
+            if (!empty($existingPost['cover_image'])) {
+                $oldFile = dirname(__DIR__, 2) . '/public/' . $existingPost['cover_image'];
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+            $data['cover_image'] = null;
+        }
+
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = dirname(__DIR__, 2) . '/public/uploads/posts/';
@@ -470,9 +485,11 @@ class AdminController extends Controller
     {
         $zineModel = new Zine();
         $categories = $zineModel->getCategories();
+        $contributors = $this->userModel->getActiveContributors(true);
         return $this->view('admin/zines/form', [
             'zine' => null,
-            'categories' => $categories
+            'categories' => $categories,
+            'contributors' => $contributors
         ]);
     }
 
@@ -494,6 +511,8 @@ class AdminController extends Controller
             'title' => trim($_POST['title'] ?? ''),
             'excerpt' => trim($_POST['excerpt'] ?? ''),
             'category_id' => $_POST['category_id'] ?? null,
+            'author_id' => !empty($_POST['author_id']) ? $_POST['author_id'] : null,
+            'image_position' => $_POST['image_position'] ?? 'center',
             'is_active' => isset($_POST['is_active']) ? 1 : 0
         ];
 
@@ -525,15 +544,17 @@ class AdminController extends Controller
         $zine = $zineModel->find($id);
 
         if (!$zine) {
-            setFlash('error', 'Buletin tidak ditemukan');
+            setFlash('error', 'Bulletin tidak ditemukan');
             header('Location: ' . BASE_URL . '/admin/zines');
             exit;
         }
 
         $categories = $zineModel->getCategories();
+        $contributors = $this->userModel->getActiveContributors(true);
         return $this->view('admin/zines/form', [
             'zine' => $zine,
-            'categories' => $categories
+            'categories' => $categories,
+            'contributors' => $contributors
         ]);
     }
 
@@ -555,6 +576,8 @@ class AdminController extends Controller
             'title' => trim($_POST['title'] ?? ''),
             'excerpt' => trim($_POST['excerpt'] ?? ''),
             'category_id' => $_POST['category_id'] ?? null,
+            'author_id' => !empty($_POST['author_id']) ? $_POST['author_id'] : null,
+            'image_position' => $_POST['image_position'] ?? 'center',
             'is_active' => isset($_POST['is_active']) ? 1 : 0
         ];
 
@@ -1100,5 +1123,310 @@ class AdminController extends Controller
         }
         
         return $this->view('admin/tickets/detail', ['ticket' => $ticket]);
+    }
+
+    // ========== KOLABORASI CRUD ==========
+
+    public function collaborations()
+    {
+        $search = $_GET['q'] ?? null;
+        $collaborations = $this->collaborationModel->all($search);
+        
+        return $this->view('admin/collaborations/index', [
+            'collaborations' => $collaborations,
+            'search' => $search
+        ]);
+    }
+
+    public function collaborationCreate()
+    {
+        $contributors = $this->userModel->all(); // Show all users
+        
+        return $this->view('admin/collaborations/form', [
+            'collaboration' => null,
+            'contributors' => $contributors,
+            'selectedContributors' => []
+        ]);
+    }
+
+    public function collaborationStore()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/collaborations');
+            exit;
+        }
+
+        $title = trim($_POST['title']);
+        $slug = $this->collaborationModel->generateSlug($title);
+        
+        $data = [
+            'title' => $title,
+            'slug' => $slug,
+            'description' => $_POST['description'] ?? '',
+            'is_active' => isset($_POST['is_active']) ? 1 : 0,
+            'social_media' => [
+                'instagram' => $_POST['instagram'] ?? '',
+                'twitter' => $_POST['twitter'] ?? '',
+                'facebook' => $_POST['facebook'] ?? '',
+                'website' => $_POST['website'] ?? ''
+            ]
+        ];
+
+        // Handle Image Upload
+        if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/collaborations/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+            $filename = $slug . '-' . uniqid() . '.' . $ext;
+            
+            if (move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename)) {
+                $data['cover_image'] = 'uploads/collaborations/' . $filename;
+            }
+        }
+
+        $collaborationId = $this->collaborationModel->create($data);
+
+        // Handle Contributors
+        if (!empty($_POST['contributors'])) {
+            $this->collaborationModel->syncContributors($collaborationId, $_POST['contributors']);
+        }
+
+        setFlash('success', 'Kolaborasi berhasil ditambahkan');
+        header('Location: ' . BASE_URL . '/admin/collaborations');
+        exit;
+    }
+
+    public function collaborationEdit($id)
+    {
+        $collaboration = $this->collaborationModel->find($id);
+        if (!$collaboration) {
+            setFlash('danger', 'Kolaborasi tidak ditemukan');
+            header('Location: ' . BASE_URL . '/admin/collaborations');
+            exit;
+        }
+
+        $contributors = $this->userModel->all(); // Show all users
+        $currentContributors = $this->collaborationModel->getContributors($id);
+        $selectedContributors = array_column($currentContributors, 'id');
+
+        return $this->view('admin/collaborations/form', [
+            'collaboration' => $collaboration,
+            'contributors' => $contributors,
+            'selectedContributors' => $selectedContributors
+        ]);
+    }
+
+    public function collaborationUpdate($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/collaborations');
+            exit;
+        }
+
+        $collaboration = $this->collaborationModel->find($id);
+        if (!$collaboration) {
+            header('Location: ' . BASE_URL . '/admin/collaborations');
+            exit;
+        }
+
+        $data = [
+            'title' => trim($_POST['title']),
+            'description' => $_POST['description'] ?? '',
+            'is_active' => isset($_POST['is_active']) ? 1 : 0,
+            'social_media' => [
+                'instagram' => $_POST['instagram'] ?? '',
+                'twitter' => $_POST['twitter'] ?? '',
+                'facebook' => $_POST['facebook'] ?? '',
+                'website' => $_POST['website'] ?? ''
+            ]
+        ];
+
+        // Handle Image Upload
+        if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = dirname(__DIR__, 2) . '/public/uploads/collaborations/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            // Delete old image
+            if (!empty($collaboration['cover_image'])) {
+                $oldFile = dirname(__DIR__, 2) . '/public/' . $collaboration['cover_image'];
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+
+            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+            $filename = $collaboration['slug'] . '-' . uniqid() . '.' . $ext;
+            
+            if (move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename)) {
+                $data['cover_image'] = 'uploads/collaborations/' . $filename;
+            }
+        }
+
+        $this->collaborationModel->update($id, $data);
+
+        // Handle Contributors
+        $contributorIds = $_POST['contributors'] ?? [];
+        $this->collaborationModel->syncContributors($id, $contributorIds);
+
+        setFlash('success', 'Kolaborasi berhasil diperbarui');
+        header('Location: ' . BASE_URL . '/admin/collaborations');
+        exit;
+    }
+
+    public function collaborationDelete($id)
+    {
+        $collaboration = $this->collaborationModel->find($id);
+        if ($collaboration) {
+            // Delete image
+            if (!empty($collaboration['cover_image'])) {
+                $oldFile = dirname(__DIR__, 2) . '/public/' . $collaboration['cover_image'];
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+            
+            $this->collaborationModel->delete($id);
+            setFlash('success', 'Kolaborasi berhasil dihapus');
+        }
+
+        header('Location: ' . BASE_URL . '/admin/collaborations');
+        exit;
+    }
+    /**
+     * AJAX Search Tags
+     */
+    public function searchTags()
+    {
+        header('Content-Type: application/json');
+        
+        $query = trim($_GET['q'] ?? '');
+        if (empty($query)) {
+            echo json_encode([]);
+            exit;
+        }
+
+        $tags = $this->tagModel->search($query);
+        echo json_encode($tags);
+        exit;
+    }
+
+    /**
+     * AJAX Generate Tags
+     */
+    public function generateTags()
+    {
+        header('Content-Type: application/json');
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode([]);
+            exit;
+        }
+
+        $title = $_POST['title'] ?? '';
+        $body = $_POST['body'] ?? '';
+        $text = $title . ' ' . $body;
+
+        // 1. Clean Text
+        $text = strip_tags($text);
+        $text = strtolower($text);
+        $text = preg_replace('/[^\w\s]/', '', $text); // Remove punctuation
+        $text = preg_replace('/\s+/', ' ', $text); // Collapse spaces
+
+        // 2. Tokenize
+        $words = explode(' ', $text);
+
+        // 3. Stopwords (Indonesian - kata sambung, preposisi, kata ganti, kata bantu)
+        $stopwords = [
+            // Kata sambung (konjungsi)
+            'dan', 'atau', 'tetapi', 'tapi', 'namun', 'melainkan', 'sedangkan', 'padahal', 
+            'serta', 'lalu', 'kemudian', 'lantas', 'lagi', 'sebab', 'karena', 'oleh', 
+            'maka', 'sehingga', 'agar', 'supaya', 'kalau', 'jika', 'jikalau', 'bila', 
+            'apabila', 'asal', 'asalkan', 'meski', 'meskipun', 'walau', 'walaupun', 
+            'sekalipun', 'biarpun', 'kendati', 'seakan', 'seolah', 'seperti', 'bagaikan',
+            'laksana', 'ibarat', 'daripada', 'alih', 'ketimbang', 'bahwa', 'yakni', 'yaitu',
+            
+            // Preposisi (kata depan)
+            'di', 'ke', 'dari', 'pada', 'dalam', 'dengan', 'untuk', 'bagi', 'demi', 
+            'tanpa', 'sampai', 'hingga', 'sejak', 'selama', 'sepanjang', 'tentang', 
+            'mengenai', 'terhadap', 'akan', 'atas', 'bawah', 'depan', 'belakang', 
+            'samping', 'antara', 'sekitar', 'seputar', 'lewat', 'melalui', 'oleh',
+            
+            // Kata ganti (pronomina)
+            'saya', 'aku', 'kamu', 'anda', 'engkau', 'dia', 'ia', 'beliau', 'mereka', 
+            'kami', 'kita', 'ini', 'itu', 'tersebut', 'yang', 'siapa', 'apa', 'mana',
+            
+            // Kata bantu / partikel
+            'adalah', 'ialah', 'merupakan', 'yaitu', 'yakni', 'bisa', 'dapat', 'mampu',
+            'boleh', 'harus', 'wajib', 'perlu', 'mesti', 'hendak', 'hendaknya', 'ingin',
+            'mau', 'akan', 'sudah', 'telah', 'pernah', 'belum', 'sedang', 'masih', 'lagi',
+            'tidak', 'tak', 'bukan', 'jangan', 'belum', 'tiada',
+            
+            // Kata keterangan umum
+            'sangat', 'amat', 'sekali', 'paling', 'lebih', 'kurang', 'agak', 'cukup',
+            'terlalu', 'begitu', 'demikian', 'bagaimana', 'mengapa', 'kenapa', 'kapan',
+            'dimana', 'kemana', 'darimana', 'bilamana', 'berapa', 'seberapa',
+            
+            // Kata umum lainnya
+            'hal', 'sebuah', 'suatu', 'satu', 'dua', 'tiga', 'empat', 'lima', 
+            'banyak', 'sedikit', 'beberapa', 'semua', 'seluruh', 'tiap', 'setiap', 
+            'para', 'berbagai', 'macam', 'jenis', 'lain', 'sama', 'sendiri',
+            'saja', 'hanya', 'justru', 'malah', 'bahkan', 'pula', 'pun', 'juga',
+            'lalu', 'kemudian', 'setelah', 'sebelum', 'ketika', 'saat', 'waktu',
+            'hari', 'bulan', 'tahun', 'minggu', 'jam', 'menit', 'detik',
+            'cara', 'tempat', 'orang', 'kali', 'kala', 'masa', 'zaman',
+            'menjadi', 'membuat', 'melakukan', 'memberikan', 'mendapatkan', 
+            'secara', 'menurut', 'berdasarkan', 'sesuai', 'terkait', 'sehubungan',
+            
+            // Kata tambahan (berdasarkan feedback)
+            'kini', 'akhir', 'awal', 'sekian', 'sekedar', 'semoga', 'berharap',
+            'tinggal', 'berusia', 'hidupnya', 'bukanlah', 'tidaklah', 'ataupun',
+            'kecil', 'besar', 'lama', 'baru', 'luas', 'tinggi', 'rendah',
+            'tahunan', 'bulanan', 'harian', 'mingguan',
+            'ditelan', 'dijaganya', 'diwarisi', 'diterima', 'dipanggil', 'digambarkan',
+            'mata', 'tangan', 'kaki', 'kepala', 'badan', 'tubuh',
+            'desa', 'kota', 'dukuh', 'dusun', 'kampung', 'negeri',
+            'ayahnya', 'ibunya', 'anaknya', 'kakeknya', 'neneknya',
+            'energinya', 'hidupnya', 'ceritanya', 'kisahnya',
+            'klasik', 'modern', 'kuno', 'tradisi', 'kesenian',
+            'menggunakan', 'dimengerti', 'menggantungkan', 'mewariskan', 'melestarikan',
+            'pencarian', 'pertunjukkan', 'kesederhanaan', 'kehidupan', 'penokohan',
+            'berdiri', 'terasing', 'dinegerinya', 'tumbang', 'hilang'
+        ];
+
+        // 4. Filter & Count (minimum 4 karakter untuk kata yang bermakna)
+        $keywords = [];
+        foreach ($words as $word) {
+            // Filter: panjang > 4, bukan stopword, bukan angka, bukan kata dengan akhiran 'nya'
+            if (strlen($word) > 4 && 
+                !in_array($word, $stopwords) && 
+                !is_numeric($word) &&
+                !preg_match('/^\d+an$/', $word) && // Filter tahun seperti 1960an
+                !preg_match('/nya$/', $word)) { // Filter kata berakhiran -nya
+                if (!isset($keywords[$word])) {
+                    $keywords[$word] = 0;
+                }
+                $keywords[$word]++;
+            }
+        }
+
+        // 5. Sort by Frequency
+        arsort($keywords);
+
+        // 6. Get Top 30 Keywords (yang paling sering muncul = paling penting)
+        $topKeywords = array_keys(array_slice($keywords, 0, 30));
+        
+        // Return structured data like tag objects
+        $results = [];
+        foreach ($topKeywords as $word) {
+            $results[] = ['name' => $word];
+        }
+
+        echo json_encode($results);
+        exit;
     }
 }

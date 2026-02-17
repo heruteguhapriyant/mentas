@@ -1,3 +1,4 @@
+
 <?php // Author Detail Page - Redesigned (Koalisi Seni Style) ?>
 <div class="author-page-container">
     <div class="author-layout">
@@ -15,10 +16,12 @@
                     </div>
                 <?php endif; ?>
 
+                <?php /* Email hidden per request
                 <div class="contact-item">
                     <span class="contact-label">alamat email:</span>
                     <a href="mailto:<?= htmlspecialchars($content['email']) ?>" class="contact-link"><?= htmlspecialchars($content['email']) ?></a>
                 </div>
+                */ ?>
 
                 <?php 
                     $socials = json_decode($content['social_media'] ?? '[]', true);
@@ -39,11 +42,112 @@
                         <?php if(!empty($handle)): ?>
                         <div class="contact-item">
                             <span class="contact-label"><?= htmlspecialchars($platform) ?>:</span>
-                            <a href="#" class="contact-link link-red"><?= htmlspecialchars($handle) ?></a> <!-- Add real URL logic if needed -->
+                            <a href="<?= htmlspecialchars($handle) ?>" target="_blank" class="contact-link link-red"><?= htmlspecialchars($handle) ?></a> 
                         </div>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
+
+                <!-- Content Submenu -->
+                <div class="author-submenu" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 10px; font-weight: 700; color: #333;">Karya & Kontribusi</h4>
+                    
+                    <style>
+                        .content-dropdown { margin-bottom: 8px; }
+                        .content-dropdown summary {
+                            cursor: pointer;
+                            font-size: 0.9rem;
+                            color: #555;
+                            display: flex;
+                            align-items: center;
+                            list-style: none; /* Hide default triangle */
+                            padding: 5px 0;
+                        }
+                        .content-dropdown summary::-webkit-details-marker { display: none; }
+                        .content-dropdown summary:hover { color: #000; }
+                        .content-dropdown summary .count-badge {
+                            margin-left: auto;
+                            background: #eee;
+                            padding: 2px 8px;
+                            border-radius: 10px;
+                            font-size: 0.75rem;
+                            font-weight: 600;
+                        }
+                        .content-dropdown summary i.fa-chevron-down {
+                            margin-left: 8px;
+                            font-size: 0.7rem;
+                            transition: transform 0.2s;
+                        }
+                        .content-dropdown[open] summary i.fa-chevron-down {
+                            transform: rotate(180deg);
+                        }
+                        .dropdown-list {
+                            list-style: none;
+                            padding: 5px 0 5px 25px;
+                            margin: 0;
+                            border-left: 2px solid #eee;
+                            margin-left: 8px;
+                        }
+                        .dropdown-list li { margin-bottom: 5px; }
+                        .dropdown-list li a {
+                            color: #666;
+                            text-decoration: none;
+                            font-size: 0.85rem;
+                            display: block;
+                            padding: 2px 0;
+                        }
+                        .dropdown-list li a:hover { color: #d63384; }
+                    </style>
+
+                    <!-- BLOG -->
+                    <?php if (!empty($contentItems['blog'])): ?>
+                        <details class="content-dropdown">
+                            <summary>
+                                <i class="fas fa-pen-nib" style="width: 20px; color: #888;"></i> Blog 
+                                <span class="count-badge"><?= count($contentItems['blog']) ?></span>
+                                <i class="fas fa-chevron-down"></i>
+                            </summary>
+                            <ul class="dropdown-list">
+                                <?php foreach ($contentItems['blog'] as $item): ?>
+                                    <li><a href="<?= BASE_URL ?>/blog/<?= $item['slug'] ?>" target="_blank"><?= htmlspecialchars($item['title']) ?></a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </details>
+                    <?php endif; ?>
+
+                    <!-- BULLETIN -->
+                    <?php if (!empty($contentItems['bulletin'])): ?>
+                        <details class="content-dropdown">
+                            <summary>
+                                <i class="fas fa-book-open" style="width: 20px; color: #888;"></i> Bulletin 
+                                <span class="count-badge"><?= count($contentItems['bulletin']) ?></span>
+                                <i class="fas fa-chevron-down"></i>
+                            </summary>
+                            <ul class="dropdown-list">
+                                <?php foreach ($contentItems['bulletin'] as $item): ?>
+                                    <!-- Check if bulletin has slug or file link -->
+                                    <li><a href="<?= BASE_URL ?>/bulletin/<?= $item['slug'] ?? '#' ?>" target="_blank"><?= htmlspecialchars($item['title']) ?></a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </details>
+                    <?php endif; ?>
+
+                    <!-- KOLABORASI -->
+                    <?php if (!empty($contentItems['kolaborasi'])): ?>
+                        <details class="content-dropdown">
+                            <summary>
+                                <i class="fas fa-users" style="width: 20px; color: #888;"></i> Kolaborasi 
+                                <span class="count-badge"><?= count($contentItems['kolaborasi']) ?></span>
+                                <i class="fas fa-chevron-down"></i>
+                            </summary>
+                            <ul class="dropdown-list">
+                                <?php foreach ($contentItems['kolaborasi'] as $item): ?>
+                                    <li><a href="<?= BASE_URL ?>/kolaborasi/<?= $item['slug'] ?>" target="_blank"><?= htmlspecialchars($item['title']) ?></a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </details>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <!-- QRIS Support Section -->
@@ -70,13 +174,14 @@
         <!-- RIGHT COLUMN: Image, Bio, Works -->
         <main class="author-main-content">
             <!-- Big Landscape Image -->
-            <div class="author-cover-image">
+            <!-- Profile Image (Square as cropped) -->
+            <div class="author-profile-image-container" style="width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 12px; overflow: hidden; margin-bottom: 30px; border: 1px solid #eee; margin-left: auto; margin-right: auto;">
                  <?php 
                     // Use a different bigger image if available, or fall back to avatar but styled differently
                     // Ideally this should be a 'cover_photo' but we use avatar for now, styled as landscape/cover
                     $image = !empty($content['avatar']) ? BASE_URL . '/' . $content['avatar'] : 'https://ui-avatars.com/api/?name=' . urlencode($content['name']) . '&background=random&size=600';
                 ?>
-                <img src="<?= $image ?>" alt="<?= htmlspecialchars($content['name']) ?>">
+                <img src="<?= $image ?>" alt="<?= htmlspecialchars($content['name']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
 
             <!-- Bio Text -->
@@ -88,26 +193,38 @@
             <div class="author-works-section">
                 <!-- <h3 class="works-title">Karya</h3> -->
                 
-                <?php if (empty($posts)): ?>
-                    <p class="text-muted">Belum ada artikel yang ditulis.</p>
+                <?php 
+                // Fallback if latestContent not set (backward compatibility)
+                $feedItems = $latestContent ?? $posts; 
+                ?>
+
+                <?php if (empty($feedItems)): ?>
+                    <p class="text-muted">Belum ada karya yang dibuat.</p>
                 <?php else: ?>
                     <div class="works-grid">
-                    <?php foreach ($posts as $post): ?>
+                    <?php foreach ($feedItems as $item): ?>
                         <div class="work-card">
-                            <?php if (!empty($post['cover_image'])): ?>
-                                <a href="<?= BASE_URL ?>/blog/<?= $post['slug'] ?>" class="work-card-img-link">
-                                    <img src="<?= BASE_URL ?>/<?= $post['cover_image'] ?>" alt="<?= htmlspecialchars($post['title']) ?>" class="work-card-img">
+                            <?php if (!empty($item['cover_image'])): ?>
+                                <a href="<?= $item['url'] ?? (BASE_URL . '/blog/' . $item['slug']) ?>" class="work-card-img-link" target="_blank">
+                                    <img src="<?= BASE_URL ?>/<?= $item['cover_image'] ?>" alt="<?= htmlspecialchars($item['title']) ?>" class="work-card-img">
                                 </a>
                             <?php endif; ?>
                             <div class="work-card-body">
-                                <span class="work-cat"><?= htmlspecialchars($post['category_name'] ?? 'Blog') ?></span>
+                                <span class="work-cat">
+                                    <?php 
+                                        // Display category or type
+                                        echo htmlspecialchars($item['category_name'] ?? 'Karya');
+                                    ?>
+                                </span>
                                 <h4 class="work-title">
-                                    <a href="<?= BASE_URL ?>/blog/<?= $post['slug'] ?>"><?= htmlspecialchars($post['title']) ?></a>
+                                    <a href="<?= $item['url'] ?? (BASE_URL . '/blog/' . $item['slug']) ?>" target="_blank"><?= htmlspecialchars($item['title']) ?></a>
                                 </h4>
                                 <div class="work-excerpt">
-                                    <?= substr(strip_tags($post['body']), 0, 150) ?>...
+                                    <?= substr(strip_tags($item['excerpt'] ?? ''), 0, 100) ?>...
                                 </div>
-                                <span class="work-date"><?= date('d M Y', strtotime($post['published_at'])) ?></span>
+                                <span class="work-date">
+                                    <?= isset($item['created_at']) ? date('d M Y', strtotime($item['created_at'])) : '' ?>
+                                </span>
                             </div>
                         </div>
                     <?php endforeach; ?>

@@ -130,7 +130,7 @@
                     <div class="zine-buttons">
                         <?php if (!empty($zine['pdf_link'])): ?>
                             <a href="<?= BASE_URL ?>/bulletin/<?= $zine['slug'] ?>" 
-                               class="btn-outline btn-secondary">
+                               class="btn-outline btn-secondary" target="_blank">
                                 <i class="fa-solid fa-eye"></i> Detail
                             </a>
                             <a href="<?= htmlspecialchars($zine['pdf_link']) ?>" 
@@ -140,7 +140,7 @@
                             </a>
                         <?php else: ?>
                             <a href="<?= BASE_URL ?>/bulletin/<?= $zine['slug'] ?>" 
-                               class="btn-outline btn-primary">
+                               class="btn-outline btn-primary" target="_blank">
                                 <i class="fa-solid fa-book-open"></i> Baca Selengkapnya
                             </a>
                         <?php endif; ?>

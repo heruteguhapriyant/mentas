@@ -3,7 +3,7 @@
 <section class="hero zine-hero">
     <div class="hero-content">
         <a href="<?= BASE_URL ?>/zine" class="zine-back-link">
-            ← Kembali ke Bulletin Sastra
+            ← Kembali ke Bulletin
         </a>
 
         <span class="zine-detail-category"><?= htmlspecialchars($zine['category_name'] ?? 'Bulletin') ?></span>

@@ -49,23 +49,89 @@ class ContentController extends Controller
             // Count total posts by author
             $totalPosts = $this->postModel->countAll(null, $author['id']);
             
-            // Generate pagination data
-            $pagination = paginate($totalPosts, $currentPage, $this->itemsPerPage);
+            // 1. Get Posts
+            $latestPosts = $this->postModel->getByAuthor($author['id'], 'published', 20, 0);
+
+            // 2. Get Zines
+            $zineModel = new Zine();
+            $zines = $zineModel->getByAuthor($author['id']); // Now returns full data
+
+            // 3. Get Collaborations
+            $collabModel = new Collaboration();
+            $collabs = $collabModel->getByUser($author['id']); // Now returns full data
+
+            // 4. Merge and Normalize
+            $feed = [];
+
+            // Helper to add to feed
+            foreach ($latestPosts as $p) {
+                $feed[] = [
+                    'type' => 'blog',
+                    'title' => $p['title'],
+                    'slug' => $p['slug'],
+                    'cover_image' => $p['cover_image'],
+                    'category_name' => $p['category_name'] ?? 'Artikel',
+                    'created_at' => $p['published_at'], // Use published date for posts
+                    'excerpt' => $p['excerpt'] ?? substr(strip_tags($p['body']), 0, 100) . '...',
+                    'url' => BASE_URL . '/blog/' . $p['slug']
+                ];
+            }
+
+            foreach ($zines as $z) {
+                $feed[] = [
+                    'type' => 'bulletin',
+                    'title' => $z['title'],
+                    'slug' => $z['slug'],
+                    'cover_image' => $z['cover_image'],
+                    'category_name' => $z['category_name'] ?? 'Buletin',
+                    'created_at' => $z['created_at'],
+                    'excerpt' => $z['excerpt'] ?? 'Buletin Sastra',
+                    'url' => BASE_URL . '/bulletin/' . ($z['slug'] ?? '#')
+                ];
+            }
+
+            foreach ($collabs as $c) {
+                $feed[] = [
+                    'type' => 'kolaborasi',
+                    'title' => $c['title'],
+                    'slug' => $c['slug'],
+                    'cover_image' => $c['cover_image'],
+                    'category_name' => 'Kolaborasi',
+                    'created_at' => $c['created_at'],
+                    'excerpt' => $c['description'] ?? 'Kolaborasi',
+                    'url' => BASE_URL . '/kolaborasi/' . $c['slug']
+                ];
+            }
+
+            // 5. Sort by Date DESC
+            usort($feed, function ($a, $b) {
+                return strtotime($b['created_at']) - strtotime($a['created_at']);
+            });
+
+            // Counts for sidebar
+            $counts = [
+                'blog' => $totalPosts,
+                'bulletin' => count($zines),
+                'kolaborasi' => count($collabs),
+                'merch' => 0,
+                'pentas' => 0
+            ];
             
-            // Get paginated posts
-            $posts = $this->postModel->getByAuthor(
-                $author['id'], 
-                'published', 
-                $pagination['items_per_page'], 
-                $pagination['offset']
-            );
+            $contentItems = [
+                'blog' => $latestPosts,
+                'bulletin' => $zines,
+                'kolaborasi' => $collabs
+            ];
             
             return $this->view('content/detail/author', [
                 'type' => ['name' => 'Penulis', 'slug' => 'author'],
                 'content' => $author,
-                'posts' => $posts,
+                'latestContent' => $feed, // Pass the combined feed
+                'posts' => $latestPosts, // Keep for backward compatibility if needed, but view should use latestContent
                 'categories' => $categories,
-                'pagination' => $pagination
+                'counts' => $counts,
+                'contentItems' => $contentItems, 
+                'pagination' => null
             ]);
         }
 

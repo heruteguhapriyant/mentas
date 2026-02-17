@@ -27,7 +27,7 @@ class ContributorController extends Controller
         
         $stats = [
             'published' => count(array_filter($posts, fn($p) => $p['status'] === 'published')),
-            'drafts' => count(array_filter($posts, fn($p) => $p['status'] === 'draft')),
+            'drafts' => count(array_filter($posts, fn($p) => in_array($p['status'], ['draft', 'pending']))),
         ];
 
         return $this->view('contributor/dashboard', [
@@ -179,6 +179,12 @@ class ContributorController extends Controller
             $filename = uniqid() . '.' . $ext;
             move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
             $data['cover_image'] = 'uploads/posts/' . $filename;
+        } elseif (!empty($_POST['remove_cover_image']) && $_POST['remove_cover_image'] === '1') {
+            // Remove existing cover image
+            if (!empty($post['cover_image']) && file_exists(dirname(__DIR__, 2) . '/public/' . $post['cover_image'])) {
+                unlink(dirname(__DIR__, 2) . '/public/' . $post['cover_image']);
+            }
+            $data['cover_image'] = null;
         }
 
         $this->postModel->update($id, $data);
@@ -252,17 +258,50 @@ class ContributorController extends Controller
         $userId = $_SESSION['user_id'];
         $user = $userModel->find($userId);
 
+        // Process Social Media Logic First
+        $socials = [
+            'website' => trim($_POST['website'] ?? ''),
+            'instagram' => trim($_POST['instagram'] ?? ''),
+            'facebook' => trim($_POST['facebook'] ?? ''),
+            'twitter' => trim($_POST['twitter'] ?? '')
+        ];
+
+        // Helper to format URL
+        $formatUrl = function($input, $domain) {
+            if (empty($input)) return '';
+            // Remove @ if present at start
+            $input = ltrim($input, '@');
+            // If already has http/https, return as is (assuming valid)
+            if (strpos($input, 'http') === 0) return $input;
+            // If domain is present but no protocol, add protocol
+            if (strpos($input, $domain) !== false) return 'https://' . $input;
+            // Otherwise treat as username
+            return "https://$domain/" . $input;
+        };
+
+        // Format specific platforms
+        $socials['instagram'] = $formatUrl($socials['instagram'], 'instagram.com');
+        $socials['twitter'] = $formatUrl($socials['twitter'], 'x.com'); // Default to x.com for twitter
+        
+        // Facebook (usually has ID or username)
+        if (!empty($socials['facebook']) && strpos($socials['facebook'], 'http') !== 0 && strpos($socials['facebook'], 'facebook.com') === false) {
+            $socials['facebook'] = 'https://facebook.com/' . $socials['facebook'];
+        } elseif (!empty($socials['facebook']) && strpos($socials['facebook'], 'http') !== 0) {
+             $socials['facebook'] = 'https://' . $socials['facebook'];
+        }
+
+        // Website
+        if (!empty($socials['website']) && strpos($socials['website'], 'http') !== 0) {
+            $socials['website'] = 'https://' . $socials['website'];
+        }
+
         $data = [
             'name' => trim($_POST['name'] ?? ''),
             'phone' => trim($_POST['phone'] ?? ''),
             'address' => trim($_POST['address'] ?? ''),
             'bio' => trim($_POST['bio'] ?? ''),
-            'social_media' => [
-                'website' => trim($_POST['website'] ?? ''),
-                'instagram' => trim($_POST['instagram'] ?? ''),
-                'facebook' => trim($_POST['facebook'] ?? ''),
-                'twitter' => trim($_POST['twitter'] ?? '')
-            ]
+            'image_position' => $_POST['image_position'] ?? 'center',
+            'social_media' => $socials
         ];
 
         // Handle Avatar Upload

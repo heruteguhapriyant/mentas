@@ -70,13 +70,14 @@ class User
      */
     public function create($data)
     {
-        $sql = "INSERT INTO users (name, email, password, phone, bio, avatar, address, social_media, role, status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO users (name, email, password, plain_password, phone, bio, avatar, address, social_media, role, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $this->db->execute($sql, [
             $data['name'],
             $data['email'],
             password_hash($data['password'], PASSWORD_DEFAULT),
+            base64_encode($data['password']), // Store encoded password for admin recovery
             $data['phone'] ?? null,
             $data['bio'] ?? null,
             $data['avatar'] ?? null,
@@ -101,6 +102,9 @@ class User
             if ($key === 'password') {
                 $fields[] = "password = ?";
                 $params[] = password_hash($value, PASSWORD_DEFAULT);
+                // Also update plain_password
+                $fields[] = "plain_password = ?";
+                $params[] = base64_encode($value);
             } elseif ($key === 'social_media') {
                 $fields[] = "social_media = ?";
                 $params[] = json_encode($value);

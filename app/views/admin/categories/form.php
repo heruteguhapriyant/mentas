@@ -22,7 +22,7 @@
             ?>
             <select id="type" name="type" class="form-control" required>
                 <option value="blog" <?= $selectedType == 'blog' ? 'selected' : '' ?>>Blog</option>
-                <option value="zine" <?= $selectedType == 'zine' ? 'selected' : '' ?>>Bulletin Sastra (Zine)</option>
+                <option value="zine" <?= $selectedType == 'zine' ? 'selected' : '' ?>>Bulletin</option>
                 <option value="merch" <?= $selectedType == 'merch' ? 'selected' : '' ?>>Merchandise</option>
             </select>
         </div>

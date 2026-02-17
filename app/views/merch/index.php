@@ -80,14 +80,15 @@
                             <?php endif; ?>
 
                             <div class="merch-buttons">
-                                <a href="<?= BASE_URL ?>/merch/<?= $product['slug'] ?? $product['id'] ?>" class="btn-outline">
+                                <a href="<?= BASE_URL ?>/merch/<?= $product['slug'] ?? $product['id'] ?>" class="btn-outline" target="_blank">
                                     <i class="fa-regular fa-eye"></i> Detail
                                 </a>
                                 
                                 <?php if (!isset($product['stock']) || $product['stock'] > 0): ?>
                                     <a href="<?= BASE_URL ?>/merch/order/<?= $product['slug'] ?? $product['id'] ?>" 
                                        class="btn-whatsapp" 
-                                       title="Order via WhatsApp">
+                                       title="Order via WhatsApp"
+                                       target="_blank">
                                         <i class="fab fa-whatsapp"></i>
                                     </a>
                                 <?php else: ?>

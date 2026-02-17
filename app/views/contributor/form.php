@@ -38,11 +38,23 @@
                 <div class="form-group">
                     <label for="cover_image">Cover Image</label>
                     <?php if (!empty($post['cover_image'])): ?>
-                        <div style="margin-bottom: 0.5rem;">
+                        <div id="cover-image-preview" style="margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 10px;">
                             <img src="<?= BASE_URL ?>/<?= $post['cover_image'] ?>" style="max-width: 150px; border-radius: 4px;">
+                            <button type="button" onclick="removeCoverImage()" class="btn btn-danger" style="padding: 4px 10px; font-size: 12px; background: #dc3545; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+                                <i class="fa-solid fa-trash"></i> Hapus
+                            </button>
                         </div>
+                        <input type="hidden" name="remove_cover_image" id="remove_cover_image" value="0">
                     <?php endif; ?>
-                    <input type="file" id="cover_image" name="cover_image" class="form-control" accept="image/*">
+                    <div id="new-cover-preview" style="margin-bottom: 0.5rem; display: none;">
+                        <img id="cover-preview-img" src="" style="max-width: 200px; border-radius: 4px;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="file" id="cover_image" name="cover_image" class="form-control" accept="image/*" style="flex: 1;" onchange="previewCover(this)">
+                        <button type="button" id="clear-file-btn" onclick="clearCoverFile()" style="display: none; padding: 6px 12px; background: #6c757d; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; white-space: nowrap;">
+                            <i class="fa-solid fa-times"></i> Clear
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -66,12 +78,60 @@
                 <input type="hidden" name="body" id="body-input">
             </div>
 
+            <!-- Manual Tags Input (Hidden/Commented by Request) -->
+            <!--
+            <div class="form-group">
+                <label for="tag-input">Tags Tambahan (Manual / Auto)</label>
+                <div class="manual-tags-wrapper" style="position: relative;">
+                    <div class="tag-input-container" id="selected-tags-container" style="display: flex; flex-wrap: wrap; gap: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: #fff; min-height: 45px;">
+                        <!-- Tags rendered here -->
+                    </div>
+                    <input type="text" id="tag-input" class="tag-input-field" placeholder="Ketik tag dan tekan Enter..." style="border: none; outline: none; flex: 1; min-width: 150px; padding: 4px; font-size: 1rem; background: transparent;" autocomplete="off">
+                </div>
+                
+                <!-- Suggestions List -->
+                <ul id="tag-suggestions" class="tag-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ddd; border-top: none; max-height: 200px; overflow-y: auto; z-index: 1000; list-style: none; padding: 0; margin: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></ul>
+
+                <div style="margin-top: 5px; display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="autoGenerateTags()">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Tags
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearGeneratedTags()">
+                        Clear Tags
+                    </button>
+                </div>
+                <input type="hidden" name="manual_tags" id="manual_tags_input">
+                <small class="form-text text-muted">Ketik tag lalu tekan <b>Enter</b>, atau gunakan tombol Generate.</small>
+            </div>
+            -->
+
             <style>
                 /* Quill Editor Container */
                 #quill-editor {
                     height: 400px;
                     background: #fff;
                     margin-bottom: 20px;
+                }
+                /* Quill image delete overlay */
+                .ql-editor img {
+                    cursor: pointer;
+                    transition: outline 0.15s;
+                }
+                .ql-editor img.selected-image {
+                    outline: 3px solid #dc3545;
+                    outline-offset: 2px;
+                }
+                .image-delete-tooltip {
+                    position: fixed;
+                    background: #dc3545;
+                    color: #fff;
+                    padding: 6px 14px;
+                    border-radius: 4px;
+                    font-size: 13px;
+                    cursor: pointer;
+                    z-index: 10000;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    display: none;
                 }
                 /* Quill Editor Styling */
                 .ql-toolbar.ql-snow {
@@ -120,56 +180,7 @@
                 }
             </style>
 
-            <?php 
-            // Get array of current post tag IDs
-            $postTagIds = [];
-            if (!empty($postTags)) {
-                foreach ($postTags as $pt) {
-                    $postTagIds[] = $pt['id'];
-                }
-            }
-            ?>
 
-            <?php if (!empty($allTags)): ?>
-            <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <label style="margin-bottom: 0;">Tags</label>
-                    <button type="button" class="btn-sm btn-secondary" onclick="clearDatabaseTags()" style="background: #dc3545; border: none; font-size: 0.8rem;">
-                        <i class="fas fa-times"></i> Clear Tags
-                    </button>
-                </div>
-                <div class="tags-container">
-                    <?php foreach ($allTags as $tag): ?>
-                        <label class="tag-checkbox">
-                            <input type="checkbox" name="tags[]" value="<?= $tag['id'] ?>" 
-                                   <?= in_array($tag['id'], $postTagIds) ? 'checked' : '' ?>>
-                            <span><?= htmlspecialchars($tag['name']) ?></span>
-                        </label>
-                    <?php endforeach; ?>
-                </div>
-                </div>
-                <div class="manual-tags-wrapper">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                        <label style="margin-bottom: 0;">Tambah Tag Lainnya:</label>
-                        <div style="display: flex; gap: 5px;">
-                            <button type="button" class="btn-sm btn-secondary" onclick="clearGeneratedTags()" style="background: #dc3545; border: none; font-size: 0.8rem;">
-                                <i class="fas fa-times"></i> Clear
-                            </button>
-                            <button type="button" class="btn-sm btn-secondary" onclick="autoGenerateTags()" style="background: #28a745; border: none; font-size: 0.8rem; display: flex; align-items: center; gap: 5px;">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Tags
-                            </button>
-                        </div>
-                    </div>
-                    <div class="tag-input-container">
-                        <div id="selected-tags-container"></div>
-                        <input type="text" id="tag-input" class="tag-input-field" placeholder="Ketik tag..." autocomplete="off">
-                    </div>
-                    <ul id="tag-suggestions" class="tag-suggestions" style="display: none;"></ul>
-                    <input type="hidden" name="manual_tags" id="manual_tags_input">
-                </div>
-                <small>Ketik untuk mencari tag yang sudah ada atau tekan Enter untuk membuat tag baru.</small>
-            </div>
-            <?php endif; ?>
 
             <div class="form-actions">
                 <button type="submit" name="status" value="draft" class="btn btn-secondary">
@@ -183,7 +194,42 @@
     </div>
 </main>
 
+<script>
+function removeCoverImage() {
+    if (confirm('Hapus gambar cover?')) {
+        document.getElementById('cover-image-preview').style.display = 'none';
+        document.getElementById('remove_cover_image').value = '1';
+    }
+}
 
+// Preview cover image when file selected
+function previewCover(input) {
+    var preview = document.getElementById('new-cover-preview');
+    var previewImg = document.getElementById('cover-preview-img');
+    var clearBtn = document.getElementById('clear-file-btn');
+    
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+        clearBtn.style.display = 'inline-block';
+    } else {
+        preview.style.display = 'none';
+        clearBtn.style.display = 'none';
+    }
+}
+
+// Clear file input and hide preview
+function clearCoverFile() {
+    var fileInput = document.getElementById('cover_image');
+    fileInput.value = '';
+    document.getElementById('new-cover-preview').style.display = 'none';
+    document.getElementById('clear-file-btn').style.display = 'none';
+}
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -379,7 +425,154 @@ document.addEventListener('DOMContentLoaded', function() {
         quill.on('text-change', function() {
             document.getElementById('body-input').value = quill.root.innerHTML;
         });
+
+        // --- Image delete on click ---
+        var deleteTooltip = document.createElement('div');
+        deleteTooltip.className = 'image-delete-tooltip';
+        deleteTooltip.innerHTML = '<i class="fa-solid fa-trash"></i> Hapus Gambar';
+        document.body.appendChild(deleteTooltip);
+        var selectedImg = null;
+
+        quill.root.addEventListener('click', function(e) {
+            if (e.target.tagName === 'IMG') {
+                // Remove previous selection
+                if (selectedImg) selectedImg.classList.remove('selected-image');
+                
+                selectedImg = e.target;
+                selectedImg.classList.add('selected-image');
+
+                // Position tooltip above image (fixed position)
+                var rect = selectedImg.getBoundingClientRect();
+                deleteTooltip.style.top = (rect.top - 36) + 'px';
+                deleteTooltip.style.left = (rect.left + rect.width / 2 - 55) + 'px';
+                deleteTooltip.style.display = 'block';
+            } else {
+                // Clicked non-image area — dismiss
+                if (selectedImg) selectedImg.classList.remove('selected-image');
+                selectedImg = null;
+                deleteTooltip.style.display = 'none';
+            }
+        });
+
+        deleteTooltip.addEventListener('click', function() {
+            if (selectedImg) {
+                var blot = Quill.find(selectedImg);
+                if (blot) {
+                    blot.remove();
+                } else {
+                    selectedImg.remove();
+                }
+                selectedImg = null;
+                deleteTooltip.style.display = 'none';
+                // Sync
+                document.getElementById('body-input').value = quill.root.innerHTML;
+            }
+        });
+
+        // Hide tooltip on scroll or click outside editor
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#quill-editor') && !e.target.closest('.image-delete-tooltip')) {
+                if (selectedImg) selectedImg.classList.remove('selected-image');
+                selectedImg = null;
+                deleteTooltip.style.display = 'none';
+            }
+        });
     });
 </script>
 
 <?php require_once __DIR__ . '/layout/footer.php'; ?>
+
+<!-- Cropping Modal -->
+<div id="cropModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9);">
+    <div style="position: relative; margin: 2% auto; padding: 0; width: 90%; max-width: 800px; height: 90%;">
+        <div style="background: #fff; padding: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">Crop Gambar</h3>
+            <div>
+                <button type="button" id="btnCrop" class="btn btn-primary">Potong & Simpan</button>
+                <button type="button" id="btnCancelCrop" class="btn btn-secondary">Batal</button>
+            </div>
+        </div>
+        <div style="height: 500px; background: #333; margin-top: 10px; display: flex; align-items: center; justify-content: center;">
+            <img id="imageToCrop" src="" style="max-width: 100%; max-height: 100%; display: block;">
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.querySelector('input[name="cover_image"]');
+    const modal = document.getElementById('cropModal');
+    const image = document.getElementById('imageToCrop');
+    const btnCrop = document.getElementById('btnCrop');
+    const btnCancel = document.getElementById('btnCancelCrop');
+    let cropper;
+
+    if (input) {
+        input.addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                const file = files[0];
+                if (!file.type.startsWith('image/')) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    image.src = e.target.result;
+                    modal.style.display = 'block';
+
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+
+                    cropper = new Cropper(image, {
+                        aspectRatio: 16 / 9, // 16:9 for articles
+                        viewMode: 1,
+                        autoCropArea: 1,
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    btnCrop.addEventListener('click', function() {
+        if (!cropper) return;
+
+        const canvas = cropper.getCroppedCanvas({
+            width: 800,
+            height: 450,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+
+        canvas.toBlob(function(blob) {
+            const fileName = input.files[0] ? input.files[0].name : "cropped.jpg";
+            const newFile = new File([blob], fileName, { type: 'image/jpeg', lastModified: new Date().getTime() });
+
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(newFile);
+            input.files = dataTransfer.files;
+
+            // Trigger preview update
+            if (typeof previewCover === 'function') {
+                previewCover(input);
+            }
+
+            modal.style.display = 'none';
+            cropper.destroy();
+            cropper = null;
+        }, 'image/jpeg', 0.9);
+    });
+
+    btnCancel.addEventListener('click', function() {
+        modal.style.display = 'none';
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        input.value = ''; 
+        if (typeof clearCoverFile === 'function') {
+            clearCoverFile();
+        }
+    });
+});
+</script>

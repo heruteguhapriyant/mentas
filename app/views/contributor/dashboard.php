@@ -76,11 +76,9 @@
                                     </td>
                                     <td><?= date('d M Y', strtotime($post['created_at'])) ?></td>
                                     <td class="actions">
-                                        <?php if ($post['status'] === 'published'): ?>
-                                            <a href="<?= BASE_URL ?>/blog/<?= $post['slug'] ?>" class="action-btn view" target="_blank" title="Lihat">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        <?php endif; ?>
+                                        <a href="<?= BASE_URL ?>/blog/<?= $post['slug'] ?>" class="action-btn view" target="_blank" title="Lihat">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                         <a href="<?= BASE_URL ?>/contributor/edit/<?= $post['id'] ?>" class="action-btn edit" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>

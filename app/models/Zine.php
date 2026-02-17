@@ -118,6 +118,29 @@ class Zine
     }
 
     /**
+     * Count zines by author (BARU - untuk profil author)
+     */
+    public function countByAuthor($authorId)
+    {
+        $sql = "SELECT COUNT(*) as total FROM zines WHERE author_id = ? AND is_active = 1";
+        $result = $this->db->queryOne($sql, [$authorId]);
+        return (int)($result['total'] ?? 0);
+    }
+
+    /**
+     * Get zines by author (BARU - untuk dropdown profil author)
+     */
+    public function getByAuthor($authorId)
+    {
+        $sql = "SELECT z.*, c.name as category_name
+                FROM zines z
+                LEFT JOIN categories c ON z.category_id = c.id
+                WHERE z.author_id = ? AND z.is_active = 1 
+                ORDER BY z.created_at DESC";
+        return $this->db->query($sql, [$authorId]);
+    }
+
+    /**
      * Get zines grouped by category (for potential use)
      */
     public function getAllGroupedByCategory()
@@ -160,8 +183,8 @@ class Zine
      */
     public function create($data)
     {
-        $sql = "INSERT INTO zines (title, slug, excerpt, content, cover_image, category_id, pdf_link, is_active) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO zines (title, slug, excerpt, content, cover_image, category_id, author_id, image_position, pdf_link, is_active) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $this->db->execute($sql, [
             $data['title'],
@@ -170,6 +193,8 @@ class Zine
             $data['content'] ?? null,
             $data['cover_image'] ?? null,
             $data['category_id'] ?? null,
+            $data['author_id'] ?? null,
+            $data['image_position'] ?? 'center',
             $data['pdf_link'] ?? null,
             $data['is_active'] ?? 1
         ]);

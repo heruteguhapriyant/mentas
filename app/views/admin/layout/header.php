@@ -10,6 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Mentas.id</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
@@ -236,10 +238,10 @@
                 <li style="padding: 0.5rem 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.75rem; text-transform: uppercase;">Konten</li>
                 
                 <li><a href="<?= BASE_URL ?>/admin/zines">
-                    <i class="fas fa-book"></i> Buletin Sastra
+                    <i class="fas fa-book"></i> Bulletin
                 </a></li>
-                <li><a href="<?= BASE_URL ?>/admin/communities">
-                    <i class="fas fa-users-cog"></i> Katalog Komunitas
+                <li><a href="<?= BASE_URL ?>/admin/collaborations">
+                    <i class="fas fa-handshake"></i> Kolaborasi
                 </a></li>
                 
                 <div class="menu-divider"></div>

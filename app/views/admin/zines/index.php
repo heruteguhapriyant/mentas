@@ -1,7 +1,7 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <div class="page-header">
-    <h1>Buletin Sastra</h1>
+    <h1>Bulletin</h1>
     <div class="header-actions">
         <form action="" method="GET" class="search-form">
             <input type="text" name="q" placeholder="Cari buletin..." value="<?= htmlspecialchars($search ?? '') ?>">

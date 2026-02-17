@@ -26,10 +26,14 @@ class Post
         $conditions = [];
 
         if ($status !== 'all') {
-            $conditions[] = "p.status = ?";
-            $params[] = $status;
-            if ($status === 'published') {
-                $conditions[] = "p.published_at <= NOW()";
+            if ($status === 'unpublished') {
+                $conditions[] = "p.status IN ('draft', 'pending')";
+            } else {
+                $conditions[] = "p.status = ?";
+                $params[] = $status;
+                if ($status === 'published') {
+                    $conditions[] = "p.published_at <= NOW()";
+                }
             }
         }
 
@@ -356,6 +360,20 @@ class Post
         }
         $result = $this->db->queryOne($sql, [$status]);
         return $result['total'];
+    }
+
+    /**
+     * Get pending posts (awaiting admin approval)
+     */
+    public function getPendingPosts()
+    {
+        $sql = "SELECT p.*, u.name as author_name 
+                FROM posts p 
+                LEFT JOIN users u ON p.author_id = u.id 
+                WHERE p.status IN ('pending', 'draft') 
+                ORDER BY p.created_at DESC 
+                LIMIT 10";
+        return $this->db->query($sql);
     }
 
     /**

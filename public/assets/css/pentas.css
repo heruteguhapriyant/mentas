@@ -117,9 +117,13 @@
 /* Card Image */
 .pentas-card-image {
     width: 100%;
-    height: 250px;
+    height: auto;
+    aspect-ratio: 16/9;
+    /* Set a default aspect ratio to prevent layout jumping, or leave auto */
+    /* height: 250px; Removed fixed height */
     overflow: hidden;
     position: relative;
+    border-bottom: 3px solid #000;
 }
 
 .pentas-card-image img {
@@ -206,6 +210,11 @@
     color: #fff;
 }
 
+.event-badge.upcoming {
+    background: #000;
+    color: #fff;
+}
+
 /* Card Content */
 .pentas-card-content {
     padding: 20px;
@@ -250,6 +259,7 @@
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
@@ -272,6 +282,7 @@
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
@@ -419,8 +430,8 @@
 .pentas-featured-image {
     width: 100%;
     height: auto;
-    max-height: 400px;
-    object-fit: cover;
+    /* max-height: 400px; Removed to respect original aspect ratio */
+    /* object-fit: cover; Removed */
     border-radius: 12px;
     margin-bottom: 30px;
     display: block;
@@ -537,7 +548,7 @@
     gap: 10px;
 }
 
-.share-btn {
+.pentas-detail-section .share-btn {
     width: 44px;
     height: 44px;
     border-radius: 50%;
@@ -552,20 +563,20 @@
     box-shadow: 3px 3px 0 #000;
 }
 
-.share-btn:hover {
+.pentas-detail-section .share-btn:hover {
     transform: translate(-1px, -1px);
     box-shadow: 4px 4px 0 #000;
 }
 
-.share-btn.whatsapp {
+.pentas-detail-section .share-btn.whatsapp {
     background: #25D366;
 }
 
-.share-btn.twitter {
+.pentas-detail-section .share-btn.twitter {
     background: #1DA1F2;
 }
 
-.share-btn.facebook {
+.pentas-detail-section .share-btn.facebook {
     background: #4267B2;
 }
 

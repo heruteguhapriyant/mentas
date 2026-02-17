@@ -19,7 +19,8 @@ class Router
 
             // Controller aliases (map URL to actual controller)
             $controllerAliases = [
-                'bulletin' => 'Zine',  // /bulletin -> ZineController
+                'bulletin' => 'Zine',      // /bulletin -> ZineController
+                'ekosistem' => 'Kolaborasi', // /ekosistem -> KolaborasiController (backward compat)
             ];
 
             // Check if there's an alias

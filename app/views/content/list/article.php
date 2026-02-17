@@ -42,7 +42,7 @@
                     <?php endif; ?>
 
                     <h3 class="blog-title">
-                        <a href="<?= BASE_URL ?>/blog/<?= $item['slug']; ?>" class="blog-title-link">
+                        <a href="<?= BASE_URL ?>/blog/<?= $item['slug']; ?>" class="blog-title-link" target="_blank">
                             <?= htmlspecialchars($item['title']); ?>
                         </a>
                     </h3>
