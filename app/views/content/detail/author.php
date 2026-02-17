@@ -42,7 +42,31 @@
                         <?php if(!empty($handle)): ?>
                         <div class="contact-item">
                             <span class="contact-label"><?= htmlspecialchars($platform) ?>:</span>
-                            <a href="<?= htmlspecialchars($handle) ?>" target="_blank" class="contact-link link-red"><?= htmlspecialchars($handle) ?></a> 
+                            <?php 
+                                $url = $handle;
+                                // Basic check if it's already a URL
+                                if (!preg_match("~^(?:f|ht)tps?://~i", $handle)) {
+                                    $cleanHandle = ltrim($handle, '@');
+                                    $plat = strtolower($platform);
+                                    
+                                    if ($plat === 'instagram') {
+                                        $url = "https://instagram.com/" . $cleanHandle;
+                                    } elseif ($plat === 'twitter' || $plat === 'x') {
+                                        $url = "https://x.com/" . $cleanHandle;
+                                    } elseif ($plat === 'facebook') {
+                                        $url = "https://facebook.com/" . $cleanHandle;
+                                    } elseif ($plat === 'tiktok') {
+                                        $url = "https://tiktok.com/@" . $cleanHandle;
+                                    } elseif ($plat === 'youtube') {
+                                        $url = "https://youtube.com/" . $cleanHandle;
+                                    } else {
+                                        // Default fallback or maybe keep as is?
+                                        // User might input 'example.com'
+                                        $url = "https://" . $handle; 
+                                    }
+                                }
+                            ?>
+                            <a href="<?= htmlspecialchars($url) ?>" target="_blank" class="contact-link link-red"><?= htmlspecialchars($handle) ?></a> 
                         </div>
                         <?php endif; ?>
                     <?php endforeach; ?>
