@@ -1,18 +1,24 @@
-# Upload user
-public/uploads/**
+# Environment
+.env
 
-# Keep folder structure
-!public/uploads/**/
-!public/uploads/**/.gitkeep
+# Database dump
+*.sql
 
 # Backup
 *.zip
 *.rar
 *.7z
 
-# Database dump
-*.sql
+# Uploads
+public/uploads/**
 
-# Test files
+# Keep folder structure
+!public/uploads/**/
+!public/uploads/**/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
 public/cek.php
 tesss-index.php
