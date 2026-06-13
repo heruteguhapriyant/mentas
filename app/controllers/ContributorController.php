@@ -115,6 +115,54 @@ class ContributorController extends Controller
         header('Location: ' . BASE_URL . '/contributor');
         exit;
     }
+    
+    /**
+     * Handle image upload from Quill editor
+     */
+    public function uploadImage()
+    {
+        header('Content-Type: application/json');
+    
+        if (!isLoggedIn()) {
+            echo json_encode(['error' => 'Unauthorized']);
+            exit;
+        }
+    
+        if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['error' => 'Upload gagal']);
+            exit;
+        }
+    
+        $file = $_FILES['image'];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    
+        if (!in_array($file['type'], $allowedTypes)) {
+            echo json_encode(['error' => 'Tipe file tidak didukung']);
+            exit;
+        }
+    
+        if ($file['size'] > 5 * 1024 * 1024) {
+            echo json_encode(['error' => 'Ukuran gambar maksimal 5MB']);
+            exit;
+        }
+    
+        $uploadDir = dirname(__DIR__, 2) . '/public/uploads/posts/content/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+    
+        $ext      = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = uniqid('img_') . '.' . $ext;
+    
+        if (move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
+            echo json_encode([
+                'url' => BASE_URL . '/uploads/posts/content/' . $filename
+            ]);
+        } else {
+            echo json_encode(['error' => 'Gagal menyimpan file']);
+        }
+        exit;
+    }
 
     /**
      * Edit post form

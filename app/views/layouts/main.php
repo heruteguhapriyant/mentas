@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mentas.id</title>
     
-    <meta name="google-site-verification" content="GCIIoCSf8_uJTraiHeIqJemJy4zXa1aRXAFQRIZqt8w" />
+    <meta name="google-site-verification" content="RnmFa6-xsCqiuI3JqzecXuZA8lxYykOSpXaepIDCaCo" />
 
     <!-- Open Graph Meta Tags -->
     <?php

@@ -63,15 +63,48 @@ $canRegister = !$isPast && ($availableTickets == -1 || $availableTickets > 0);
                     </p>
                     
                     <!-- Location Info -->
-                    <?php if (!empty($event['venue']) || !empty($event['venue_address'])): ?>
-                        <div class="event-location-box">
-                            <h4><i class="fas fa-map-marker-alt"></i>Lokasi</h4>
-                            <?php if (!empty($event['venue'])): ?>
-                                <p class="venue-name"><?= htmlspecialchars($event['venue']) ?></p>
-                            <?php endif; ?>
-                            <?php if (!empty($event['venue_address'])): ?>
-                                <p class="venue-address"><?= nl2br(htmlspecialchars($event['venue_address'])) ?></p>
-                            <?php endif; ?>
+                    <!-- Jadwal & Lokasi -->
+                    <?php if (!empty($schedules)): ?>
+                        <div class="event-schedules-detail">
+                            <h3><i class="fas fa-calendar-alt"></i> Jadwal & Lokasi</h3>
+                            <div class="schedules-grid">
+                                <?php foreach ($schedules as $idx => $sch):
+                                    $isPastSch = strtotime($sch['event_date']) < time();
+                                ?>
+                                <div class="schedule-detail-card <?= $isPastSch ? 'past' : 'upcoming' ?>">
+                                    <div class="sdc-header">
+                                        <span class="sdc-badge <?= $isPastSch ? 'badge-past' : 'badge-upcoming' ?>">
+                                            <?= $isPastSch ? 'Selesai' : 'Akan Datang' ?>
+                                        </span>
+                                        <span class="sdc-num">Jadwal <?= $idx + 1 ?></span>
+                                    </div>
+                                    <div class="sdc-date">
+                                        <i class="far fa-calendar-alt"></i>
+                                        <?= date('d F Y', strtotime($sch['event_date'])) ?>
+                                        &nbsp;•&nbsp;
+                                        <i class="far fa-clock"></i>
+                                        <?= date('H:i', strtotime($sch['event_date'])) ?> WIB
+                                        <?php if (!empty($sch['end_date'])): ?>
+                                            &nbsp;–&nbsp; <?= date('H:i', strtotime($sch['end_date'])) ?> WIB
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php if (!empty($sch['venue'])): ?>
+                                        <div class="sdc-venue">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <?= htmlspecialchars($sch['venue']) ?>
+                                            <?php if (!empty($sch['city'])): ?>
+                                                <span class="sdc-city">— <?= htmlspecialchars($sch['city']) ?></span>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($sch['venue_address'])): ?>
+                                        <div class="sdc-address">
+                                            <?= nl2br(htmlspecialchars($sch['venue_address'])) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                     <?php endif; ?>
                     
@@ -131,11 +164,11 @@ $canRegister = !$isPast && ($availableTickets == -1 || $availableTickets > 0);
                         <?php endif; ?>
 
                         <!-- Attendee count -->
-                        <?php if ($confirmedCount > 0): ?>
-                            <div class="attendee-info">
-                                <i class="fas fa-users"></i> <?= $confirmedCount ?> peserta terdaftar
-                            </div>
-                        <?php endif; ?>
+                        <!--<?php if ($confirmedCount > 0): ?>-->
+                        <!--    <div class="attendee-info">-->
+                        <!--        <i class="fas fa-users"></i> <?= $confirmedCount ?> peserta terdaftar-->
+                        <!--    </div>-->
+                        <!--<?php endif; ?>-->
 
                         <!-- Register / Status Button -->
                         <!--<?php if ($canRegister): ?>-->
@@ -188,7 +221,7 @@ $canRegister = !$isPast && ($availableTickets == -1 || $availableTickets > 0);
                 <!-- Widget Yang Terlibat -->
                 <?php if (!empty($eventContributors)): ?>
                 <div class="sidebar-contributors-widget">
-                    <h3 class="sidebar-widget-title">Yang Terlibat</h3>
+                    <h3 class="sidebar-widget-title">Kreator</h3>
                     <ul class="contributors-list">
                         <?php foreach ($eventContributors as $contributor): ?>
                             <li class="contributor-item">
@@ -251,6 +284,44 @@ $canRegister = !$isPast && ($availableTickets == -1 || $availableTickets > 0);
     <style>
     .cover-wrapper:hover .cover-overlay { background: rgba(0,0,0,0.35) !important; }
     .cover-wrapper:hover .cover-overlay i { opacity: 1 !important; }
+
+    .event-schedules-detail { margin: 24px 0; }
+    .event-schedules-detail h3 { margin-bottom: 16px; }
+    .schedules-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .schedule-detail-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 16px;
+        background: #fff;
+        border-left: 4px solid #d52c2c;
+    }
+    .schedule-detail-card.past {
+        border-left-color: #aaa;
+        background: #f9f9f9;
+    }
+    .sdc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .sdc-badge {
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    .badge-upcoming { background: #fff0f0; color: #d52c2c; }
+    .badge-past     { background: #f0f0f0; color: #888; }
+    .sdc-num        { font-size: 12px; color: #aaa; }
+    .sdc-date       { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .sdc-venue      { font-size: 14px; color: #444; margin-bottom: 4px; }
+    .sdc-city       { color: #888; }
+    .sdc-address    { font-size: 13px; color: #666; margin-top: 6px; line-height: 1.6; }
     </style>
 
     <script>

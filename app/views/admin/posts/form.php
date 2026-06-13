@@ -7,8 +7,16 @@
     </a>
 </div>
 
+<?php $flash = getFlash(); ?>
+<?php if ($flash): ?>
+    <div class="alert alert-<?= $flash['type'] ?>">
+        <?= $flash['message'] ?>
+    </div>
+<?php endif; ?>
+
 <div class="card">
     <form action="<?= BASE_URL ?>/admin/<?= $post ? 'postUpdate/' . $post['id'] : 'postStore' ?>" method="POST" enctype="multipart/form-data">
+
         <div class="form-group">
             <label for="title">Judul Artikel *</label>
             <input type="text" id="title" name="title" class="form-control" required value="<?= htmlspecialchars($post['title'] ?? '') ?>">
@@ -38,7 +46,7 @@
 
         <div class="form-group">
             <label for="published_at">Tanggal Publish (Opsional)</label>
-            <input type="datetime-local" id="published_at" name="published_at" class="form-control" 
+            <input type="datetime-local" id="published_at" name="published_at" class="form-control"
                    value="<?= !empty($post['published_at']) ? date('Y-m-d\TH:i', strtotime($post['published_at'])) : '' ?>">
             <small class="text-muted" style="color: #6c757d; font-size: 0.85em;">
                 Jika status <b>Published</b> dan tanggal ini diisi masa depan, artikel akan "Terjadwal".<br>
@@ -50,7 +58,7 @@
             <label for="cover_image">Cover Image</label>
             <?php if (!empty($post['cover_image'])): ?>
                 <div id="cover-image-preview" style="margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 10px;">
-                    <img src="<?= BASE_URL ?>/<?= $post['cover_image'] ?>" style="max-width: 200px; border-radius: 4px;">
+                    <img src="<?= BASE_URL ?>/<?= $post['cover_image'] ?>" style="max-width: 150px; border-radius: 4px;">
                     <button type="button" onclick="removeCoverImage()" class="btn btn-danger" style="padding: 4px 10px; font-size: 12px; background: #dc3545; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
                         <i class="fa-solid fa-trash"></i> Hapus
                     </button>
@@ -61,7 +69,7 @@
                 <img id="cover-preview-img" src="" style="max-width: 200px; border-radius: 4px;">
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
-                <input type="file" id="cover_image" name="cover_image" class="form-control" accept="image/*" onchange="previewCover(this)">
+                <input type="file" id="cover_image" name="cover_image" class="form-control" accept="image/*" style="flex: 1;" onchange="previewCover(this)">
                 <button type="button" id="clear-file-btn" onclick="clearCoverFile()" style="display: none; padding: 6px 12px; background: #6c757d; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; white-space: nowrap;">
                     <i class="fa-solid fa-times"></i> Clear
                 </button>
@@ -75,15 +83,13 @@
 
         <div class="form-group">
             <label for="body">Isi Artikel *</label>
-            <!-- Quill Editor Container -->
             <div id="quill-wrapper" style="position: relative;">
-                <div id="quill-editor" style="min-height: 300px; background: white;"></div>
+                <div id="quill-editor"></div>
             </div>
-            <input type="hidden" name="body" id="body" required value="<?= htmlspecialchars($post['body'] ?? '') ?>">
+            <input type="hidden" name="body" id="body" required>
         </div>
 
-        <?php 
-        // Get array of current post tag IDs
+        <?php
         $postTagIds = [];
         if (!empty($postTags)) {
             foreach ($postTags as $pt) {
@@ -100,13 +106,15 @@
                     <i class="fas fa-times"></i> Clear Tags
                 </button>
             </div>
-            <div class="tags-checkbox-container" style="display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #ddd; max-height: 200px; overflow-y: auto;">
+            <div class="tags-checkbox-wrapper" id="tags-checkbox-list">
                 <?php foreach ($allTags as $tag): ?>
-                    <label class="tag-label" style="display: flex; align-items: center; gap: 5px; cursor: pointer; padding: 5px 12px; background: #fff; border-radius: 20px; border: 1px solid #ddd; transition: all 0.2s;">
-                        <input type="checkbox" name="tags[]" value="<?= $tag['id'] ?>" 
-                               data-tag-name="<?= strtolower($tag['name']) ?>"
-                               <?= in_array($tag['id'], $postTagIds) ? 'checked' : '' ?>
-                               style="margin: 0;">
+                    <label class="tag-checkbox-item" data-name="<?= strtolower(htmlspecialchars($tag['name'])) ?>">
+                        <input
+                            type="checkbox"
+                            name="tags[]"
+                            value="<?= $tag['id'] ?>"
+                            <?= in_array($tag['id'], $postTagIds) ? 'checked' : '' ?>
+                        >
                         <span><?= htmlspecialchars($tag['name']) ?></span>
                     </label>
                 <?php endforeach; ?>
@@ -115,7 +123,6 @@
         </div>
         <?php endif; ?>
 
-        <!-- Manual Tags / Generated Tags -->
         <!-- Manual & Generated Tags -->
         <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -129,100 +136,177 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Tag Input Wrapper -->
             <div class="manual-tags-wrapper" style="position: relative;">
                 <div class="tag-input-container" style="display: flex; flex-wrap: wrap; gap: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: #fff; min-height: 45px;">
-                    <div id="active-tags-container" style="display: contents;">
-                        <!-- Tags rendered here -->
-                    </div>
-                    <input type="text" id="tag-input" class="tag-input-field" placeholder="Ketik tag dan tekan Enter..." style="border: none; outline: none; flex: 1; min-width: 150px; padding: 4px; font-size: 1rem; background: transparent;" autocomplete="off">
+                    <div id="active-tags-container" style="display: contents;"></div>
+                    <input type="text" id="tag-input" class="tag-input-field" placeholder="Ketik tag dan tekan Enter..."
+                        style="border: none; outline: none; flex: 1; min-width: 150px; padding: 4px; font-size: 1rem; background: transparent;" autocomplete="off">
                 </div>
-                <!-- Autocomplete Suggestions -->
-                <ul id="tag-suggestions" class="tag-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ddd; border-top: none; max-height: 200px; overflow-y: auto; z-index: 1000; list-style: none; padding: 0; margin: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></ul>
+                <ul id="tag-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ddd; border-top: none; max-height: 200px; overflow-y: auto; z-index: 1000; list-style: none; padding: 0; margin: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></ul>
             </div>
-            
             <input type="hidden" name="manual_tags" id="manual_tags_input">
             <small class="form-text text-muted">Ketik tag lalu tekan <b>Enter</b>, atau gunakan tombol Generate.</small>
         </div>
 
         <div style="display: flex; gap: 1rem;">
-            <button type="submit" name="status" value="draft" class="btn btn-secondary">
-                <i class="fas fa-save"></i> Simpan Draft
-            </button>
-            <button type="submit" name="status" value="published" class="btn btn-primary">
-                <i class="fas fa-paper-plane"></i> Publish
+            <button type="submit" class="btn btn-secondary">
+                <i class="fas fa-save"></i> Simpan
             </button>
         </div>
+
     </form>
 </div>
 
-<!-- Quill Styles -->
-<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 <style>
-.active-tag-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    background: #e9ecef;
-    border-radius: 16px;
-    font-size: 0.9rem;
-    color: #333;
-    margin-right: 5px;
-    margin-bottom: 5px;
-}
-.active-tag-chip .remove-tag {
-    cursor: pointer;
-    font-weight: bold;
-    color: #666;
-    margin-left: 5px;
-}
-.active-tag-chip .remove-tag:hover {
-    color: #dc3545;
-}
-.suggestion-item {
-    padding: 8px 12px;
-    cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
-}
-.suggestion-item:hover {
-    background: #f8f9fa;
-    color: #007bff;
-}
+    /* Quill Editor */
+    #quill-editor {
+        height: 400px;
+        background: #fff;
+        margin-bottom: 20px;
+    }
+    .ql-toolbar.ql-snow {
+        border-radius: 4px 4px 0 0;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+    }
+    .ql-container.ql-snow {
+        border-radius: 0 0 4px 4px;
+        border: 1px solid #ddd;
+        border-top: none;
+        font-size: 16px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .ql-editor {
+        min-height: 350px;
+        line-height: 1.8;
+    }
+    .ql-editor h1, .ql-editor h2, .ql-editor h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .ql-editor blockquote {
+        border-left: 4px solid #d52c2c;
+        padding-left: 1rem;
+        color: #555;
+    }
+    .ql-editor a {
+        color: #d52c2c;
+    }
+    .ql-snow .ql-picker.ql-header .ql-picker-label::before,
+    .ql-snow .ql-picker.ql-header .ql-picker-item::before { content: 'Normal'; }
+    .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
+    .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before { content: 'Heading 1'; }
+    .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
+    .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before { content: 'Heading 2'; }
+    .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
+    .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before { content: 'Heading 3'; }
 
-/* Quill Overrides */
-.ql-toolbar.ql-snow {
-    border-radius: 4px 4px 0 0;
-    margin-top: 0.5rem;
-}
-.ql-container.ql-snow {
-    border-radius: 0 0 4px 4px;
-    font-family: inherit;
-    font-size: 1rem;
-}
+    /* Image delete tooltip */
+    .ql-editor img {
+        cursor: pointer;
+        transition: outline 0.15s;
+    }
+    .ql-editor img.selected-image {
+        outline: 3px solid #dc3545;
+        outline-offset: 2px;
+    }
+    .image-delete-tooltip {
+        position: fixed;
+        background: #dc3545;
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 4px;
+        font-size: 13px;
+        cursor: pointer;
+        z-index: 10000;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        display: none;
+    }
 
-/* Quill Image Delete */
-.ql-editor img.selected-image {
-    outline: 3px solid #dc3545;
-    cursor: pointer;
-}
-.image-delete-tooltip {
-    position: fixed;
-    background: #dc3545;
-    color: #fff;
-    padding: 6px 14px;
-    border-radius: 4px;
-    font-size: 13px;
-    cursor: pointer;
-    z-index: 10000;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    display: none;
-}
+    /* Tags DB checkbox */
+    .tags-checkbox-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fafafa;
+        max-height: 220px;
+        overflow-y: auto;
+    }
+    .tag-checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        background: #fff;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.15s;
+        user-select: none;
+        margin: 0;
+    }
+    .tag-checkbox-item:hover {
+        border-color: #d52c2c;
+        background: #fff5f5;
+    }
+    .tag-checkbox-item input[type="checkbox"] {
+        accent-color: #d52c2c;
+        width: 14px;
+        height: 14px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .tag-checkbox-item:has(input:checked) {
+        border-color: #d52c2c;
+        background: #fff0f0;
+        font-weight: 500;
+        color: #d52c2c;
+    }
+
+    /* Manual tags chip */
+    .active-tag-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        background: #e9ecef;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        color: #333;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    .active-tag-chip .remove-tag {
+        cursor: pointer;
+        font-weight: bold;
+        color: #666;
+        margin-left: 5px;
+    }
+    .active-tag-chip .remove-tag:hover {
+        color: #dc3545;
+    }
+    .suggestion-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .suggestion-item:hover {
+        background: #f8f9fa;
+        color: #007bff;
+    }
 </style>
 
+<!-- Quill CSS -->
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+
 <script>
-// Cover image management
+// =====================
+// Cover Image Functions
+// =====================
 function removeCoverImage() {
     if (confirm('Hapus gambar cover?')) {
         document.getElementById('cover-image-preview').style.display = 'none';
@@ -255,84 +339,84 @@ function clearCoverFile() {
     document.getElementById('clear-file-btn').style.display = 'none';
 }
 
-// Unified Tag Logic
+// =====================
+// Tags DB
+// =====================
+function clearDatabaseTags() {
+    document.querySelectorAll('input[name="tags[]"]').forEach(cb => cb.checked = false);
+}
+
+// =====================
+// Manual / Auto Tags
+// =====================
 let activeTags = [];
-const tagInput = document.getElementById('tag-input');
-const suggestionsList = document.getElementById('tag-suggestions');
-const activeTagsContainer = document.getElementById('active-tags-container');
-const manualTagsInput = document.getElementById('manual_tags_input');
 let debounceTimer;
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Init from hidden input (if editing or validation error)
+document.addEventListener('DOMContentLoaded', function () {
+    const manualTagsInput = document.getElementById('manual_tags_input');
     if (manualTagsInput.value) {
         activeTags = manualTagsInput.value.split(',').filter(t => t.trim() !== '');
         renderActiveTags();
     }
-});
 
-// Input Event
-tagInput.addEventListener('input', function() {
-    const query = this.value.trim();
-    clearTimeout(debounceTimer);
+    const tagInput = document.getElementById('tag-input');
+    const suggestionsList = document.getElementById('tag-suggestions');
 
-    if (query.length < 1) {
-        suggestionsList.style.display = 'none';
-        return;
-    }
-
-    debounceTimer = setTimeout(() => {
-        fetch(`<?= BASE_URL ?>/admin/searchTags?q=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(tags => {
-                suggestionsList.innerHTML = '';
-                if (tags.length > 0) {
-                    tags.forEach(tag => {
-                        const li = document.createElement('li');
-                        li.className = 'suggestion-item';
-                        li.textContent = tag.name;
-                        li.onclick = () => addTag(tag.name);
-                        suggestionsList.appendChild(li);
-                    });
-                    suggestionsList.style.display = 'block';
-                } else {
-                    suggestionsList.style.display = 'none';
-                }
-            });
-    }, 300);
-});
-
-tagInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        const value = this.value.trim();
-        if (value) {
-            addTag(value);
+    tagInput.addEventListener('input', function () {
+        const query = this.value.trim();
+        clearTimeout(debounceTimer);
+        if (query.length < 1) {
+            suggestionsList.style.display = 'none';
+            return;
         }
-    }
-});
+        debounceTimer = setTimeout(() => {
+            fetch(`<?= BASE_URL ?>/admin/searchTags?q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(tags => {
+                    suggestionsList.innerHTML = '';
+                    if (tags.length > 0) {
+                        tags.forEach(tag => {
+                            const li = document.createElement('li');
+                            li.className = 'suggestion-item';
+                            li.textContent = tag.name;
+                            li.onclick = () => addTag(tag.name);
+                            suggestionsList.appendChild(li);
+                        });
+                        suggestionsList.style.display = 'block';
+                    } else {
+                        suggestionsList.style.display = 'none';
+                    }
+                });
+        }, 300);
+    });
 
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.manual-tags-wrapper')) {
-        suggestionsList.style.display = 'none';
-    }
+    tagInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const value = this.value.trim();
+            if (value) addTag(value);
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.manual-tags-wrapper')) {
+            suggestionsList.style.display = 'none';
+        }
+    });
 });
 
 function addTag(name) {
-    // Check if already in activeTags
     if (activeTags.includes(name)) {
-        tagInput.value = '';
-        suggestionsList.style.display = 'none';
+        document.getElementById('tag-input').value = '';
+        document.getElementById('tag-suggestions').style.display = 'none';
         return;
     }
-    
     activeTags.push(name);
     renderActiveTags();
     updateHiddenInput();
-    
-    tagInput.value = '';
-    suggestionsList.style.display = 'none';
-    tagInput.focus();
+    document.getElementById('tag-input').value = '';
+    document.getElementById('tag-suggestions').style.display = 'none';
+    document.getElementById('tag-input').focus();
 }
 
 function removeActiveTag(name) {
@@ -342,21 +426,19 @@ function removeActiveTag(name) {
 }
 
 function renderActiveTags() {
-    // activeTagsContainer might be null if script runs before DOM? 
-    // But we are at bottom of body.
-    if (!activeTagsContainer) return;
-
-    activeTagsContainer.innerHTML = '';
+    const container = document.getElementById('active-tags-container');
+    if (!container) return;
+    container.innerHTML = '';
     activeTags.forEach(tag => {
         const chip = document.createElement('div');
         chip.className = 'active-tag-chip';
         chip.innerHTML = `${tag} <span class="remove-tag" onclick="removeActiveTag('${tag}')">&times;</span>`;
-        activeTagsContainer.appendChild(chip);
+        container.appendChild(chip);
     });
 }
 
 function updateHiddenInput() {
-    manualTagsInput.value = activeTags.join(',');
+    document.getElementById('manual_tags_input').value = activeTags.join(',');
 }
 
 function clearAllTags() {
@@ -367,10 +449,8 @@ function clearAllTags() {
 
 function autoGenerateTags() {
     const title = document.getElementById('title').value;
-    // Quill editor might not update textarea immediately if not triggered
-    // But here we access #body input which is synced
     const body = document.getElementById('body').value;
-    
+
     if (!title && !body) {
         alert('Mohon isi Judul atau Konten Artikel terlebih dahulu.');
         return;
@@ -389,22 +469,19 @@ function autoGenerateTags() {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(tags => {
         if (tags.length > 0) {
             let count = 0;
             tags.forEach(tag => {
-                // Capitalize first letter
                 const tagName = tag.name.charAt(0).toUpperCase() + tag.name.slice(1);
-                 if (!activeTags.includes(tagName)) {
-                     activeTags.push(tagName); 
-                     count++;
-                 }
+                if (!activeTags.includes(tagName)) {
+                    activeTags.push(tagName);
+                    count++;
+                }
             });
-            
             renderActiveTags();
             updateHiddenInput();
-            
             alert(`Berhasil mengekstrak ${tags.length} kata kunci! (${count} baru)`);
         } else {
             alert('Tidak dapat menemukan kata kunci yang cocok.');
@@ -419,93 +496,137 @@ function autoGenerateTags() {
         btn.disabled = false;
     });
 }
-
-// Clear all database tags (uncheck all checkboxes)
-function clearDatabaseTags() {
-    document.querySelectorAll('input[name="tags[]"]').forEach(checkbox => {
-        checkbox.checked = false;
-    });
-}
 </script>
 
 <!-- Quill JS -->
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <script>
-    // Initialize Quill Editor after DOM is ready
-    document.addEventListener('DOMContentLoaded', function() {
-        var quill = new Quill('#quill-editor', {
-            theme: 'snow',
-            placeholder: 'Tulis isi artikel di sini...',
-            modules: {
-                toolbar: [
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Custom image upload handler (pakai endpoint contributor)
+    function imageUploadHandler() {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+
+        input.onchange = function () {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran gambar maksimal 5MB');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+            document.body.style.cursor = 'wait';
+
+            fetch('<?= BASE_URL ?>/contributor/uploadImage', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.body.style.cursor = 'default';
+                if (data.url) {
+                    const range = quill.getSelection(true);
+                    quill.insertEmbed(range.index, 'image', data.url);
+                    quill.setSelection(range.index + 1);
+                } else {
+                    alert('Gagal upload gambar: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                document.body.style.cursor = 'default';
+                alert('Gagal upload gambar');
+                console.error(err);
+            });
+        };
+    }
+
+    var quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        placeholder: 'Tulis isi artikel di sini...',
+        modules: {
+            toolbar: {
+                container: [
                     [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
                     ['bold', 'italic', 'underline', 'strike'],
                     [{ 'color': [] }, { 'background': [] }],
                     [{ 'align': [] }],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    [{ 'indent': '-1' }, { 'indent': '+1' }],
                     ['blockquote', 'code-block'],
                     ['link', 'image', 'video'],
                     ['clean']
-                ]
+                ],
+                handlers: {
+                    image: imageUploadHandler
+                }
             }
-        });
-
-        // Load existing content if editing
-        <?php if (!empty($post['body'])): ?>
-        // Use clipboard to paste HTML correctly
-        quill.clipboard.dangerouslyPasteHTML(<?= json_encode($post['body']) ?>);
-        <?php endif; ?>
-
-        // Sync content into hidden input on change
-        quill.on('text-change', function() {
-            document.getElementById('body').value = quill.root.innerHTML;
-        });
-        
-        // Initial sync ensures field has value if untouched
-        document.getElementById('body').value = quill.root.innerHTML;
-
-        // Image click-to-delete in Quill
-        var deleteTooltip = document.createElement('div');
-        deleteTooltip.className = 'image-delete-tooltip';
-        deleteTooltip.innerHTML = '<i class="fa-solid fa-trash"></i> Hapus Gambar';
-        document.body.appendChild(deleteTooltip);
-        var selectedImg = null;
-
-        quill.root.addEventListener('click', function(e) {
-            if (e.target.tagName === 'IMG') {
-                if (selectedImg) selectedImg.classList.remove('selected-image');
-                selectedImg = e.target;
-                selectedImg.classList.add('selected-image');
-                var rect = selectedImg.getBoundingClientRect();
-                deleteTooltip.style.top = (rect.top - 36) + 'px';
-                deleteTooltip.style.left = (rect.left + rect.width / 2 - 55) + 'px';
-                deleteTooltip.style.display = 'block';
-            } else {
-                if (selectedImg) selectedImg.classList.remove('selected-image');
-                selectedImg = null;
-                deleteTooltip.style.display = 'none';
-            }
-        });
-
-        deleteTooltip.addEventListener('click', function(ev) {
-            ev.stopPropagation();
-            if (selectedImg && confirm('Hapus gambar ini dari artikel?')) {
-                selectedImg.remove();
-                selectedImg = null;
-                deleteTooltip.style.display = 'none';
-                document.getElementById('body').value = quill.root.innerHTML;
-            }
-        });
-
-        document.addEventListener('click', function(ev) {
-            if (!ev.target.closest('#quill-wrapper') && !ev.target.closest('.image-delete-tooltip')) {
-                if (selectedImg) selectedImg.classList.remove('selected-image');
-                selectedImg = null;
-                deleteTooltip.style.display = 'none';
-            }
-        });
+        }
     });
+
+    <?php if (!empty($post['body'])): ?>
+    quill.root.innerHTML = <?= json_encode($post['body']) ?>;
+    <?php endif; ?>
+
+    // Sync on change
+    quill.on('text-change', function () {
+        document.getElementById('body').value = quill.root.innerHTML;
+    });
+
+    // Sync on submit
+    document.querySelector('form').addEventListener('submit', function () {
+        document.getElementById('body').value = quill.root.innerHTML;
+    });
+
+    // Init sync
+    document.getElementById('body').value = quill.root.innerHTML;
+
+    // --- Image delete on click ---
+    var deleteTooltip = document.createElement('div');
+    deleteTooltip.className = 'image-delete-tooltip';
+    deleteTooltip.innerHTML = '<i class="fa-solid fa-trash"></i> Hapus Gambar';
+    document.body.appendChild(deleteTooltip);
+    var selectedImg = null;
+
+    quill.root.addEventListener('click', function (e) {
+        if (e.target.tagName === 'IMG') {
+            if (selectedImg) selectedImg.classList.remove('selected-image');
+            selectedImg = e.target;
+            selectedImg.classList.add('selected-image');
+            var rect = selectedImg.getBoundingClientRect();
+            deleteTooltip.style.top = (rect.top - 36) + 'px';
+            deleteTooltip.style.left = (rect.left + rect.width / 2 - 55) + 'px';
+            deleteTooltip.style.display = 'block';
+        } else {
+            if (selectedImg) selectedImg.classList.remove('selected-image');
+            selectedImg = null;
+            deleteTooltip.style.display = 'none';
+        }
+    });
+
+    deleteTooltip.addEventListener('click', function () {
+        if (selectedImg) {
+            var blot = Quill.find(selectedImg);
+            if (blot) blot.remove(); else selectedImg.remove();
+            selectedImg = null;
+            deleteTooltip.style.display = 'none';
+            document.getElementById('body').value = quill.root.innerHTML;
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('#quill-wrapper') && !e.target.closest('.image-delete-tooltip')) {
+            if (selectedImg) selectedImg.classList.remove('selected-image');
+            selectedImg = null;
+            deleteTooltip.style.display = 'none';
+        }
+    });
+});
 </script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
@@ -527,7 +648,7 @@ function clearDatabaseTags() {
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const input = document.querySelector('input[name="cover_image"]');
     const modal = document.getElementById('cropModal');
     const image = document.getElementById('imageToCrop');
@@ -536,77 +657,54 @@ document.addEventListener('DOMContentLoaded', function() {
     let cropper;
 
     if (input) {
-        input.addEventListener('change', function(e) {
+        input.addEventListener('change', function (e) {
             const files = e.target.files;
             if (files && files.length > 0) {
                 const file = files[0];
                 if (!file.type.startsWith('image/')) return;
 
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     image.src = e.target.result;
                     modal.style.display = 'block';
-
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-
+                    if (cropper) cropper.destroy();
                     cropper = new Cropper(image, {
-                        aspectRatio: 16 / 9, // Blog posts usually 16:9
+                        aspectRatio: 16 / 9,
                         viewMode: 1,
                         autoCropArea: 1,
                     });
                 };
                 reader.readAsDataURL(file);
-                
-                // Reset value to allow re-selecting same file if cancelled, 
-                // but here implementation is slightly different than Zine. 
-                // We'll handle input reset in cancel.
             }
         });
     }
 
-    btnCrop.addEventListener('click', function() {
+    btnCrop.addEventListener('click', function () {
         if (!cropper) return;
-
         const canvas = cropper.getCroppedCanvas({
             width: 800,
             height: 450,
             imageSmoothingEnabled: true,
             imageSmoothingQuality: 'high',
         });
-
-        canvas.toBlob(function(blob) {
-            const fileName = input.files[0] ? input.files[0].name : "cropped.jpg";
+        canvas.toBlob(function (blob) {
+            const fileName = input.files[0] ? input.files[0].name : 'cropped.jpg';
             const newFile = new File([blob], fileName, { type: 'image/jpeg', lastModified: new Date().getTime() });
-
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(newFile);
             input.files = dataTransfer.files;
-
-            // Trigger preview update (existing function)
-            if (typeof previewCover === 'function') {
-                previewCover(input);
-            }
-
+            if (typeof previewCover === 'function') previewCover(input);
             modal.style.display = 'none';
             cropper.destroy();
             cropper = null;
         }, 'image/jpeg', 0.9);
     });
 
-    btnCancel.addEventListener('click', function() {
+    btnCancel.addEventListener('click', function () {
         modal.style.display = 'none';
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
-        input.value = ''; // Clear input
-        if (typeof clearCoverFile === 'function') {
-            clearCoverFile();
-        }
+        if (cropper) { cropper.destroy(); cropper = null; }
+        input.value = '';
+        if (typeof clearCoverFile === 'function') clearCoverFile();
     });
-
-    // Handle existing clear button interaction if needed
 });
 </script>

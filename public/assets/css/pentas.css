@@ -977,6 +977,32 @@
     background: var(--primary-dark, #c0202d);
 }
 
+.event-schedules-list {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.schedule-row {
+    font-size: 13px;
+    color: #444;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 10px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    border-left: 3px solid #d52c2c;
+}
+.schedule-row.past {
+    border-left-color: #aaa;
+    color: #888;
+}
+.schedule-date { font-weight: 600; }
+.schedule-time { margin-left: 6px; font-weight: 400; color: #666; }
+.schedule-venue { font-size: 12px; color: #666; }
+.schedule-venue em { color: #999; }
+
 /* =========================
    RESPONSIVE
 ========================= */

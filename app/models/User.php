@@ -166,4 +166,20 @@ class User
         $orderBy = $sortByName ? 'name ASC' : 'created_at DESC';
         return $this->all('contributor', 'active', $orderBy);
     }
+    
+    public function count($status = null)
+    {
+        $sql = "SELECT COUNT(*) as total FROM users";
+    
+        $params = [];
+    
+        if ($status !== null) {
+            $sql .= " WHERE status = ?";
+            $params[] = $status;
+        }
+    
+        $result = $this->db->queryOne($sql, $params);
+    
+        return $result['total'] ?? 0;
+    }
 }

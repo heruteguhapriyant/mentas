@@ -260,9 +260,30 @@
                 <div class="menu-divider"></div>
                 <li style="padding: 0.5rem 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.75rem; text-transform: uppercase;">Pengguna</li>
                 
-                <li><a href="<?= BASE_URL ?>/admin/users">
-                    <i class="fas fa-users"></i> Kelola User
-                </a></li>
+                <li>
+                    <a href="<?= BASE_URL ?>/admin/users">
+                        <i class="fas fa-users"></i> Kelola User
+                
+                        <?php 
+                        // Fetch pending users count
+                        $pendingUsers = 0;
+                
+                        if (class_exists('User')) {
+                            $userModel = new User();
+                
+                            // pastikan method count bisa menerima kondisi status
+                            $pendingUsers = $userModel->count('pending');
+                        }
+                        ?>
+                
+                        <?php if ($pendingUsers > 0): ?>
+                            <span class="badge badge-warning" 
+                                  style="margin-left: auto; font-size: 10px; padding: 2px 6px; border-radius: 10px;">
+                                <?= $pendingUsers ?>
+                            </span>
+                        <?php endif; ?>
+                    </a>
+                </li>
                 
                 <div class="menu-divider"></div>
                 

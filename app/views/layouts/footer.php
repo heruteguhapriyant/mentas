@@ -8,7 +8,7 @@
             <h4>Katalog</h4>
             <a href="<?= BASE_URL ?>/blog" rel="nofollow">Artikel</a><br />
             <a href="<?= BASE_URL ?>/kolaborasi" rel="nofollow">Koleb</a><br />
-            <a href="<?= BASE_URL ?>/bulletin" rel="nofollow">Katalog</a>
+            <a href="<?= BASE_URL ?>/bulletin" rel="nofollow">Katalog Digital</a>
         </div>
         <div>
             <h4>Info</h4>

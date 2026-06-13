@@ -349,4 +349,160 @@ class Event {
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getSchedules($eventId) {
+    $stmt = $this->db->prepare(
+        "SELECT * FROM event_schedules WHERE event_id = ? ORDER BY event_date ASC"
+    );
+    $stmt->execute([$eventId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Ambil jadwal terdekat untuk satu event
+     */
+    public function getNearestSchedule($eventId) {
+        $stmt = $this->db->prepare(
+            "SELECT * FROM event_schedules 
+             WHERE event_id = ? AND event_date >= NOW() 
+             ORDER BY event_date ASC LIMIT 1"
+        );
+        $stmt->execute([$eventId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        // fallback ke jadwal terakhir jika semua sudah lewat
+        if (!$result) {
+            $stmt = $this->db->prepare(
+                "SELECT * FROM event_schedules WHERE event_id = ? ORDER BY event_date DESC LIMIT 1"
+            );
+            $stmt->execute([$eventId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        return $result;
+    }
+    
+    /**
+     * Sync jadwal event (hapus lama, insert baru)
+     */
+    public function syncSchedules($eventId, array $schedules) {
+        $stmt = $this->db->prepare("DELETE FROM event_schedules WHERE event_id = ?");
+        $stmt->execute([$eventId]);
+    
+        if (!empty($schedules)) {
+            $insert = $this->db->prepare(
+                "INSERT INTO event_schedules (event_id, venue, venue_address, event_date, end_date, ticket_quota, city)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)"
+            );
+            foreach ($schedules as $s) {
+                if (empty($s['event_date'])) continue;
+                $insert->execute([
+                    $eventId,
+                    $s['venue']         ?? '',
+                    $s['venue_address'] ?? '',
+                    $s['event_date'],
+                    $s['end_date']      ?: null,
+                    intval($s['ticket_quota'] ?? 0),
+                    $s['city']          ?? '',
+                ]);
+            }
+        }
+    }
+    
+    /**
+     * Ambil event upcoming berdasarkan jadwal di event_schedules
+     */
+    public function getUpcomingWithSchedules($search = '', $offset = 0, $limit = 9) {
+        $sql = "SELECT DISTINCT e.*, 
+                    MIN(es.event_date) as nearest_date
+                FROM {$this->table} e
+                JOIN event_schedules es ON es.event_id = e.id
+                WHERE e.is_active = 1 AND es.event_date >= NOW()";
+        $params = [];
+    
+        if (!empty($search)) {
+            $sql .= " AND (e.title LIKE :search OR e.description LIKE :search2)";
+            $params[':search']  = "%$search%";
+            $params[':search2'] = "%$search%";
+        }
+    
+        $sql .= " GROUP BY e.id ORDER BY nearest_date ASC LIMIT :limit OFFSET :offset";
+    
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+        $stmt->bindValue(':limit',  $limit,  PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Ambil event past berdasarkan jadwal di event_schedules
+     */
+    public function getPastWithSchedules($search = '', $offset = 0, $limit = 9) {
+        $sql = "SELECT DISTINCT e.*,
+                    MAX(es.event_date) as last_date
+                FROM {$this->table} e
+                JOIN event_schedules es ON es.event_id = e.id
+                WHERE e.is_active = 1
+                AND e.id NOT IN (
+                    SELECT DISTINCT event_id FROM event_schedules WHERE event_date >= NOW()
+                )";
+        $params = [];
+    
+        if (!empty($search)) {
+            $sql .= " AND (e.title LIKE :search OR e.description LIKE :search2)";
+            $params[':search']  = "%$search%";
+            $params[':search2'] = "%$search%";
+        }
+    
+        $sql .= " GROUP BY e.id ORDER BY last_date DESC LIMIT :limit OFFSET :offset";
+    
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+        $stmt->bindValue(':limit',  $limit,  PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Count upcoming events berdasarkan event_schedules
+     */
+    public function countUpcomingWithSchedules($search = '') {
+        $sql = "SELECT COUNT(DISTINCT e.id) FROM {$this->table} e
+                JOIN event_schedules es ON es.event_id = e.id
+                WHERE e.is_active = 1 AND es.event_date >= NOW()";
+        $params = [];
+    
+        if (!empty($search)) {
+            $sql .= " AND (e.title LIKE :search OR e.description LIKE :search2)";
+            $params[':search']  = "%$search%";
+            $params[':search2'] = "%$search%";
+        }
+    
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return (int)$stmt->fetchColumn();
+    }
+    
+    /**
+     * Count past events berdasarkan event_schedules
+     */
+    public function countPastWithSchedules($search = '') {
+        $sql = "SELECT COUNT(DISTINCT e.id) FROM {$this->table} e
+                JOIN event_schedules es ON es.event_id = e.id
+                WHERE e.is_active = 1
+                AND e.id NOT IN (
+                    SELECT DISTINCT event_id FROM event_schedules WHERE event_date >= NOW()
+                )";
+        $params = [];
+    
+        if (!empty($search)) {
+            $sql .= " AND (e.title LIKE :search OR e.description LIKE :search2)";
+            $params[':search']  = "%$search%";
+            $params[':search2'] = "%$search%";
+        }
+    
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return (int)$stmt->fetchColumn();
+    }
 }

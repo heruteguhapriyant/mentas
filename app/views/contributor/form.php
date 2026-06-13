@@ -87,34 +87,34 @@
                 }
             }
             ?>
-            <?php if (!empty($allTags)): ?>
-            <div class="form-group">
-                <label>Tags</label>
-                <small class="text-muted" style="display: block; margin-bottom: 8px; color: #6c757d; font-size: 0.85em;">
-                    Pilih tag yang sesuai dengan artikel kamu (maks. 5 tag).
-                </small>
-                <input
-                    type="text"
-                    id="tag-search"
-                    placeholder="Cari tag..."
-                    style="width: 100%; padding: 7px 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box;"
-                    oninput="filterTags(this.value)"
-                >
-                <div class="tags-checkbox-wrapper" id="tags-checkbox-list">
-                    <?php foreach ($allTags as $tag): ?>
-                        <label class="tag-checkbox-item" data-name="<?= strtolower(htmlspecialchars($tag['name'])) ?>">
-                            <input
-                                type="checkbox"
-                                name="tags[]"
-                                value="<?= $tag['id'] ?>"
-                                <?= in_array($tag['id'], $postTagIds) ? 'checked' : '' ?>
-                            >
-                            <span><?= htmlspecialchars($tag['name']) ?></span>
-                        </label>
-                    <?php endforeach; ?>
-                </div>
-                <small id="tag-counter" style="color: #6c757d; font-size: 0.82em; margin-top: 6px; display: block;">0 dari 5 tag dipilih</small>
-            </div>
+            <!--<?php if (!empty($allTags)): ?>-->
+            <!--<div class="form-group">-->
+            <!--    <label>Tags</label>-->
+            <!--    <small class="text-muted" style="display: block; margin-bottom: 8px; color: #6c757d; font-size: 0.85em;">-->
+            <!--        Pilih tag yang sesuai dengan artikel kamu (maks. 5 tag).-->
+            <!--    </small>-->
+            <!--    <input-->
+            <!--        type="text"-->
+            <!--        id="tag-search"-->
+            <!--        placeholder="Cari tag..."-->
+            <!--        style="width: 100%; padding: 7px 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box;"-->
+            <!--        oninput="filterTags(this.value)"-->
+            <!--    >-->
+            <!--    <div class="tags-checkbox-wrapper" id="tags-checkbox-list">-->
+            <!--        <?php foreach ($allTags as $tag): ?>-->
+            <!--            <label class="tag-checkbox-item" data-name="<?= strtolower(htmlspecialchars($tag['name'])) ?>">-->
+            <!--                <input-->
+            <!--                    type="checkbox"-->
+            <!--                    name="tags[]"-->
+            <!--                    value="<?= $tag['id'] ?>"-->
+            <!--                    <?= in_array($tag['id'], $postTagIds) ? 'checked' : '' ?>-->
+            <!--                >-->
+            <!--                <span><?= htmlspecialchars($tag['name']) ?></span>-->
+            <!--            </label>-->
+            <!--        <?php endforeach; ?>-->
+            <!--    </div>-->
+            <!--    <small id="tag-counter" style="color: #6c757d; font-size: 0.82em; margin-top: 6px; display: block;">0 dari 5 tag dipilih</small>-->
+            <!--</div>-->
             <?php else: ?>
             <div class="form-group">
                 <label>Tags</label>
@@ -343,13 +343,58 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- Quill JS -->
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <script>
-    // Initialize Quill Editor after DOM is ready
-    document.addEventListener('DOMContentLoaded', function() {
-        var quill = new Quill('#quill-editor', {
-            theme: 'snow',
-            placeholder: 'Tulis isi artikel di sini...',
-            modules: {
-                toolbar: [
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Custom image handler - upload ke server, bukan base64
+    function imageUploadHandler() {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+
+        input.onchange = function() {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran gambar maksimal 5MB');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            document.body.style.cursor = 'wait';
+
+            fetch('<?= BASE_URL ?>/contributor/uploadImage', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.body.style.cursor = 'default';
+                if (data.url) {
+                    const range = quill.getSelection(true);
+                    quill.insertEmbed(range.index, 'image', data.url);
+                    quill.setSelection(range.index + 1);
+                } else {
+                    alert('Gagal upload gambar: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                document.body.style.cursor = 'default';
+                alert('Gagal upload gambar');
+                console.error(err);
+            });
+        };
+    }
+
+    var quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        placeholder: 'Tulis isi artikel di sini...',
+        modules: {
+            toolbar: {
+                container: [
                     [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
                     ['bold', 'italic', 'underline', 'strike'],
                     [{ 'color': [] }, { 'background': [] }],
@@ -359,77 +404,67 @@ document.addEventListener('DOMContentLoaded', function () {
                     ['blockquote', 'code-block'],
                     ['link', 'image', 'video'],
                     ['clean']
-                ]
-            }
-        });
-
-        // Load existing content if editing
-        <?php if (!empty($post['body'])): ?>
-        quill.root.innerHTML = <?= json_encode($post['body']) ?>;
-        <?php endif; ?>
-
-        // Sync content to hidden input on form submit
-        document.querySelector('form').addEventListener('submit', function() {
-            document.getElementById('body-input').value = quill.root.innerHTML;
-        });
-
-        // Also sync on any change for draft saving
-        quill.on('text-change', function() {
-            document.getElementById('body-input').value = quill.root.innerHTML;
-        });
-
-        // --- Image delete on click ---
-        var deleteTooltip = document.createElement('div');
-        deleteTooltip.className = 'image-delete-tooltip';
-        deleteTooltip.innerHTML = '<i class="fa-solid fa-trash"></i> Hapus Gambar';
-        document.body.appendChild(deleteTooltip);
-        var selectedImg = null;
-
-        quill.root.addEventListener('click', function(e) {
-            if (e.target.tagName === 'IMG') {
-                // Remove previous selection
-                if (selectedImg) selectedImg.classList.remove('selected-image');
-                
-                selectedImg = e.target;
-                selectedImg.classList.add('selected-image');
-
-                // Position tooltip above image (fixed position)
-                var rect = selectedImg.getBoundingClientRect();
-                deleteTooltip.style.top = (rect.top - 36) + 'px';
-                deleteTooltip.style.left = (rect.left + rect.width / 2 - 55) + 'px';
-                deleteTooltip.style.display = 'block';
-            } else {
-                // Clicked non-image area — dismiss
-                if (selectedImg) selectedImg.classList.remove('selected-image');
-                selectedImg = null;
-                deleteTooltip.style.display = 'none';
-            }
-        });
-
-        deleteTooltip.addEventListener('click', function() {
-            if (selectedImg) {
-                var blot = Quill.find(selectedImg);
-                if (blot) {
-                    blot.remove();
-                } else {
-                    selectedImg.remove();
+                ],
+                handlers: {
+                    image: imageUploadHandler
                 }
-                selectedImg = null;
-                deleteTooltip.style.display = 'none';
-                // Sync
-                document.getElementById('body-input').value = quill.root.innerHTML;
             }
-        });
-
-        // Hide tooltip on scroll or click outside editor
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('#quill-editor') && !e.target.closest('.image-delete-tooltip')) {
-                if (selectedImg) selectedImg.classList.remove('selected-image');
-                selectedImg = null;
-                deleteTooltip.style.display = 'none';
-            }
-        });
+        }
     });
+
+    <?php if (!empty($post['body'])): ?>
+    quill.root.innerHTML = <?= json_encode($post['body']) ?>;
+    <?php endif; ?>
+
+    document.querySelector('form').addEventListener('submit', function() {
+        document.getElementById('body-input').value = quill.root.innerHTML;
+    });
+
+    quill.on('text-change', function() {
+        document.getElementById('body-input').value = quill.root.innerHTML;
+    });
+
+    // --- Image delete on click ---
+    var deleteTooltip = document.createElement('div');
+    deleteTooltip.className = 'image-delete-tooltip';
+    deleteTooltip.innerHTML = '<i class="fa-solid fa-trash"></i> Hapus Gambar';
+    document.body.appendChild(deleteTooltip);
+    var selectedImg = null;
+
+    quill.root.addEventListener('click', function(e) {
+        if (e.target.tagName === 'IMG') {
+            if (selectedImg) selectedImg.classList.remove('selected-image');
+            selectedImg = e.target;
+            selectedImg.classList.add('selected-image');
+            var rect = selectedImg.getBoundingClientRect();
+            deleteTooltip.style.top  = (rect.top - 36) + 'px';
+            deleteTooltip.style.left = (rect.left + rect.width / 2 - 55) + 'px';
+            deleteTooltip.style.display = 'block';
+        } else {
+            if (selectedImg) selectedImg.classList.remove('selected-image');
+            selectedImg = null;
+            deleteTooltip.style.display = 'none';
+        }
+    });
+
+    deleteTooltip.addEventListener('click', function() {
+        if (selectedImg) {
+            var blot = Quill.find(selectedImg);
+            if (blot) blot.remove(); else selectedImg.remove();
+            selectedImg = null;
+            deleteTooltip.style.display = 'none';
+            document.getElementById('body-input').value = quill.root.innerHTML;
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#quill-editor') && !e.target.closest('.image-delete-tooltip')) {
+            if (selectedImg) selectedImg.classList.remove('selected-image');
+            selectedImg = null;
+            deleteTooltip.style.display = 'none';
+        }
+    });
+});
 </script>
 
 <?php require_once __DIR__ . '/layout/footer.php'; ?>

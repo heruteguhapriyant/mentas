@@ -20,7 +20,7 @@
                 $igUrl = $socials['instagram'] ?? '';
             ?>
                 <div class="ekosistem-card">
-                    <?php if (!empty($item['cover_image']) && file_exists('../public/' . $item['cover_image'])): ?>
+                    <?php if (!empty($item['cover_image']) && file_exists('public/' . $item['cover_image'])): ?>
                         <div class="ekosistem-card-image">
                             <img src="<?= BASE_URL ?>/<?= $item['cover_image'] ?>" alt="<?= htmlspecialchars($item['title']) ?>">
                         </div>

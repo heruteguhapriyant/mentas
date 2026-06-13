@@ -84,12 +84,6 @@
                         <?php endif; ?>
 
                         <div class="pentas-card-content">
-                            <div class="pentas-card-meta">
-                                <span><i class="far fa-clock"></i> <?= date('H:i', strtotime($event['event_date'])) ?> WIB</span>
-                                <?php if (!empty($event['venue'])): ?>
-                                    <span><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($event['venue']) ?></span>
-                                <?php endif; ?>
-                            </div>
                             <h3><?= htmlspecialchars($event['title']) ?></h3>
                             <?php if ($event['ticket_price'] > 0): ?>
                                 <p class="event-price">Rp <?= number_format($event['ticket_price'], 0, ',', '.') ?></p>
@@ -97,7 +91,33 @@
                             <p class="pentas-card-excerpt">
                                 <?= htmlspecialchars(substr($event['description'] ?? '', 0, 100)) ?>...
                             </p>
-                            <a href="<?= BASE_URL ?>/pentas/<?= !empty($event['slug']) ? $event['slug'] : $event['id'] ?>" class="btn-outline" target="_blank">
+                        
+                            <!-- Daftar semua jadwal -->
+                            <?php if (!empty($event['schedules'])): ?>
+                                <div class="event-schedules-list">
+                                    <?php foreach ($event['schedules'] as $sch): ?>
+                                        <div class="schedule-row <?= strtotime($sch['event_date']) < time() ? 'past' : '' ?>">
+                                            <span class="schedule-date">
+                                                <i class="far fa-calendar-alt"></i>
+                                                <?= date('d M Y', strtotime($sch['event_date'])) ?>
+                                                <span class="schedule-time"><?= date('H:i', strtotime($sch['event_date'])) ?> WIB</span>
+                                            </span>
+                                            <?php if (!empty($sch['venue'])): ?>
+                                                <span class="schedule-venue">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                    <?= htmlspecialchars($sch['venue']) ?>
+                                                    <?php if (!empty($sch['city'])): ?>
+                                                        <em>(<?= htmlspecialchars($sch['city']) ?>)</em>
+                                                    <?php endif; ?>
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        
+                            <a href="<?= BASE_URL ?>/pentas/<?= !empty($event['slug']) ? $event['slug'] : $event['id'] ?>"
+                               class="btn-outline" target="_blank">
                                 <i class="fa-regular fa-eye"></i> Lihat Detail
                             </a>
                         </div>
@@ -138,11 +158,40 @@
                     <?php endif; ?>
 
                     <div class="pentas-card-content">
-                        <div class="pentas-card-meta">
-                            <span><i class="far fa-calendar"></i> <?= date('d M Y', strtotime($event['event_date'])) ?></span>
-                        </div>
                         <h3><?= htmlspecialchars($event['title']) ?></h3>
-                        <a href="<?= BASE_URL ?>/pentas/<?= !empty($event['slug']) ? $event['slug'] : $event['id'] ?>" class="btn-outline" target="_blank">
+                        <?php if ($event['ticket_price'] > 0): ?>
+                            <p class="event-price">Rp <?= number_format($event['ticket_price'], 0, ',', '.') ?></p>
+                        <?php endif; ?>
+                        <p class="pentas-card-excerpt">
+                            <?= htmlspecialchars(substr($event['description'] ?? '', 0, 100)) ?>...
+                        </p>
+                    
+                        <!-- Daftar semua jadwal -->
+                        <?php if (!empty($event['schedules'])): ?>
+                            <div class="event-schedules-list">
+                                <?php foreach ($event['schedules'] as $sch): ?>
+                                    <div class="schedule-row <?= strtotime($sch['event_date']) < time() ? 'past' : '' ?>">
+                                        <span class="schedule-date">
+                                            <i class="far fa-calendar-alt"></i>
+                                            <?= date('d M Y', strtotime($sch['event_date'])) ?>
+                                            <span class="schedule-time"><?= date('H:i', strtotime($sch['event_date'])) ?> WIB</span>
+                                        </span>
+                                        <?php if (!empty($sch['venue'])): ?>
+                                            <span class="schedule-venue">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                <?= htmlspecialchars($sch['venue']) ?>
+                                                <?php if (!empty($sch['city'])): ?>
+                                                    <em>(<?= htmlspecialchars($sch['city']) ?>)</em>
+                                                <?php endif; ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    
+                        <a href="<?= BASE_URL ?>/pentas/<?= !empty($event['slug']) ? $event['slug'] : $event['id'] ?>"
+                           class="btn-outline" target="_blank">
                             <i class="fa-regular fa-eye"></i> Lihat Detail
                         </a>
                     </div>

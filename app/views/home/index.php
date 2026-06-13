@@ -57,7 +57,6 @@
                 <img src="<?= BASE_URL ?>/<?= $main['cover_image'] ?>" alt="<?= htmlspecialchars($main['title']) ?>">
                 <div class="featured-overlay">
                     <div class="featured-meta">
-                        <span>at <i class="fa-regular fa-clock"></i> <?= date('d F Y', strtotime($main['published_at'])) ?></span>
                     </div>
                     <h2><?= htmlspecialchars($main['title']) ?></h2>
                 </div>
@@ -71,13 +70,67 @@
                     <img src="<?= BASE_URL ?>/<?= $post['cover_image'] ?>" alt="<?= htmlspecialchars($post['title']) ?>">
                     <div class="featured-overlay">
                         <div class="featured-meta-small">
-                            <span>at <i class="fa-regular fa-clock"></i> <?= date('d F Y', strtotime($post['published_at'])) ?></span>
                         </div>
                         <h3><?= htmlspecialchars($post['title']) ?></h3>
                     </div>
                 </a>
                 <?php endif; endfor; ?>
             </div>
+        </div>
+    </section>
+    <?php endif; ?>
+    
+    <!-- Featured Blog Editorial Section -->
+    <?php if (!empty($editorialPosts)): ?>
+    <section class="featured-section">
+        <div class="section-header" style="display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto 1rem;padding:0 1rem;">
+            <h2 style="margin:0;font-size:1.5rem;">Editorial</h2>
+            <a href="<?= BASE_URL ?>/blog/editorial" class="featured-btn-all" style="font-size:14px;">
+                <i class="fas fa-arrow-right"></i> Lihat Semua
+            </a>
+        </div>
+        <div class="featured-grid">
+    
+            <!-- Main Editorial (Post Pertama) -->
+            <?php if (isset($editorialPosts[0])): $main = $editorialPosts[0]; ?>
+            <a href="<?= BASE_URL ?>/blog/<?= $main['slug'] ?>" target="_blank" class="featured-card featured-main">
+                <?php if (!empty($main['cover_image'])): ?>
+                    <img src="<?= BASE_URL ?>/<?= $main['cover_image'] ?>" alt="<?= htmlspecialchars($main['title']) ?>">
+                <?php else: ?>
+                    <div style="width:100%;height:100%;background:#1a1a2e;display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-pen-nib" style="font-size:3rem;color:#666;"></i>
+                    </div>
+                <?php endif; ?>
+                <div class="featured-overlay">
+                    <div class="featured-meta">
+                        <span style="font-size:11px;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:20px;color:#fff;text-transform:uppercase;letter-spacing:1px;">Editorial</span>
+                    </div>
+                    <h2><?= htmlspecialchars($main['title']) ?></h2>
+                </div>
+            </a>
+            <?php endif; ?>
+    
+            <!-- Sub Editorial (2 Post Berikutnya) -->
+            <div class="featured-sub">
+                <?php for ($i = 1; $i < 3; $i++): if (isset($editorialPosts[$i])): $post = $editorialPosts[$i]; ?>
+                <a href="<?= BASE_URL ?>/blog/<?= $post['slug'] ?>" target="_blank" class="featured-card featured-item">
+                    <?php if (!empty($post['cover_image'])): ?>
+                        <img src="<?= BASE_URL ?>/<?= $post['cover_image'] ?>" alt="<?= htmlspecialchars($post['title']) ?>">
+                    <?php else: ?>
+                        <div style="width:100%;height:100%;background:#1a1a2e;display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-pen-nib" style="font-size:2rem;color:#666;"></i>
+                        </div>
+                    <?php endif; ?>
+                    <div class="featured-overlay">
+                        <div class="featured-meta-small">
+                            <span style="font-size:10px;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:20px;color:#fff;text-transform:uppercase;letter-spacing:1px;">Editorial</span>
+                        </div>
+                        <h3><?= htmlspecialchars($post['title']) ?></h3>
+                    </div>
+                </a>
+                <?php endif; endfor; ?>
+            </div>
+    
         </div>
     </section>
     <?php endif; ?>

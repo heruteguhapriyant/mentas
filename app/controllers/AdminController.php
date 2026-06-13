@@ -868,29 +868,26 @@ class AdminController extends Controller
             header('Location: ' . BASE_URL . '/admin/events');
             exit;
         }
-
-        // Generate slug from title
+    
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $_POST['title'] ?? '')));
-        $slug = preg_replace('/-+/', '-', $slug);
-        $slug = trim($slug, '-');
-
+        $slug = trim(preg_replace('/-+/', '-', $slug), '-');
+    
         $data = [
-            'title'         => trim($_POST['title'] ?? ''),
-            'slug'          => $slug,
-            'description'   => trim($_POST['description'] ?? ''),
-            'venue'         => trim($_POST['venue'] ?? ''),
-            'venue_address' => trim($_POST['venue_address'] ?? ''),
-            'event_date'    => $_POST['event_date'] ?? null,
-            'end_date'      => $_POST['event_end_date'] ?: null,
-            'ticket_price'  => intval($_POST['ticket_price'] ?? 0),
-            'ticket_quota'  => intval($_POST['ticket_quota'] ?? 100),
-            'is_active'     => isset($_POST['is_active']) ? 1 : 0,
+            'title'          => trim($_POST['title'] ?? ''),
+            'slug'           => $slug,
+            'description'    => trim($_POST['description'] ?? ''),
+            'ticket_price'   => intval($_POST['ticket_price'] ?? 0),
+            'ticket_quota'   => intval($_POST['ticket_quota'] ?? 100),
+            'is_active'      => isset($_POST['is_active']) ? 1 : 0,
             'community_name' => $_POST['community_name'] ?? null,
-            'community_ig'   => $_POST['community_ig'] ?? null,
-            'community_wa'   => $_POST['community_wa'] ?? null,
-                    ];
-
-        // Handle cover image upload
+            'community_ig'   => $_POST['community_ig']   ?? null,
+            'community_wa'   => $_POST['community_wa']   ?? null,
+            // kolom lama diisi kosong agar tidak error (belum di-drop)
+            'venue'          => '',
+            'venue_address'  => '',
+            'event_date'     => $_POST['schedules'][0]['event_date'] ?? date('Y-m-d H:i:s'),
+        ];
+    
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = dirname(__DIR__, 2) . '/public/uploads/events/';
             if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
@@ -899,20 +896,20 @@ class AdminController extends Controller
             move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
             $data['cover_image'] = 'uploads/events/' . $filename;
         }
-
+    
         $eventModel = new Event();
-        $newEventId = $eventModel->create($data); // returns lastInsertId
-
-        // Sync kontributor
-        $contributorIds = $_POST['contributors'] ?? [];
+        $newEventId = $eventModel->create($data);
+    
         if ($newEventId) {
-            $eventModel->syncEventContributors($newEventId, $contributorIds);
+            $eventModel->syncEventContributors($newEventId, $_POST['contributors'] ?? []);
+            $eventModel->syncSchedules($newEventId, $_POST['schedules'] ?? []);
         }
-
+    
         setFlash('success', 'Event berhasil ditambahkan');
         header('Location: ' . BASE_URL . '/admin/events');
         exit;
     }
+
 
     public function eventEdit($id)
     {
@@ -941,23 +938,20 @@ class AdminController extends Controller
             header('Location: ' . BASE_URL . '/admin/events');
             exit;
         }
-
+    
         $data = [
-            'title'         => trim($_POST['title'] ?? ''),
-            'description'   => trim($_POST['description'] ?? ''),
-            'venue'         => trim($_POST['venue'] ?? ''),
-            'venue_address' => trim($_POST['venue_address'] ?? ''),
-            'event_date'    => $_POST['event_date'] ?? null,
-            'end_date'      => $_POST['event_end_date'] ?: null,
-            'ticket_price'  => intval($_POST['ticket_price'] ?? 0),
-            'ticket_quota'  => intval($_POST['ticket_quota'] ?? 100),
-            'is_active'     => isset($_POST['is_active']) ? 1 : 0,
+            'title'          => trim($_POST['title'] ?? ''),
+            'description'    => trim($_POST['description'] ?? ''),
+            'ticket_price'   => intval($_POST['ticket_price'] ?? 0),
+            'ticket_quota'   => intval($_POST['ticket_quota'] ?? 100),
+            'is_active'      => isset($_POST['is_active']) ? 1 : 0,
             'community_name' => $_POST['community_name'] ?? null,
-            'community_ig'   => $_POST['community_ig'] ?? null,
-            'community_wa'   => $_POST['community_wa'] ?? null,
+            'community_ig'   => $_POST['community_ig']   ?? null,
+            'community_wa'   => $_POST['community_wa']   ?? null,
+            // update event_date induk ke jadwal terdekat
+            'event_date'     => $_POST['schedules'][0]['event_date'] ?? date('Y-m-d H:i:s'),
         ];
-
-        // Handle cover image upload
+    
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = dirname(__DIR__, 2) . '/public/uploads/events/';
             if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
@@ -966,14 +960,12 @@ class AdminController extends Controller
             move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
             $data['cover_image'] = 'uploads/events/' . $filename;
         }
-
+    
         $eventModel = new Event();
         $eventModel->update($id, $data);
-
-        // Sync kontributor
-        $contributorIds = $_POST['contributors'] ?? [];
-        $eventModel->syncEventContributors($id, $contributorIds);
-
+        $eventModel->syncEventContributors($id, $_POST['contributors'] ?? []);
+        $eventModel->syncSchedules($id, $_POST['schedules'] ?? []);
+    
         setFlash('success', 'Event berhasil diupdate');
         header('Location: ' . BASE_URL . '/admin/events');
         exit;

@@ -59,7 +59,7 @@
                         <td>
                             <strong><?= htmlspecialchars($event['title']) ?></strong>
                             <?php if ($event['ticket_price'] == 0): ?>
-                                <span class="badge badge-success" style="margin-left: 5px;">Reservasi</span>
+                                <span class="badge badge-success" style="margin-left: 5px;">GRATIS</span>
                             <?php endif; ?>
                         </td>
                         <td>

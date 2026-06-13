@@ -17,22 +17,29 @@ class PentasController extends Controller {
         if ($idOrSlug) {
             return $this->detail($idOrSlug);
         }
-
+    
         $search   = trim($_GET['search'] ?? '');
         $pageUp   = max(1, (int)($_GET['page_upcoming'] ?? 1));
         $pagePast = max(1, (int)($_GET['page_past'] ?? 1));
         $perPage  = 9;
-
-        // Upcoming events
-        $totalUpcoming  = $this->eventModel->countUpcoming($search);
+    
+        $totalUpcoming  = $this->eventModel->countUpcomingWithSchedules($search);
         $paginationUp   = paginate($totalUpcoming, $pageUp, $perPage);
-        $upcomingEvents = $this->eventModel->getUpcoming($search, $paginationUp['offset'], $perPage);
-
-        // Past events — sekarang ikut search juga
-        $totalPast      = $this->eventModel->countPast($search);
+        $upcomingEvents = $this->eventModel->getUpcomingWithSchedules($search, $paginationUp['offset'], $perPage);
+    
+        $totalPast      = $this->eventModel->countPastWithSchedules($search);
         $paginationPast = paginate($totalPast, $pagePast, $perPage);
-        $pastEvents     = $this->eventModel->getPast($paginationPast['offset'], $perPage, $search);
-
+        $pastEvents     = $this->eventModel->getPastWithSchedules($search, $paginationPast['offset'], $perPage);
+    
+        // Lampirkan semua jadwal ke setiap event
+        foreach ($upcomingEvents as &$ev) {
+            $ev['schedules'] = $this->eventModel->getSchedules($ev['id']);
+        }
+        foreach ($pastEvents as &$ev) {
+            $ev['schedules'] = $this->eventModel->getSchedules($ev['id']);
+        }
+        unset($ev);
+    
         return $this->view('pentas/index', [
             'upcomingEvents'     => $upcomingEvents,
             'pastEvents'         => $pastEvents,
@@ -51,17 +58,19 @@ class PentasController extends Controller {
         } else {
             $event = $this->eventModel->getBySlug($idOrSlug);
         }
-
+    
         if (!$event) {
             return $this->view('errors/404');
         }
-
+    
+        $schedules         = $this->eventModel->getSchedules($event['id']);
         $availableTickets  = $this->eventModel->getAvailableTickets($event['id']);
         $confirmedCount    = $this->ticketModel->countByStatusForEvent($event['id'], 'confirmed');
         $eventContributors = $this->eventModel->getEventContributorsDetail($event['id']);
-
+    
         return $this->view('pentas/detail', [
             'event'             => $event,
+            'schedules'         => $schedules,
             'availableTickets'  => $availableTickets,
             'confirmedCount'    => $confirmedCount,
             'eventContributors' => $eventContributors,
