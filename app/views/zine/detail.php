@@ -24,11 +24,16 @@
     <article class="zine-article">
 
         <?php if (!empty($zine['cover_image'])): ?>
-            <img 
-                src="<?= BASE_URL ?>/<?= $zine['cover_image'] ?>" 
-                alt="<?= htmlspecialchars($zine['title']) ?>" 
-                class="zine-cover"
-            >
+            <div class="cover-wrapper" style="position:relative;">
+                <img 
+                    src="<?= BASE_URL ?>/<?= $zine['cover_image'] ?>" 
+                    alt="<?= htmlspecialchars($zine['title']) ?>" 
+                    class="zine-cover"
+                >
+                <div class="cover-overlay" onclick="openLightbox('<?= BASE_URL ?>/<?= $zine['cover_image'] ?>')" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.3s;">
+                    <i class="fas fa-eye" style="color:#fff;font-size:2rem;opacity:0;transition:opacity 0.3s;"></i>
+                </div>
+            </div>
         <?php endif; ?>
 
         <!-- Contributor Info -->
@@ -79,3 +84,30 @@
 
     </article>
 </section>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()" style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);cursor:zoom-out;align-items:center;justify-content:center;">
+    <img id="lightbox-img" src="" style="max-width:90%;max-height:90vh;object-fit:contain;border-radius:8px;box-shadow:0 0 30px rgba(0,0,0,0.5);">
+    <span onclick="closeLightbox()" style="position:fixed;top:20px;right:30px;font-size:2rem;color:#fff;cursor:pointer;line-height:1;">✕</span>
+</div>
+
+<style>
+.cover-wrapper:hover .cover-overlay { background: rgba(0,0,0,0.35) !important; }
+.cover-wrapper:hover .cover-overlay i { opacity: 1 !important; }
+</style>
+
+<script>
+function openLightbox(src) {
+    const lb = document.getElementById('lightbox');
+    document.getElementById('lightbox-img').src = src;
+    lb.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+});
+</script>

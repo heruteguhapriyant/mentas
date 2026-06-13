@@ -97,25 +97,36 @@ body>main {
 
 
 .profile-icon {
-    width: 40px;
-    height: 40px;
-    border: 2px solid #d52c2c;
-    border-radius: 50%;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 7px;
+    padding: 0 14px;
+    height: 38px;
+    border: 2px solid #d52c2c;
+    border-radius: 999px;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: 500;
     background: #fff;
     color: #d52c2c;
     transition: all 0.25s ease;
+    white-space: nowrap;
 }
 
-/* Hover */
+.profile-icon i {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.profile-icon-label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
 .profile-icon:hover {
     background: #d52c2c;
     color: #fff;
-    border-color: #d52c2c;
 }
 
 /* Saat sticky */

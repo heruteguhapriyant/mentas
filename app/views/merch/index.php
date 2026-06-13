@@ -2,8 +2,8 @@
 
 <section class="hero merch-hero">
     <div class="hero-content">
-        <h1 class="page-title">Merch</h1>
-        <p class="page-subtitle">Koleksi karya dan merchendise</p>
+        <h1 class="page-title">Produk</h1>
+        <p class="page-subtitle">Produk, Merch, dan Karya Komunitas</p>
     </div>
 </section>
 

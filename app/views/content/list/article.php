@@ -52,11 +52,8 @@
                     </p>
 
                     <div class="blog-meta">
-                        <?php if (!empty($item['author_name'])): ?>
-                            ✍ <?= $item['author_name']; ?>
-                        <?php endif; ?>
                         <?php if (!empty($item['published_at'])): ?>
-                            - 📅 <?= date('d M Y', strtotime($item['published_at'])); ?>
+                             📅 <?= date('d M Y', strtotime($item['published_at'])); ?>
                         <?php endif; ?>
                     </div>
                 </article>

@@ -4,7 +4,7 @@
 
 /* Hero Section */
 .pentas-hero {
-    padding: 80px 60px 60px;
+    padding: 190px 60px 60px;
     text-align: center;
 }
 
@@ -57,7 +57,7 @@
 /* Events Grid */
 .events-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 30px;
 }
 
@@ -360,7 +360,7 @@
 ========================= */
 
 .pentas-hero-detail {
-    padding: 80px 60px 60px;
+    padding: 190px 60px 60px;
     text-align: center;
 }
 
@@ -808,6 +808,175 @@
     font-size: 0.95rem;
 }
 
+/* ============================================
+   SIDEBAR CONTRIBUTORS WIDGET
+   Tambahkan ke: public/assets/css/pentas.css
+   ============================================ */
+
+.sidebar-contributors-widget {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 16px;
+}
+
+.contributors-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.contributor-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.contributor-avatar-initial {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #333;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.contributor-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.contributor-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 8px;
+    padding: 4px 6px;
+    margin: -4px -6px;
+    transition: background 0.2s;
+}
+
+.contributor-link:hover {
+    background: #f5f5f5;
+}
+
+.contributor-link:hover .contributor-name {
+    color: #c0392b;
+}
+
+/* WhatsApp Contact Button */
+.btn-wa-contact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    background-color: #25D366;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.btn-wa-contact:hover {
+    background-color: #1ebe5a;
+    color: #fff;
+}
+
+/* Komunitas Widget - sama style dengan contributors */
+.sidebar-community-widget {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.pentas-search-form {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.pentas-search-wrap {
+    display: flex;
+    width: 100%;
+    max-width: 500px;
+    border: 2px solid #ddd;
+    border-radius: 30px;
+    overflow: hidden;
+    background: #fff;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.pentas-search-wrap:focus-within {
+    border-color: var(--primary-color, #e63946);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pentas-search-icon {
+    padding: 12px 0 12px 16px;
+    color: #999;
+    display: flex;
+    align-items: center;
+}
+
+.pentas-search-input {
+    flex: 1;
+    padding: 12px 12px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+}
+
+.pentas-search-input::placeholder {
+    color: #999;
+}
+
+.pentas-search-clear {
+    padding: 12px 8px;
+    color: #999;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.pentas-search-clear:hover {
+    color: var(--primary-color, #e63946);
+}
+
+.pentas-search-btn {
+    padding: 12px 20px;
+    background: var(--primary-color, #e63946);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 1rem;
+}
+
+.pentas-search-btn:hover {
+    background: var(--primary-dark, #c0202d);
+}
+
 /* =========================
    RESPONSIVE
 ========================= */
@@ -820,6 +989,9 @@
     .pentas-sidebar {
         position: static;
         order: 2;
+    }
+    .events-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -837,8 +1009,8 @@
     }
 
     .events-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
     }
 
     .section-heading {
@@ -869,6 +1041,11 @@
 }
 
 @media (max-width: 480px) {
+
+    .events-grid {
+        grid-template-columns: 1fr; /* 1 kolom di HP kecil saja */
+    }
+    
     .pentas-section {
         padding: 30px 10px;
     }

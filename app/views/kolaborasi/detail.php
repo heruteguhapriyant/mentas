@@ -13,10 +13,6 @@ if (!empty($item['social_media'])) {
 
 <section class="hero ekosistem-hero-detail">
     <div class="hero-content">
-        <a href="<?= BASE_URL ?>/kolaborasi" class="ekosistem-back-link">
-            ← Kembali ke Kolaborasi
-        </a>
-        
         <span class="ekosistem-detail-tagline" style="background: <?= $colorConfig ?>;">KOLABORASI</span>
         
         <h1 class="ekosistem-detail-title">
@@ -35,7 +31,7 @@ if (!empty($item['social_media'])) {
                 class="ekosistem-detail-image"
             >
         <?php else: ?>
-            <div class="ekosistem-detail-placeholder" style="background: linear-gradient(135deg, <?= $colorConfig ?> 0%, #1a1a2e 100%);">
+            <div class="ekosistem-detail-placeholder" style="background: linear-gradient(135deg, <?= $colorConfig ?> 0%, #ffffff 100%);">
                 <i class="fa-solid fa-users"></i>
                 <span><?= htmlspecialchars($item['title']) ?></span>
             </div>

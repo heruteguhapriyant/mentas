@@ -1,4 +1,3 @@
-
 <?php // Author Detail Page - Redesigned (Koalisi Seni Style) ?>
 <div class="author-page-container">
     <div class="author-layout">
@@ -16,18 +15,10 @@
                     </div>
                 <?php endif; ?>
 
-                <?php /* Email hidden per request
-                <div class="contact-item">
-                    <span class="contact-label">alamat email:</span>
-                    <a href="mailto:<?= htmlspecialchars($content['email']) ?>" class="contact-link"><?= htmlspecialchars($content['email']) ?></a>
-                </div>
-                */ ?>
-
-                <?php 
+                <?php
                     $socials = json_decode($content['social_media'] ?? '[]', true);
-                    // Extract website if exists in socials or separate field (assuming socials for now)
                     $website = $socials['website'] ?? null;
-                    unset($socials['website']); 
+                    unset($socials['website']);
                 ?>
 
                 <?php if ($website): ?>
@@ -42,13 +33,11 @@
                         <?php if(!empty($handle)): ?>
                         <div class="contact-item">
                             <span class="contact-label"><?= htmlspecialchars($platform) ?>:</span>
-                            <?php 
+                            <?php
                                 $url = $handle;
-                                // Basic check if it's already a URL
                                 if (!preg_match("~^(?:f|ht)tps?://~i", $handle)) {
                                     $cleanHandle = ltrim($handle, '@');
                                     $plat = strtolower($platform);
-                                    
                                     if ($plat === 'instagram') {
                                         $url = "https://instagram.com/" . $cleanHandle;
                                     } elseif ($plat === 'twitter' || $plat === 'x') {
@@ -60,13 +49,11 @@
                                     } elseif ($plat === 'youtube') {
                                         $url = "https://youtube.com/" . $cleanHandle;
                                     } else {
-                                        // Default fallback or maybe keep as is?
-                                        // User might input 'example.com'
-                                        $url = "https://" . $handle; 
+                                        $url = "https://" . $handle;
                                     }
                                 }
                             ?>
-                            <a href="<?= htmlspecialchars($url) ?>" target="_blank" class="contact-link link-red"><?= htmlspecialchars($handle) ?></a> 
+                            <a href="<?= htmlspecialchars($url) ?>" target="_blank" class="contact-link link-red"><?= htmlspecialchars($handle) ?></a>
                         </div>
                         <?php endif; ?>
                     <?php endforeach; ?>
@@ -74,7 +61,7 @@
 
                 <!-- Content Submenu -->
                 <div class="author-submenu" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <h4 style="font-size: 0.9rem; margin-bottom: 10px; font-weight: 700; color: #333;">Karya & Kontribusi</h4>
+                    <h4 style="font-size: 0.9rem; margin-bottom: 10px; font-weight: 700; color: #333;">Contributor</h4>
                     
                     <style>
                         .content-dropdown { margin-bottom: 8px; }
@@ -84,7 +71,7 @@
                             color: #555;
                             display: flex;
                             align-items: center;
-                            list-style: none; /* Hide default triangle */
+                            list-style: none;
                             padding: 5px 0;
                         }
                         .content-dropdown summary::-webkit-details-marker { display: none; }
@@ -149,7 +136,6 @@
                             </summary>
                             <ul class="dropdown-list">
                                 <?php foreach ($contentItems['bulletin'] as $item): ?>
-                                    <!-- Check if bulletin has slug or file link -->
                                     <li><a href="<?= BASE_URL ?>/bulletin/<?= $item['slug'] ?? '#' ?>" target="_blank"><?= htmlspecialchars($item['title']) ?></a></li>
                                 <?php endforeach; ?>
                             </ul>
@@ -160,7 +146,7 @@
                     <?php if (!empty($contentItems['kolaborasi'])): ?>
                         <details class="content-dropdown">
                             <summary>
-                                <i class="fas fa-users" style="width: 20px; color: #888;"></i> Kolaborasi 
+                                <i class="fas fa-users" style="width: 20px; color: #888;"></i> Koleb 
                                 <span class="count-badge"><?= count($contentItems['kolaborasi']) ?></span>
                                 <i class="fas fa-chevron-down"></i>
                             </summary>
@@ -171,6 +157,47 @@
                             </ul>
                         </details>
                     <?php endif; ?>
+
+                    <!-- PENTAS -->
+                    <?php if (!empty($contentItems['pentas'])): ?>
+                        <details class="content-dropdown">
+                            <summary>
+                                <i class="fas fa-theater-masks" style="width: 20px; color: #888;"></i> Pentas
+                                <span class="count-badge"><?= count($contentItems['pentas']) ?></span>
+                                <i class="fas fa-chevron-down"></i>
+                            </summary>
+                            <ul class="dropdown-list">
+                                <?php foreach ($contentItems['pentas'] as $item): ?>
+                                    <li>
+                                        <a href="<?= BASE_URL ?>/pentas/<?= !empty($item['slug']) ? $item['slug'] : $item['id'] ?>" target="_blank">
+                                            <?= htmlspecialchars($item['title']) ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </details>
+                    <?php endif; ?>
+
+                    <!-- MERCH -->
+                    <?php if (!empty($contentItems['merch'])): ?>
+                        <details class="content-dropdown">
+                            <summary>
+                                <i class="fas fa-shopping-bag" style="width: 20px; color: #888;"></i> Produk
+                                <span class="count-badge"><?= count($contentItems['merch']) ?></span>
+                                <i class="fas fa-chevron-down"></i>
+                            </summary>
+                            <ul class="dropdown-list">
+                                <?php foreach ($contentItems['merch'] as $item): ?>
+                                    <li>
+                                        <a href="<?= BASE_URL ?>/merch/detail/<?= $item['slug'] ?? $item['id'] ?>" target="_blank">
+                                            <?= htmlspecialchars($item['name']) ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </details>
+                    <?php endif; ?>
+
                 </div>
             </div>
 
@@ -183,7 +210,7 @@
                 </h4>
                 <div class="qris-container" style="background: #fff; padding: 15px; border-radius: 10px; border: 2px solid #eee; text-align: center;">
                     <img 
-                        src="<?= BASE_URL ?>/<?= $content['qris_image'] ?>" 
+                        src="<?= BASE_URL ?>/<?= $content['qris_image'] ?>"
                         alt="QRIS <?= htmlspecialchars($content['name']) ?>"
                         style="max-width: 200px; width: 100%; height: auto; border-radius: 8px;"
                     >
@@ -197,12 +224,8 @@
 
         <!-- RIGHT COLUMN: Image, Bio, Works -->
         <main class="author-main-content">
-            <!-- Big Landscape Image -->
-            <!-- Profile Image (Square as cropped) -->
             <div class="author-profile-image-container" style="width: 100%; max-width: 350px; aspect-ratio: 1/1; border-radius: 12px; overflow: hidden; margin-bottom: 30px; border: 1px solid #eee; margin-left: auto; margin-right: auto;">
-                 <?php 
-                    // Use a different bigger image if available, or fall back to avatar but styled differently
-                    // Ideally this should be a 'cover_photo' but we use avatar for now, styled as landscape/cover
+                <?php
                     $image = !empty($content['avatar']) ? BASE_URL . '/' . $content['avatar'] : 'https://ui-avatars.com/api/?name=' . urlencode($content['name']) . '&background=random&size=600';
                 ?>
                 <img src="<?= $image ?>" alt="<?= htmlspecialchars($content['name']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
@@ -215,11 +238,8 @@
 
             <!-- Articles Grid -->
             <div class="author-works-section">
-                <!-- <h3 class="works-title">Karya</h3> -->
-                
-                <?php 
-                // Fallback if latestContent not set (backward compatibility)
-                $feedItems = $latestContent ?? $posts; 
+                <?php
+                    $feedItems = $latestContent ?? $posts;
                 ?>
 
                 <?php if (empty($feedItems)): ?>
@@ -235,10 +255,7 @@
                             <?php endif; ?>
                             <div class="work-card-body">
                                 <span class="work-cat">
-                                    <?php 
-                                        // Display category or type
-                                        echo htmlspecialchars($item['category_name'] ?? 'Karya');
-                                    ?>
+                                    <?= htmlspecialchars($item['category_name'] ?? 'Karya') ?>
                                 </span>
                                 <h4 class="work-title">
                                     <a href="<?= $item['url'] ?? (BASE_URL . '/blog/' . $item['slug']) ?>" target="_blank"><?= htmlspecialchars($item['title']) ?></a>

@@ -31,33 +31,104 @@ class Event {
     }
 
     /**
-     * Get upcoming events
+     * Get upcoming events with search & pagination
      */
-    public function getUpcoming($limit = 10) {
-        $stmt = $this->db->prepare(
-            "SELECT * FROM {$this->table} 
-             WHERE is_active = 1 AND event_date >= NOW() 
-             ORDER BY event_date ASC 
-             LIMIT :limit"
-        );
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    public function getUpcoming($search = '', $offset = 0, $limit = 9) {
+        // Jika dipanggil dengan cara lama getUpcoming(20), tangani gracefully
+        if (is_numeric($search)) {
+            $limit  = (int)$search;
+            $search = '';
+            $offset = 0;
+        }
+
+        $sql = "SELECT * FROM {$this->table} WHERE is_active = 1 AND event_date >= NOW()";
+        $params = [];
+
+        if (!empty($search)) {
+            $sql .= " AND (title LIKE :search OR description LIKE :search2 OR venue LIKE :search3)";
+            $params[':search']  = "%$search%";
+            $params[':search2'] = "%$search%";
+            $params[':search3'] = "%$search%";
+        }
+
+        $sql .= " ORDER BY event_date ASC LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->bindValue(':limit',  $limit,  PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
     /**
-     * Get past events
+     * Get past events with pagination
      */
-    public function getPast($limit = 10) {
-        $stmt = $this->db->prepare(
-            "SELECT * FROM {$this->table} 
-             WHERE is_active = 1 AND event_date < NOW() 
-             ORDER BY event_date DESC 
-             LIMIT :limit"
-        );
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    public function getPast($offset = 0, $limit = 9, $search = '') {
+        // Graceful handling jika dipanggil cara lama getPast(10)
+        if (func_num_args() === 1 && $offset <= 50) {
+            $limit  = $offset;
+            $offset = 0;
+        }
+
+        $sql    = "SELECT * FROM {$this->table} WHERE is_active = 1 AND event_date < NOW()";
+        $params = [];
+
+        if (!empty($search)) {
+            $sql .= " AND (title LIKE :search OR description LIKE :search2 OR venue LIKE :search3)";
+            $params[':search']  = "%$search%";
+            $params[':search2'] = "%$search%";
+            $params[':search3'] = "%$search%";
+        }
+
+        $sql .= " ORDER BY event_date DESC LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->bindValue(':limit',  $limit,  PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    /**
+     * Count upcoming events (for pagination)
+     */
+    public function countUpcoming($search = '') {
+        $sql = "SELECT COUNT(*) FROM {$this->table} WHERE is_active = 1 AND event_date >= NOW()";
+        $params = [];
+
+        if (!empty($search)) {
+            $sql .= " AND (title LIKE :search OR description LIKE :search2 OR venue LIKE :search3)";
+            $params[':search']  = "%$search%";
+            $params[':search2'] = "%$search%";
+            $params[':search3'] = "%$search%";
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return (int)$stmt->fetchColumn();
+    }
+
+    /**
+     * Count past events (for pagination)
+     */
+    public function countPast($search = '') {
+        $sql    = "SELECT COUNT(*) FROM {$this->table} WHERE is_active = 1 AND event_date < NOW()";
+        $params = [];
+
+        if (!empty($search)) {
+            $sql .= " AND (title LIKE :search OR description LIKE :search2 OR venue LIKE :search3)";
+            $params[':search']  = "%$search%";
+            $params[':search2'] = "%$search%";
+            $params[':search3'] = "%$search%";
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return (int)$stmt->fetchColumn();
     }
 
     /**
@@ -110,7 +181,10 @@ class Event {
         $stmt->bindParam(':ticket_quota', $data['ticket_quota']);
         $stmt->bindParam(':is_active', $data['is_active']);
         
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return $this->db->lastInsertId(); // return ID untuk sync kontributor
+        }
+        return false;
     }
 
     /**
@@ -194,5 +268,85 @@ class Event {
     public function isFree($id) {
         $event = $this->getById($id);
         return $event && $event['ticket_price'] == 0;
+    }
+
+    // =========================================================
+    // CONTRIBUTOR METHODS
+    // =========================================================
+
+    /**
+     * Ambil semua kontributor aktif (untuk form admin)
+     */
+    public function getActiveContributors() {
+        $stmt = $this->db->query(
+            "SELECT id, name FROM users 
+             WHERE role = 'contributor' AND status = 'active' 
+             ORDER BY name ASC"
+        );
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Ambil user_id kontributor yang sudah dipilih untuk event tertentu
+     * (digunakan untuk pre-check checkbox di form edit)
+     */
+    public function getEventContributors($eventId) {
+        $stmt = $this->db->prepare(
+            "SELECT user_id FROM event_contributors WHERE event_id = ?"
+        );
+        $stmt->execute([$eventId]);
+        return array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'user_id');
+    }
+
+    /**
+     * Ambil data kontributor lengkap (id + name) untuk halaman detail publik
+     */
+    public function getEventContributorsDetail($eventId) {
+        $stmt = $this->db->prepare(
+            "SELECT u.id, u.name
+             FROM event_contributors ec
+             JOIN users u ON ec.user_id = u.id
+             WHERE ec.event_id = ?
+             ORDER BY u.name ASC"
+        );
+        $stmt->execute([$eventId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Sync kontributor event (hapus lama, insert baru)
+     * Dipanggil saat store maupun update event
+     */
+    public function syncEventContributors($eventId, array $userIds) {
+        // Hapus semua relasi lama
+        $stmt = $this->db->prepare(
+            "DELETE FROM event_contributors WHERE event_id = ?"
+        );
+        $stmt->execute([$eventId]);
+
+        // Insert relasi baru
+        if (!empty($userIds)) {
+            $insert = $this->db->prepare(
+                "INSERT INTO event_contributors (event_id, user_id) VALUES (?, ?)"
+            );
+            foreach ($userIds as $userId) {
+                $insert->execute([$eventId, (int)$userId]);
+            }
+        }
+    }
+
+    /**
+     * Ambil event yang melibatkan user tertentu (untuk halaman profil author)
+     */
+    public function getEventsByContributor($userId) {
+        $stmt = $this->db->prepare(
+            "SELECT e.id, e.title, e.slug, e.event_date
+             FROM event_contributors ec
+             JOIN events e ON ec.event_id = e.id
+             WHERE ec.user_id = ? AND e.is_active = 1
+             ORDER BY e.event_date DESC"
+        );
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

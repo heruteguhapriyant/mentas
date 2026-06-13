@@ -78,32 +78,51 @@
                 <input type="hidden" name="body" id="body-input">
             </div>
 
-            <!-- Manual Tags Input (Hidden/Commented by Request) -->
-            <!--
+            <!-- Tags: pilih dari daftar admin -->
+            <?php
+            $postTagIds = [];
+            if (!empty($postTags)) {
+                foreach ($postTags as $pt) {
+                    $postTagIds[] = $pt['id'];
+                }
+            }
+            ?>
+            <?php if (!empty($allTags)): ?>
             <div class="form-group">
-                <label for="tag-input">Tags Tambahan (Manual / Auto)</label>
-                <div class="manual-tags-wrapper" style="position: relative;">
-                    <div class="tag-input-container" id="selected-tags-container" style="display: flex; flex-wrap: wrap; gap: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: #fff; min-height: 45px;">
-                        <!-- Tags rendered here -->
-                    </div>
-                    <input type="text" id="tag-input" class="tag-input-field" placeholder="Ketik tag dan tekan Enter..." style="border: none; outline: none; flex: 1; min-width: 150px; padding: 4px; font-size: 1rem; background: transparent;" autocomplete="off">
+                <label>Tags</label>
+                <small class="text-muted" style="display: block; margin-bottom: 8px; color: #6c757d; font-size: 0.85em;">
+                    Pilih tag yang sesuai dengan artikel kamu (maks. 5 tag).
+                </small>
+                <input
+                    type="text"
+                    id="tag-search"
+                    placeholder="Cari tag..."
+                    style="width: 100%; padding: 7px 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box;"
+                    oninput="filterTags(this.value)"
+                >
+                <div class="tags-checkbox-wrapper" id="tags-checkbox-list">
+                    <?php foreach ($allTags as $tag): ?>
+                        <label class="tag-checkbox-item" data-name="<?= strtolower(htmlspecialchars($tag['name'])) ?>">
+                            <input
+                                type="checkbox"
+                                name="tags[]"
+                                value="<?= $tag['id'] ?>"
+                                <?= in_array($tag['id'], $postTagIds) ? 'checked' : '' ?>
+                            >
+                            <span><?= htmlspecialchars($tag['name']) ?></span>
+                        </label>
+                    <?php endforeach; ?>
                 </div>
-                
-                <!-- Suggestions List -->
-                <ul id="tag-suggestions" class="tag-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ddd; border-top: none; max-height: 200px; overflow-y: auto; z-index: 1000; list-style: none; padding: 0; margin: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></ul>
-
-                <div style="margin-top: 5px; display: flex; gap: 10px;">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="autoGenerateTags()">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Tags
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearGeneratedTags()">
-                        Clear Tags
-                    </button>
-                </div>
-                <input type="hidden" name="manual_tags" id="manual_tags_input">
-                <small class="form-text text-muted">Ketik tag lalu tekan <b>Enter</b>, atau gunakan tombol Generate.</small>
+                <small id="tag-counter" style="color: #6c757d; font-size: 0.82em; margin-top: 6px; display: block;">0 dari 5 tag dipilih</small>
             </div>
-            -->
+            <?php else: ?>
+            <div class="form-group">
+                <label>Tags</label>
+                <p style="color: #999; font-size: 14px; padding: 10px; border: 1px dashed #ddd; border-radius: 4px;">
+                    Belum ada tag tersedia. Hubungi admin.
+                </p>
+            </div>
+            <?php endif; ?>
 
             <style>
                 /* Quill Editor Container */
@@ -178,9 +197,57 @@
                 .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
                     content: 'Heading 3';
                 }
+                /* Tags checkbox */
+                .tags-checkbox-wrapper {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 8px;
+                    padding: 12px;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
+                    background: #fafafa;
+                    max-height: 220px;
+                    overflow-y: auto;
+                }
+                .tag-checkbox-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 5px 12px;
+                    border: 1px solid #ddd;
+                    border-radius: 20px;
+                    background: #fff;
+                    cursor: pointer;
+                    font-size: 13px;
+                    transition: all 0.15s;
+                    user-select: none;
+                    margin: 0;
+                }
+                .tag-checkbox-item:hover {
+                    border-color: #d52c2c;
+                    background: #fff5f5;
+                }
+                .tag-checkbox-item input[type="checkbox"] {
+                    accent-color: #d52c2c;
+                    width: 14px;
+                    height: 14px;
+                    cursor: pointer;
+                    flex-shrink: 0;
+                }
+                .tag-checkbox-item:has(input:checked) {
+                    border-color: #d52c2c;
+                    background: #fff0f0;
+                    font-weight: 500;
+                    color: #d52c2c;
+                }
+                .tag-checkbox-item.hidden {
+                    display: none;
+                }
+                .tag-checkbox-item.disabled-tag {
+                    opacity: 0.45;
+                    pointer-events: none;
+                }
             </style>
-
-
 
             <div class="form-actions">
                 <button type="submit" name="status" value="draft" class="btn btn-secondary">
@@ -229,162 +296,47 @@ function clearCoverFile() {
     document.getElementById('new-cover-preview').style.display = 'none';
     document.getElementById('clear-file-btn').style.display = 'none';
 }
+
+// Filter tag berdasarkan pencarian
+function filterTags(query) {
+    const items = document.querySelectorAll('.tag-checkbox-item');
+    const q = query.toLowerCase().trim();
+    items.forEach(item => {
+        const name = item.getAttribute('data-name') || '';
+        item.classList.toggle('hidden', q !== '' && !name.includes(q));
+    });
+}
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const tagInput = document.getElementById('tag-input');
-    const suggestionsList = document.getElementById('tag-suggestions');
-    const selectedTagsContainer = document.getElementById('selected-tags-container');
-    const manualTagsInput = document.getElementById('manual_tags_input');
-    
-    let selectedTags = [];
-    let debounceTimer;
+// Counter & batasi max 5 tag
+document.addEventListener('DOMContentLoaded', function () {
+    const checkboxes = document.querySelectorAll('input[name="tags[]"]');
+    const counter = document.getElementById('tag-counter');
+    const MAX_TAGS = 5;
 
-    // Load initial manual tags if editing (optional, strictly user asked for adding)
-    // For now we start empty or parse from existing manual inputs if we had them
+    if (!checkboxes.length || !counter) return;
 
-    tagInput.addEventListener('input', function() {
-        const query = this.value.trim();
-        clearTimeout(debounceTimer);
+    function updateCounter() {
+        const checked = document.querySelectorAll('input[name="tags[]"]:checked').length;
+        counter.textContent = checked + ' dari ' + MAX_TAGS + ' tag dipilih';
+        counter.style.color = checked >= MAX_TAGS ? '#d52c2c' : '#6c757d';
 
-        if (query.length < 1) {
-            suggestionsList.style.display = 'none';
-            return;
-        }
-
-        debounceTimer = setTimeout(() => {
-            fetch(`<?= BASE_URL ?>/contributor/searchTags?q=${encodeURIComponent(query)}`)
-                .then(response => response.json())
-                .then(tags => {
-                    suggestionsList.innerHTML = '';
-                    if (tags.length > 0) {
-                        tags.forEach(tag => {
-                            const li = document.createElement('li');
-                            li.className = 'suggestion-item';
-                            li.textContent = tag.name;
-                            li.onclick = () => addTag(tag.name);
-                            suggestionsList.appendChild(li);
-                        });
-                        suggestionsList.style.display = 'block';
-                    } else {
-                        suggestionsList.style.display = 'none'; // Or show "Create new tag..."
-                    }
-                });
-        }, 300);
-    });
-
-    tagInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const value = this.value.trim();
-            if (value) {
-                addTag(value);
-            }
-        }
-    });
-
-    // Close suggestions when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.manual-tags-wrapper')) {
-            suggestionsList.style.display = 'none';
-        }
-    });
-
-    window.addTag = function(name) {
-        // Prevent duplicates
-        if (selectedTags.includes(name)) {
-            tagInput.value = '';
-            suggestionsList.style.display = 'none';
-            return;
-        }
-
-        selectedTags.push(name);
-        renderTags();
-        updateHiddenInput();
-        
-        tagInput.value = '';
-        suggestionsList.style.display = 'none';
-        tagInput.focus();
-    }
-
-    window.removeTag = function(name) {
-        selectedTags = selectedTags.filter(tag => tag !== name);
-        renderTags();
-        updateHiddenInput();
-    }
-
-    // Expose for auto-generation
-    window.autoGenerateTags = function() {
-        const title = document.getElementById('title').value;
-        const body = document.getElementById('body-input').value;
-        
-        if (!title && !body) {
-            alert('Mohon isi Judul atau Konten Artikel terlebih dahulu.');
-            return;
-        }
-
-        const btn = document.querySelector('button[onclick="autoGenerateTags()"]');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
-        btn.disabled = true;
-
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('body', body);
-
-        fetch('<?= BASE_URL ?>/contributor/generateTags', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(tags => {
-            if (tags.length > 0) {
-                tags.forEach(tag => {
-                    addTag(tag.name);
-                });
-                alert('Tags berhasil digenerate: ' + tags.map(t => t.name).join(', '));
+        checkboxes.forEach(cb => {
+            const label = cb.closest('.tag-checkbox-item');
+            if (!cb.checked) {
+                const isMax = checked >= MAX_TAGS;
+                cb.disabled = isMax;
+                label.classList.toggle('disabled-tag', isMax);
             } else {
-                alert('Tidak dapat menemukan kata kunci yang cocok.');
+                cb.disabled = false;
+                label.classList.remove('disabled-tag');
             }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Terjadi kesalahan saat generate tags.');
-        })
-        .finally(() => {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        });
-    };
-
-    function renderTags() {
-        selectedTagsContainer.innerHTML = '';
-        selectedTags.forEach(tag => {
-            const chip = document.createElement('div');
-            chip.className = 'tag-chip';
-            chip.innerHTML = `${tag} <span class="remove-tag" onclick="removeTag('${tag}')">&times;</span>`;
-            selectedTagsContainer.appendChild(chip);
         });
     }
 
-    function updateHiddenInput() {
-        manualTagsInput.value = selectedTags.join(',');
-    }
-
-    // Clear all database tags (uncheck all checkboxes)
-    window.clearDatabaseTags = function() {
-        document.querySelectorAll('input[name="tags[]"]').forEach(checkbox => {
-            checkbox.checked = false;
-        });
-    };
-
-    // Clear all generated/manual tags
-    window.clearGeneratedTags = function() {
-        selectedTags = [];
-        renderTags();
-        updateHiddenInput();
-    };
+    checkboxes.forEach(cb => cb.addEventListener('change', updateCounter));
+    updateCounter();
 });
 </script>
 

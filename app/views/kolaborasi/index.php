@@ -2,8 +2,8 @@
 
 <section class="hero ekosistem-hero">
     <div class="hero-content">
-        <h1>Kolaborasi</h1>
-        <p>Ruang seni budaya dan kolaborasi</p>
+        <h1>Koleb</h1>
+        <p>Pertemuan yang melahirkan gerak mencipta ruang dialog, untuk merayakan perbedaan cara pandang budaya, dan membuka kemungkinan masa depan. Di titik itulah kebudayaan tidak lagi dipahami sebagai benda mati yang disimpan, melainkan sebagai gerak yang terus hidup serta bertumbuh dari percakapan, dari kolaborasi, dari keberanian untuk saling mendengar dan mencipta bersama..</p>
     </div>
 </section>
 

@@ -9,6 +9,7 @@ class AdminController extends Controller
     private $categoryModel;
     private $postModel;
     private $tagModel;
+    private $collaborationModel;
 
     public function __construct()
     {
@@ -513,7 +514,8 @@ class AdminController extends Controller
             'category_id' => $_POST['category_id'] ?? null,
             'author_id' => !empty($_POST['author_id']) ? $_POST['author_id'] : null,
             'image_position' => $_POST['image_position'] ?? 'center',
-            'is_active' => isset($_POST['is_active']) ? 1 : 0
+            'is_active' => isset($_POST['is_active']) ? 1 : 0,
+            'published_at' => !empty($_POST['published_at']) ? $_POST['published_at'] : date('Y-m-d H:i:s') // ✅ tambahkan ini
         ];
 
         // Handle cover image upload
@@ -578,7 +580,8 @@ class AdminController extends Controller
             'category_id' => $_POST['category_id'] ?? null,
             'author_id' => !empty($_POST['author_id']) ? $_POST['author_id'] : null,
             'image_position' => $_POST['image_position'] ?? 'center',
-            'is_active' => isset($_POST['is_active']) ? 1 : 0
+            'is_active' => isset($_POST['is_active']) ? 1 : 0,
+            'published_at' => !empty($_POST['published_at']) ? $_POST['published_at'] : date('Y-m-d H:i:s') // ✅ tambahkan ini
         ];
 
         // Handle cover image upload
@@ -705,7 +708,7 @@ class AdminController extends Controller
         exit;
     }
 
-    // =====================
+// =====================
     // PRODUCTS MANAGEMENT (Merch)
     // =====================
 
@@ -713,15 +716,24 @@ class AdminController extends Controller
     {
         $search = $_GET['q'] ?? null;
         $productModel = new Product();
-        $products = $productModel->getAll(null, 0, false, $search); // Get all including inactive with search
+        $products = $productModel->getAll(null, 0, false, $search);
         return $this->view('admin/products/index', ['products' => $products, 'search' => $search]);
     }
 
     public function productCreate()
     {
         $productModel = new Product();
-        $categories = $productModel->getCategories();
-        return $this->view('admin/products/form', ['product' => null, 'categories' => $categories]);
+        $categories   = $productModel->getCategories();
+
+        // Ambil semua kontributor aktif untuk dropdown creator
+        $eventModel   = new Event();
+        $contributors = $eventModel->getActiveContributors();
+
+        return $this->view('admin/products/form', [
+            'product'      => null,
+            'categories'   => $categories,
+            'contributors' => $contributors,
+        ]);
     }
 
     public function productStore()
@@ -732,22 +744,21 @@ class AdminController extends Controller
         }
 
         $data = [
-            'name' => trim($_POST['name'] ?? ''),
-            'category_id' => $_POST['category_id'] ?? null,
-            'description' => trim($_POST['description'] ?? ''),
-            'price' => intval($_POST['price'] ?? 0),
-            'stock' => intval($_POST['stock'] ?? 0),
-            'whatsapp_number' => trim($_POST['whatsapp_number'] ?? '6283895189649'),
-            'is_active' => isset($_POST['is_active']) ? 1 : 0
+            'name'             => trim($_POST['name'] ?? ''),
+            'category_id'      => $_POST['category_id'] ?? null,
+            'description'      => trim($_POST['description'] ?? ''),
+            'price'            => intval($_POST['price'] ?? 0),
+            'stock'            => intval($_POST['stock'] ?? 0),
+            'creator_id'       => !empty($_POST['creator_id']) ? intval($_POST['creator_id']) : null, // TAMBAHAN
+            'whatsapp_number'  => trim($_POST['whatsapp_number'] ?? '6283895189649'),
+            'is_active'        => isset($_POST['is_active']) ? 1 : 0,
         ];
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = dirname(__DIR__, 2) . '/public/uploads/products/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+            $ext      = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
             $filename = uniqid() . '.' . $ext;
             move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
             $data['cover_image'] = 'uploads/products/' . $filename;
@@ -763,16 +774,23 @@ class AdminController extends Controller
     public function productEdit($id)
     {
         $productModel = new Product();
-        $product = $productModel->find($id);
+        $product      = $productModel->find($id);
 
         if (!$product) {
             setFlash('error', 'Produk tidak ditemukan');
             header('Location: ' . BASE_URL . '/admin/products');
             exit;
         }
-        
-        $categories = $productModel->getCategories();
-        return $this->view('admin/products/form', ['product' => $product, 'categories' => $categories]);
+
+        $categories   = $productModel->getCategories();
+        $eventModel   = new Event();
+        $contributors = $eventModel->getActiveContributors();
+
+        return $this->view('admin/products/form', [
+            'product'      => $product,
+            'categories'   => $categories,
+            'contributors' => $contributors,
+        ]);
     }
 
     public function productUpdate($id)
@@ -783,22 +801,21 @@ class AdminController extends Controller
         }
 
         $data = [
-            'name' => trim($_POST['name'] ?? ''),
-            'category_id' => $_POST['category_id'] ?? null,
-            'description' => trim($_POST['description'] ?? ''),
-            'price' => intval($_POST['price'] ?? 0),
-            'stock' => intval($_POST['stock'] ?? 0),
+            'name'            => trim($_POST['name'] ?? ''),
+            'category_id'     => $_POST['category_id'] ?? null,
+            'description'     => trim($_POST['description'] ?? ''),
+            'price'           => intval($_POST['price'] ?? 0),
+            'stock'           => intval($_POST['stock'] ?? 0),
+            'creator_id'      => !empty($_POST['creator_id']) ? intval($_POST['creator_id']) : null, // TAMBAHAN
             'whatsapp_number' => trim($_POST['whatsapp_number'] ?? '6283895189649'),
-            'is_active' => isset($_POST['is_active']) ? 1 : 0
+            'is_active'       => isset($_POST['is_active']) ? 1 : 0,
         ];
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = dirname(__DIR__, 2) . '/public/uploads/products/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+            $ext      = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
             $filename = uniqid() . '.' . $ext;
             move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
             $data['cover_image'] = 'uploads/products/' . $filename;
@@ -820,7 +837,7 @@ class AdminController extends Controller
         exit;
     }
 
-    // =====================
+// =====================
     // EVENTS MANAGEMENT (Pentas)
     // =====================
 
@@ -834,7 +851,15 @@ class AdminController extends Controller
 
     public function eventCreate()
     {
-        return $this->view('admin/events/form', ['event' => null]);
+        $eventModel           = new Event();
+        $contributors         = $eventModel->getActiveContributors();
+        $selectedContributors = [];
+
+        return $this->view('admin/events/form', [
+            'event'                => null,
+            'contributors'         => $contributors,
+            'selectedContributors' => $selectedContributors,
+        ]);
     }
 
     public function eventStore()
@@ -846,36 +871,44 @@ class AdminController extends Controller
 
         // Generate slug from title
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $_POST['title'] ?? '')));
-        $slug = preg_replace('/-+/', '-', $slug); // Remove multiple dashes
-        $slug = trim($slug, '-'); // Remove leading/trailing dashes
-        
+        $slug = preg_replace('/-+/', '-', $slug);
+        $slug = trim($slug, '-');
+
         $data = [
-            'title' => trim($_POST['title'] ?? ''),
-            'slug' => $slug,
-            'description' => trim($_POST['description'] ?? ''),
-            'venue' => trim($_POST['venue'] ?? ''),
+            'title'         => trim($_POST['title'] ?? ''),
+            'slug'          => $slug,
+            'description'   => trim($_POST['description'] ?? ''),
+            'venue'         => trim($_POST['venue'] ?? ''),
             'venue_address' => trim($_POST['venue_address'] ?? ''),
-            'event_date' => $_POST['event_date'] ?? null,
-            'end_date' => $_POST['event_end_date'] ?: null,
-            'ticket_price' => intval($_POST['ticket_price'] ?? 0),
-            'ticket_quota' => intval($_POST['ticket_quota'] ?? 100),
-            'is_active' => isset($_POST['is_active']) ? 1 : 0
-        ];
+            'event_date'    => $_POST['event_date'] ?? null,
+            'end_date'      => $_POST['event_end_date'] ?: null,
+            'ticket_price'  => intval($_POST['ticket_price'] ?? 0),
+            'ticket_quota'  => intval($_POST['ticket_quota'] ?? 100),
+            'is_active'     => isset($_POST['is_active']) ? 1 : 0,
+            'community_name' => $_POST['community_name'] ?? null,
+            'community_ig'   => $_POST['community_ig'] ?? null,
+            'community_wa'   => $_POST['community_wa'] ?? null,
+                    ];
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = dirname(__DIR__, 2) . '/public/uploads/events/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+            $ext      = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
             $filename = uniqid() . '.' . $ext;
             move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
             $data['cover_image'] = 'uploads/events/' . $filename;
         }
 
         $eventModel = new Event();
-        $eventModel->create($data);
+        $newEventId = $eventModel->create($data); // returns lastInsertId
+
+        // Sync kontributor
+        $contributorIds = $_POST['contributors'] ?? [];
+        if ($newEventId) {
+            $eventModel->syncEventContributors($newEventId, $contributorIds);
+        }
+
         setFlash('success', 'Event berhasil ditambahkan');
         header('Location: ' . BASE_URL . '/admin/events');
         exit;
@@ -884,7 +917,7 @@ class AdminController extends Controller
     public function eventEdit($id)
     {
         $eventModel = new Event();
-        $event = $eventModel->find($id);
+        $event      = $eventModel->find($id);
 
         if (!$event) {
             setFlash('error', 'Event tidak ditemukan');
@@ -892,7 +925,14 @@ class AdminController extends Controller
             exit;
         }
 
-        return $this->view('admin/events/form', ['event' => $event]);
+        $contributors         = $eventModel->getActiveContributors();
+        $selectedContributors = $eventModel->getEventContributors($id);
+
+        return $this->view('admin/events/form', [
+            'event'                => $event,
+            'contributors'         => $contributors,
+            'selectedContributors' => $selectedContributors,
+        ]);
     }
 
     public function eventUpdate($id)
@@ -903,24 +943,25 @@ class AdminController extends Controller
         }
 
         $data = [
-            'title' => trim($_POST['title'] ?? ''),
-            'description' => trim($_POST['description'] ?? ''),
-            'venue' => trim($_POST['venue'] ?? ''),
+            'title'         => trim($_POST['title'] ?? ''),
+            'description'   => trim($_POST['description'] ?? ''),
+            'venue'         => trim($_POST['venue'] ?? ''),
             'venue_address' => trim($_POST['venue_address'] ?? ''),
-            'event_date' => $_POST['event_date'] ?? null,
-            'end_date' => $_POST['event_end_date'] ?: null,
-            'ticket_price' => intval($_POST['ticket_price'] ?? 0),
-            'ticket_quota' => intval($_POST['ticket_quota'] ?? 100),
-            'is_active' => isset($_POST['is_active']) ? 1 : 0
+            'event_date'    => $_POST['event_date'] ?? null,
+            'end_date'      => $_POST['event_end_date'] ?: null,
+            'ticket_price'  => intval($_POST['ticket_price'] ?? 0),
+            'ticket_quota'  => intval($_POST['ticket_quota'] ?? 100),
+            'is_active'     => isset($_POST['is_active']) ? 1 : 0,
+            'community_name' => $_POST['community_name'] ?? null,
+            'community_ig'   => $_POST['community_ig'] ?? null,
+            'community_wa'   => $_POST['community_wa'] ?? null,
         ];
 
         // Handle cover image upload
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = dirname(__DIR__, 2) . '/public/uploads/events/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+            $ext      = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
             $filename = uniqid() . '.' . $ext;
             move_uploaded_file($_FILES['cover_image']['tmp_name'], $uploadDir . $filename);
             $data['cover_image'] = 'uploads/events/' . $filename;
@@ -928,6 +969,11 @@ class AdminController extends Controller
 
         $eventModel = new Event();
         $eventModel->update($id, $data);
+
+        // Sync kontributor
+        $contributorIds = $_POST['contributors'] ?? [];
+        $eventModel->syncEventContributors($id, $contributorIds);
+
         setFlash('success', 'Event berhasil diupdate');
         header('Location: ' . BASE_URL . '/admin/events');
         exit;
@@ -939,38 +985,6 @@ class AdminController extends Controller
         $eventModel->delete($id);
         setFlash('success', 'Event berhasil dihapus');
         header('Location: ' . BASE_URL . '/admin/events');
-        exit;
-    }
-
-    public function zineDelete($id)
-    {
-        $zineModel = new Zine();
-        $zine = $zineModel->find($id);
-
-        if ($zine) {
-            // Delete cover image
-            if (!empty($zine['cover_image'])) {
-                $coverPath = dirname(__DIR__, 2) . '/public/' . $zine['cover_image'];
-                if (file_exists($coverPath)) {
-                    unlink($coverPath);
-                }
-            }
-
-            // Delete PDF file
-            if (!empty($zine['pdf_file'])) {
-                $pdfPath = dirname(__DIR__, 2) . '/public/' . $zine['pdf_file'];
-                if (file_exists($pdfPath)) {
-                    unlink($pdfPath);
-                }
-            }
-
-            $zineModel->delete($id);
-            setFlash('success', 'Buletin berhasil dihapus');
-        } else {
-            setFlash('error', 'Buletin tidak ditemukan');
-        }
-
-        header('Location: ' . BASE_URL . '/admin/zines');
         exit;
     }
 

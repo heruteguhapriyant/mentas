@@ -54,97 +54,101 @@ class ContentController extends Controller
 
             // 2. Get Zines
             $zineModel = new Zine();
-            $zines = $zineModel->getByAuthor($author['id']); // Now returns full data
+            $zines = $zineModel->getByAuthor($author['id']);
 
             // 3. Get Collaborations
             $collabModel = new Collaboration();
-            $collabs = $collabModel->getByUser($author['id']); // Now returns full data
+            $collabs = $collabModel->getByUser($author['id']);
 
-            // 4. Merge and Normalize
+            // 4. Get Pentas (Events)
+            $eventModel = new Event();
+            $pentas = $eventModel->getEventsByContributor($author['id']);
+
+            // 5. Get Produk (Merch)
+            $productModel = new Product();
+            $produk = $productModel->getByCreator($author['id']);
+
+            // 6. Merge and Normalize
             $feed = [];
 
-            // Helper to add to feed
             foreach ($latestPosts as $p) {
                 $feed[] = [
-                    'type' => 'blog',
-                    'title' => $p['title'],
-                    'slug' => $p['slug'],
-                    'cover_image' => $p['cover_image'],
+                    'type'          => 'blog',
+                    'title'         => $p['title'],
+                    'slug'          => $p['slug'],
+                    'cover_image'   => $p['cover_image'],
                     'category_name' => $p['category_name'] ?? 'Artikel',
-                    'created_at' => $p['published_at'], // Use published date for posts
-                    'excerpt' => $p['excerpt'] ?? substr(strip_tags($p['body']), 0, 100) . '...',
-                    'url' => BASE_URL . '/blog/' . $p['slug']
+                    'created_at'    => $p['published_at'],
+                    'excerpt'       => $p['excerpt'] ?? substr(strip_tags($p['body']), 0, 100) . '...',
+                    'url'           => BASE_URL . '/blog/' . $p['slug']
                 ];
             }
 
             foreach ($zines as $z) {
                 $feed[] = [
-                    'type' => 'bulletin',
-                    'title' => $z['title'],
-                    'slug' => $z['slug'],
-                    'cover_image' => $z['cover_image'],
+                    'type'          => 'bulletin',
+                    'title'         => $z['title'],
+                    'slug'          => $z['slug'],
+                    'cover_image'   => $z['cover_image'],
                     'category_name' => $z['category_name'] ?? 'Buletin',
-                    'created_at' => $z['created_at'],
-                    'excerpt' => $z['excerpt'] ?? 'Buletin Sastra',
-                    'url' => BASE_URL . '/bulletin/' . ($z['slug'] ?? '#')
+                    'created_at'    => $z['created_at'],
+                    'excerpt'       => $z['excerpt'] ?? 'Buletin Sastra',
+                    'url'           => BASE_URL . '/bulletin/' . ($z['slug'] ?? '#')
                 ];
             }
 
             foreach ($collabs as $c) {
                 $feed[] = [
-                    'type' => 'kolaborasi',
-                    'title' => $c['title'],
-                    'slug' => $c['slug'],
-                    'cover_image' => $c['cover_image'],
+                    'type'          => 'kolaborasi',
+                    'title'         => $c['title'],
+                    'slug'          => $c['slug'],
+                    'cover_image'   => $c['cover_image'],
                     'category_name' => 'Kolaborasi',
-                    'created_at' => $c['created_at'],
-                    'excerpt' => $c['description'] ?? 'Kolaborasi',
-                    'url' => BASE_URL . '/kolaborasi/' . $c['slug']
+                    'created_at'    => $c['created_at'],
+                    'excerpt'       => $c['description'] ?? 'Kolaborasi',
+                    'url'           => BASE_URL . '/kolaborasi/' . $c['slug']
                 ];
             }
 
-            // 5. Sort by Date DESC
+            // 6. Sort by Date DESC
             usort($feed, function ($a, $b) {
                 return strtotime($b['created_at']) - strtotime($a['created_at']);
             });
 
             // Counts for sidebar
             $counts = [
-                'blog' => $totalPosts,
-                'bulletin' => count($zines),
+                'blog'       => $totalPosts,
+                'bulletin'   => count($zines),
                 'kolaborasi' => count($collabs),
-                'merch' => 0,
-                'pentas' => 0
+                'merch'      => count($produk),
+                'pentas'     => count($pentas),
             ];
             
             $contentItems = [
-                'blog' => $latestPosts,
-                'bulletin' => $zines,
-                'kolaborasi' => $collabs
+                'blog'       => $latestPosts,
+                'bulletin'   => $zines,
+                'kolaborasi' => $collabs,
+                'pentas'     => $pentas,
+                'merch'      => $produk,
             ];
             
             return $this->view('content/detail/author', [
-                'type' => ['name' => 'Penulis', 'slug' => 'author'],
-                'content' => $author,
-                'latestContent' => $feed, // Pass the combined feed
-                'posts' => $latestPosts, // Keep for backward compatibility if needed, but view should use latestContent
-                'categories' => $categories,
-                'counts' => $counts,
-                'contentItems' => $contentItems, 
-                'pagination' => null
+                'type'          => ['name' => 'Penulis', 'slug' => 'author'],
+                'content'       => $author,
+                'latestContent' => $feed,
+                'posts'         => $latestPosts,
+                'categories'    => $categories,
+                'counts'        => $counts,
+                'contentItems'  => $contentItems,
+                'pagination'    => null
             ]);
         }
 
         // 🔍 SEARCH FUNCTIONALITY (/blog?q=keyword)
         $searchQuery = trim($_GET['q'] ?? '');
         if (!empty($searchQuery) && !$slug) {
-            // Count search results
             $totalPosts = $this->postModel->countSearch($searchQuery);
-            
-            // Generate pagination data
             $pagination = paginate($totalPosts, $currentPage, $this->itemsPerPage);
-            
-            // Get search results
             $posts = $this->postModel->search(
                 $searchQuery,
                 $pagination['items_per_page'],
@@ -152,19 +156,18 @@ class ContentController extends Controller
             );
             
             return $this->view('content/list/article', [
-                'type' => ['name' => 'Hasil Pencarian', 'slug' => 'blog'],
-                'contents' => $posts,
-                'categories' => $categories,
-                'activeCategory' => null,
-                'searchQuery' => $searchQuery,
-                'pagination' => $pagination
+                'type'          => ['name' => 'Hasil Pencarian', 'slug' => 'blog'],
+                'contents'      => $posts,
+                'categories'    => $categories,
+                'activeCategory'=> null,
+                'searchQuery'   => $searchQuery,
+                'pagination'    => $pagination
             ]);
         }
 
         // 🏷️ TAG FILTERING (/blog?tag=tag-slug)
         $tagSlug = trim($_GET['tag'] ?? '');
         if (!empty($tagSlug) && !$slug) {
-            // Get tag info
             $tagModel = new Tag();
             $tag = $tagModel->findBySlug($tagSlug);
             
@@ -172,13 +175,8 @@ class ContentController extends Controller
                 return $this->view('errors/404');
             }
             
-            // Count posts with this tag
             $totalPosts = $this->postModel->countByTag($tagSlug);
-            
-            // Generate pagination data
             $pagination = paginate($totalPosts, $currentPage, $this->itemsPerPage);
-            
-            // Get posts with this tag
             $posts = $this->postModel->getByTag(
                 $tagSlug,
                 $pagination['items_per_page'],
@@ -186,35 +184,30 @@ class ContentController extends Controller
             );
             
             return $this->view('content/list/article', [
-                'type' => ['name' => 'Tag: ' . $tag['name'], 'slug' => 'blog'],
-                'contents' => $posts,
-                'categories' => $categories,
-                'activeCategory' => null,
-                'activeTag' => $tag,
-                'pagination' => $pagination
+                'type'          => ['name' => 'Tag: ' . $tag['name'], 'slug' => 'blog'],
+                'contents'      => $posts,
+                'categories'    => $categories,
+                'activeCategory'=> null,
+                'activeTag'     => $tag,
+                'pagination'    => $pagination
             ]);
         }
 
         // 1️⃣ HALAMAN LIST SEMUA POST (/blog)
         if (!$slug) {
-            // Count total posts
             $totalPosts = $this->postModel->countAll();
-            
-            // Generate pagination data
             $pagination = paginate($totalPosts, $currentPage, $this->itemsPerPage);
-            
-            // Get paginated posts
             $posts = $this->postModel->getPaginated(
                 $pagination['items_per_page'],
                 $pagination['offset']
             );
             
             return $this->view('content/list/article', [
-                'type' => ['name' => 'Blog', 'slug' => 'blog'],
-                'contents' => $posts,
-                'categories' => $categories,
-                'activeCategory' => null,
-                'pagination' => $pagination
+                'type'          => ['name' => 'Blog', 'slug' => 'blog'],
+                'contents'      => $posts,
+                'categories'    => $categories,
+                'activeCategory'=> null,
+                'pagination'    => $pagination
             ]);
         }
 
@@ -222,13 +215,8 @@ class ContentController extends Controller
         $category = $this->categoryModel->findBySlug($slug);
         
         if ($category) {
-            // Count posts in category
             $totalPosts = $this->postModel->countAll($slug);
-            
-            // Generate pagination data
             $pagination = paginate($totalPosts, $currentPage, $this->itemsPerPage);
-            
-            // Get paginated posts by category
             $posts = $this->postModel->getByCategory(
                 $slug,
                 $pagination['items_per_page'],
@@ -236,40 +224,37 @@ class ContentController extends Controller
             );
             
             return $this->view('content/list/article', [
-                'type' => ['name' => 'Blog', 'slug' => 'blog'],
-                'contents' => $posts,
-                'categories' => $categories,
-                'activeCategory' => $slug,
-                'categoryName' => $category['name'],
-                'pagination' => $pagination
+                'type'          => ['name' => 'Blog', 'slug' => 'blog'],
+                'contents'      => $posts,
+                'categories'    => $categories,
+                'activeCategory'=> $slug,
+                'categoryName'  => $category['name'],
+                'pagination'    => $pagination
             ]);
         }
 
         // 3️⃣ SLUG = POST DETAIL (/blog/judul-artikel)
         $post = $this->postModel->findBySlug($slug);
         
-        // Check if post exists and is viewable
         $isPublished = $post && $post['status'] === 'published';
         $canView = $isPublished || isAdmin() || (isLoggedIn() && $post['author_id'] == $_SESSION['user_id']);
 
         if ($post && $canView) {
-            // Increment view count
             $this->postModel->incrementViews($post['id']);
             
-            // Get sidebar data
             $recentPosts = $this->postModel->getRecent(5);
             $categoriesWithCount = $this->categoryModel->getWithPostCount();
             $postTags = $this->tagModel->getByPost($post['id']);
             $comments = $this->commentModel->getByPost($post['id']);
             
             return $this->view('content/detail/article', [
-                'type' => ['name' => 'Blog', 'slug' => 'blog'],
-                'content' => $post,
-                'categories' => $categories,
-                'recentPosts' => $recentPosts,
-                'categoriesWithCount' => $categoriesWithCount,
-                'postTags' => $postTags,
-                'comments' => $comments
+                'type'               => ['name' => 'Blog', 'slug' => 'blog'],
+                'content'            => $post,
+                'categories'         => $categories,
+                'recentPosts'        => $recentPosts,
+                'categoriesWithCount'=> $categoriesWithCount,
+                'postTags'           => $postTags,
+                'comments'           => $comments
             ]);
         }
 

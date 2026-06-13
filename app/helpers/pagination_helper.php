@@ -64,31 +64,25 @@ if (!function_exists('paginate')) {
         ];
     }
 }
-
 if (!function_exists('getPaginationUrl')) {
-    /**
-     * Generate URL dengan parameter page
-     * 
-     * @param int $page Nomor halaman
-     * @param array $params Parameter tambahan
-     * @return string URL lengkap
-     */
     function getPaginationUrl($page, $params = [])
     {
-        $currentUrl = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $currentUrl  = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $queryParams = $_GET;
-        
+
         // Override dengan params yang diberikan
         $queryParams = array_merge($queryParams, $params);
-        
-        // Set page number
+
+        // Ambil page_key dari params jika ada, default 'page'
+        $pageKey = $params['_page_key'] ?? 'page';
+        unset($queryParams['_page_key']); // jangan ikut di URL
+
         if ($page > 1) {
-            $queryParams['page'] = $page;
+            $queryParams[$pageKey] = $page;
         } else {
-            unset($queryParams['page']); // Hapus page=1 untuk URL yang lebih bersih
+            unset($queryParams[$pageKey]);
         }
 
-        // Build query string
         if (!empty($queryParams)) {
             return $currentUrl . '?' . http_build_query($queryParams);
         }
@@ -98,38 +92,30 @@ if (!function_exists('getPaginationUrl')) {
 }
 
 if (!function_exists('renderPagination')) {
-    /**
-     * Render HTML pagination
-     * 
-     * @param array $pagination Data pagination dari paginate()
-     * @param array $options Opsi tambahan untuk custom class, dll
-     * @return string HTML pagination
-     */
     function renderPagination($pagination, $options = [])
     {
-        // Jika hanya 1 halaman atau tidak ada data, jangan tampilkan pagination
         if ($pagination['total_pages'] <= 1) {
             return '';
         }
 
         $wrapperClass = $options['wrapper_class'] ?? 'pagination-wrapper';
-        $activeClass = $options['active_class'] ?? 'active';
-        $disabledClass = $options['disabled_class'] ?? 'disabled';
+        $activeClass  = $options['active_class']  ?? 'active';
+        $disabledClass= $options['disabled_class'] ?? 'disabled';
+        $pageKey      = $options['page_key']       ?? 'page'; // <-- tambahan
 
         ob_start();
         ?>
         <div class="<?= $wrapperClass ?>">
             <nav class="pagination" role="navigation" aria-label="Pagination">
+
                 <!-- Previous Button -->
                 <?php if ($pagination['has_previous']): ?>
-                    <a href="<?= getPaginationUrl($pagination['previous_page']) ?>" 
-                       class="pagination-btn pagination-prev"
-                       aria-label="Previous page">
+                    <a href="<?= getPaginationUrl($pagination['previous_page'], ['_page_key' => $pageKey]) ?>"
+                       class="pagination-btn pagination-prev" aria-label="Previous page">
                         Previous
                     </a>
                 <?php else: ?>
-                    <span class="pagination-btn pagination-prev <?= $disabledClass ?>" 
-                          aria-disabled="true">
+                    <span class="pagination-btn pagination-prev <?= $disabledClass ?>" aria-disabled="true">
                         Previous
                     </span>
                 <?php endif; ?>
@@ -138,25 +124,21 @@ if (!function_exists('renderPagination')) {
                 <div class="pagination-numbers">
                     <?php foreach ($pagination['pages'] as $page): ?>
                         <?php if ($page == $pagination['current_page']): ?>
-                            <span class="pagination-number <?= $activeClass ?>" 
-                                  aria-current="page">
+                            <span class="pagination-number <?= $activeClass ?>" aria-current="page">
                                 <?= $page ?>
                             </span>
                         <?php else: ?>
-                            <a href="<?= getPaginationUrl($page) ?>" 
-                               class="pagination-number"
-                               aria-label="Go to page <?= $page ?>">
+                            <a href="<?= getPaginationUrl($page, ['_page_key' => $pageKey]) ?>"
+                               class="pagination-number" aria-label="Go to page <?= $page ?>">
                                 <?= $page ?>
                             </a>
                         <?php endif; ?>
                     <?php endforeach; ?>
 
-                    <!-- Show dots if there are more pages -->
                     <?php if ($pagination['end_page'] < $pagination['total_pages']): ?>
                         <span class="pagination-dots">...</span>
-                        <a href="<?= getPaginationUrl($pagination['total_pages']) ?>" 
-                           class="pagination-number"
-                           aria-label="Go to last page">
+                        <a href="<?= getPaginationUrl($pagination['total_pages'], ['_page_key' => $pageKey]) ?>"
+                           class="pagination-number" aria-label="Go to last page">
                             <?= $pagination['total_pages'] ?>
                         </a>
                     <?php endif; ?>
@@ -164,23 +146,21 @@ if (!function_exists('renderPagination')) {
 
                 <!-- Next Button -->
                 <?php if ($pagination['has_next']): ?>
-                    <a href="<?= getPaginationUrl($pagination['next_page']) ?>" 
-                       class="pagination-btn pagination-next"
-                       aria-label="Next page">
+                    <a href="<?= getPaginationUrl($pagination['next_page'], ['_page_key' => $pageKey]) ?>"
+                       class="pagination-btn pagination-next" aria-label="Next page">
                         Next
                     </a>
                 <?php else: ?>
-                    <span class="pagination-btn pagination-next <?= $disabledClass ?>"
-                          aria-disabled="true">
+                    <span class="pagination-btn pagination-next <?= $disabledClass ?>" aria-disabled="true">
                         Next
                     </span>
                 <?php endif; ?>
+
             </nav>
 
-            <!-- Pagination Info (Optional) -->
             <div class="pagination-info">
-                Menampilkan <?= $pagination['showing_from'] ?>-<?= $pagination['showing_to'] ?> 
-                dari <?= $pagination['total_items'] ?> artikel
+                Menampilkan <?= $pagination['showing_from'] ?>-<?= $pagination['showing_to'] ?>
+                dari <?= $pagination['total_items'] ?> item
             </div>
         </div>
         <?php

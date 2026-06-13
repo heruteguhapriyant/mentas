@@ -9,23 +9,32 @@ class HomeController extends Controller
         $eventModel = new Event();
         $collabModel = new Collaboration();
 
-        // Get latest content ordered by published_at/created_at
-        $featuredPosts = $postModel->all(3); // 3 latest published posts
-        $latestBulletins = $zineModel->all(3); // 3 latest bulletins
-        $latestProducts = $productModel->getAll(4); // 4 latest products
-        $latestEvents = $eventModel->getAll(); // upcoming events
-        $latestCollaborations = $collabModel->getActive(); // active collaborations
-        
-        // Limit events and collaborations
-        $latestEvents = array_slice($latestEvents, 0, 3);
+        $featuredPosts   = $postModel->getExcludeCategory('editorial', 3);
+        $editorialPosts  = $postModel->getByCategory('editorial', 3);
+        $latestBulletins = $zineModel->all(3);
+        $latestProducts  = $productModel->getAll(4);
+        $latestEvents    = $eventModel->getAll();
+        $latestCollaborations = $collabModel->getActive();
+
+        // Sort berdasarkan tanggal terbaru
+        usort($latestEvents, function($a, $b) {
+            return strtotime($b['event_date']) - strtotime($a['event_date']);
+        });
+        usort($latestCollaborations, function($a, $b) {
+            return strtotime($b['created_at']) - strtotime($a['created_at']);
+        });
+
+        // Limit
+        $latestEvents         = array_slice($latestEvents, 0, 3);
         $latestCollaborations = array_slice($latestCollaborations, 0, 3);
 
         $this->view('home/index', [
-            'featuredPosts' => $featuredPosts,
-            'latestBulletins' => $latestBulletins,
-            'latestProducts' => $latestProducts,
-            'latestEvents' => $latestEvents,
-            'latestCollaborations' => $latestCollaborations
+            'featuredPosts'        => $featuredPosts,
+            'editorialPosts'       => $editorialPosts,
+            'latestBulletins'      => $latestBulletins,
+            'latestProducts'       => $latestProducts,
+            'latestEvents'         => $latestEvents,
+            'latestCollaborations' => $latestCollaborations,
         ]);
     }
 }

@@ -50,6 +50,31 @@
             <small class="form-text">Format: JPG, PNG. Max 2MB</small>
         </div>
 
+        <!-- CREATOR -->
+        <div class="form-group">
+            <label>Creator / Pembuat Produk</label>
+            <small style="display:block; margin-bottom:8px; color:#666;">Pilih satu kontributor sebagai creator produk ini</small>
+            <?php if (!empty($contributors)): ?>
+                <div class="contributors-grid">
+                    <!-- Opsi kosong (tidak ada creator) -->
+                    <label class="contributor-checkbox">
+                        <input type="radio" name="creator_id" value=""
+                               <?= empty($product['creator_id']) ? 'checked' : '' ?>>
+                        <span>— Tidak ada —</span>
+                    </label>
+                    <?php foreach ($contributors as $contributor): ?>
+                        <label class="contributor-checkbox">
+                            <input type="radio" name="creator_id" value="<?= $contributor['id'] ?>"
+                                   <?= ($product['creator_id'] ?? '') == $contributor['id'] ? 'checked' : '' ?>>
+                            <span><?= htmlspecialchars($contributor['name']) ?></span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p style="color:#999;">Belum ada kontributor aktif.</p>
+            <?php endif; ?>
+        </div>
+
         <div class="form-group">
             <label>Nomor WhatsApp</label>
             <input type="text" name="whatsapp_number" class="form-control" value="<?= $product['whatsapp_number'] ?? '6283895189649' ?>" placeholder="6281234567890">
@@ -73,6 +98,40 @@
 <style>
 .form-row { display: flex; gap: 20px; }
 @media (max-width: 768px) { .form-row { flex-direction: column; gap: 0; } }
+
+.contributors-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.contributor-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    background: #f9f9f9;
+    user-select: none;
+}
+.contributor-checkbox:hover {
+    border-color: #888;
+    background: #f0f0f0;
+}
+.contributor-checkbox input[type="radio"] {
+    accent-color: #333;
+    cursor: pointer;
+}
+.contributor-checkbox input:checked + span {
+    font-weight: 600;
+}
+.contributor-checkbox:has(input:checked) {
+    border-color: #333;
+    background: #e8e8e8;
+}
 </style>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
@@ -113,13 +172,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.onload = function(e) {
                     image.src = e.target.result;
                     modal.style.display = 'block';
-
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-
+                    if (cropper) cropper.destroy();
                     cropper = new Cropper(image, {
-                        aspectRatio: 1, // 1:1 for products
+                        aspectRatio: 1,
                         viewMode: 1,
                         autoCropArea: 1,
                     });
@@ -131,26 +186,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     btnCrop.addEventListener('click', function() {
         if (!cropper) return;
-
         const canvas = cropper.getCroppedCanvas({
             width: 800,
             height: 800,
             imageSmoothingEnabled: true,
             imageSmoothingQuality: 'high',
         });
-
         canvas.toBlob(function(blob) {
             const fileName = input.files[0] ? input.files[0].name : "cropped.jpg";
             const newFile = new File([blob], fileName, { type: 'image/jpeg', lastModified: new Date().getTime() });
-
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(newFile);
             input.files = dataTransfer.files;
-
-            // Simple preview update if img exists nearby (optional but good UX)
-            // const preview = input.previousElementSibling && input.previousElementSibling.querySelector('img');
-            // if (preview) preview.src = URL.createObjectURL(newFile);
-
             modal.style.display = 'none';
             cropper.destroy();
             cropper = null;
@@ -159,11 +206,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     btnCancel.addEventListener('click', function() {
         modal.style.display = 'none';
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
-        input.value = ''; // Clear input if cancelled
+        if (cropper) { cropper.destroy(); cropper = null; }
+        input.value = '';
     });
 });
 </script>

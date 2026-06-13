@@ -4,7 +4,6 @@
 <section class="hero merch-hero detail-hero">
     <div class="hero-content">
         <h1 class="page-title"><?= htmlspecialchars($product['name']) ?></h1>
-        <p class="page-subtitle"><?= ($product['category_slug'] ?? '') === 'buku' ? 'Buku' : 'Merchandise' ?> dari Mentas.id</p>
     </div>
 </section>
 
@@ -17,7 +16,7 @@
             <a href="<?= BASE_URL ?>/merch">Merch</a>
             <span>/</span>
             <a href="<?= BASE_URL ?>/merch?category=<?= $product['category_slug'] ?? '' ?>">
-                <?= ($product['category_slug'] ?? '') === 'buku' ? 'Buku' : 'Merchandise' ?>
+                <?= htmlspecialchars($product['category_name'] ?? '') ?>
             </a>
             <span>/</span>
             <span class="current"><?= htmlspecialchars($product['name']) ?></span>
@@ -54,10 +53,23 @@
             <!-- Product Info -->
             <div class="product-info-detail">
                 <span class="product-category">
-                    <?= ($product['category_slug'] ?? '') === 'buku' ? 'Buku' : 'Merchandise' ?>
+                    <?= htmlspecialchars($product['category_name'] ?? '') ?>
                 </span>
                 
                 <h1 class="product-title"><?= htmlspecialchars($product['name']) ?></h1>
+
+                <!-- Creator Info -->
+                <?php if (!empty($product['creator_id']) && !empty($product['creator_name'])): ?>
+                <div class="product-creator">
+                    <span class="creator-label">Oleh</span>
+                    <a href="<?= BASE_URL ?>/author/<?= $product['creator_id'] ?>" class="creator-link">
+                        <div class="creator-avatar">
+                            <?= strtoupper(mb_substr($product['creator_name'], 0, 1)) ?>
+                        </div>
+                        <span class="creator-name"><?= htmlspecialchars($product['creator_name']) ?></span>
+                    </a>
+                </div>
+                <?php endif; ?>
                 
                 <div class="product-price-box">
                     <span class="price-label">Harga</span>
@@ -127,6 +139,55 @@
         <?php endif; ?>
     </div>
 </main>
+
+<style>
+.product-creator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.creator-label {
+    font-size: 13px;
+    color: #999;
+}
+.creator-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+    padding: 4px 10px 4px 4px;
+    border-radius: 20px;
+    border: 1px solid #eee;
+    transition: all 0.2s;
+}
+.creator-link:hover {
+    border-color: #c0392b;
+    background: #fff5f5;
+}
+.creator-link:hover .creator-name {
+    color: #c0392b;
+}
+.creator-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #333;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+.creator-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+</style>
 
 <!-- Toast Notification -->
 <div class="toast-container" id="toastContainer"></div>

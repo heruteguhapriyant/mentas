@@ -2,27 +2,24 @@
     <div class="footer-grid">
         <div>
             <h4>Tentang</h4>
-            <a href="<?= BASE_URL ?>/page/about">Tentang Kami</a><br />
-            <a href="<?= BASE_URL ?>/page/about">Visi & Misi</a><br />
-            <a href="<?= BASE_URL ?>/page/about">Hubungi</a>
+            <a href="<?= BASE_URL ?>/page/about" rel="nofollow">Tentang Kami</a><br />
         </div>
         <div>
-            <h4>Koleksi</h4>
-            <a href="<?= BASE_URL ?>/blog">Karya Kreator</a><br />
-            <a href="<?= BASE_URL ?>/katalog">Galeri Komunitas</a><br />
-            <a href="<?= BASE_URL ?>/zine">Arsip Digital</a>
+            <h4>Katalog</h4>
+            <a href="<?= BASE_URL ?>/blog" rel="nofollow">Artikel</a><br />
+            <a href="<?= BASE_URL ?>/kolaborasi" rel="nofollow">Koleb</a><br />
+            <a href="<?= BASE_URL ?>/bulletin" rel="nofollow">Katalog</a>
         </div>
         <div>
             <h4>Info</h4>
-            <a href="<?= BASE_URL ?>/page/about">Kebijakan Privasi</a><br />
-            <a href="<?= BASE_URL ?>/page/contribute">Panduan Upload</a>
+            <a href="<?= BASE_URL ?>/page/about" rel="nofollow">Kebijakan Privasi</a><br />
+            <a href="<?= BASE_URL ?>/page/contribute" rel="nofollow">Contributor</a>
         </div>
         <div>
             <h4>Ikuti Kami</h4>
             <div style="display: flex; gap: 15px; margin-top: 10px;">
-                <a href="https://instagram.com/mentas.id" target="_blank" style="font-size: 20px;"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://facebook.com/mentas.id" target="_blank" style="font-size: 20px;"><i class="fa-brands fa-facebook"></i></a>
-                <a href="https://twitter.com/mentas_id" target="_blank" style="font-size: 20px;"><i class="fa-brands fa-twitter"></i></a>
+                <a href="https://www.instagram.com/mentas.id?igsh=d250ajRidHF2MGFj" target="_blank" rel="nofollow noopener" style="font-size: 20px;"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.facebook.com/profile.php?id=100089339096110" target="_blank" rel="nofollow noopener" style="font-size: 20px;"><i class="fa-brands fa-facebook"></i></a>
             </div>
         </div>
     </div>

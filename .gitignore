@@ -1,81 +1,18 @@
-# ======================
-# Database Files
-# ======================
-# Full database dumps (large, contain sensitive data)
+# Upload user
+public/uploads/**
+
+# Keep folder structure
+!public/uploads/**/
+!public/uploads/**/.gitkeep
+
+# Backup
+*.zip
+*.rar
+*.7z
+
+# Database dump
 *.sql
-!database/*.sql
 
-# Keep schema and migrations in database folder
-# but ignore any backup dumps
-
-# ======================
-# Uploads & User Content
-# ======================
-public/uploads/
-uploads/
-
-# ======================
-# WordPress Migration
-# ======================
-# This folder is only for migration reference, not needed in production
-migration dari wordpress/
-
-# ======================
-# IDE & Editor
-# ======================
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-.project
-.settings/
-
-# ======================
-# OS Generated
-# ======================
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-desktop.ini
-
-# ======================
-# Logs & Cache
-# ======================
-*.log
-logs/
-cache/
-tmp/
-temp/
-
-# ======================
-# Dependencies (if any)
-# ======================
-vendor/
-node_modules/
-
-# ======================
-# Environment
-# ======================
-.env
-.env.local
-.env.*.local
-config.local.php
-
-# ======================
-# Backup files
-# ======================
-*.bak
-*.backup
-*~
-*.swp
-*.swo
-
-# ======================
-# Large Data Files
-# ======================
-data2/
-data2.zip
+# Test files
+public/cek.php
+tesss-index.php

@@ -4,7 +4,7 @@
 
 /* Hero Section */
 .merch-hero {
-    padding: 80px 60px 60px;
+    padding: 190px 60px 60px;
     text-align: center;
 }
 
@@ -78,7 +78,7 @@
 /* Products Grid */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(3, 1fr); /* FIX: hardcode 3 kolom di desktop */
     gap: 30px;
 }
 
@@ -273,7 +273,6 @@
 .merch-card:hover .merch-buttons .btn-outline:hover {
     transform: translate(-2px, -2px);
     box-shadow: 6px 6px 0 #fff;
-
 }
 
 .merch-card:hover .merch-buttons .btn-outline:active {
@@ -325,7 +324,6 @@
 .merch-card:hover .btn-whatsapp:hover {
     transform: translate(-2px, -2px);
     box-shadow: 6px 6px 0 #fff;
-
 }
 
 .merch-card:hover .btn-whatsapp:active {
@@ -758,6 +756,10 @@
     .product-gallery {
         position: static;
     }
+
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr); /* FIX: 2 kolom di tablet */
+    }
 }
 
 @media (max-width: 768px) {
@@ -783,7 +785,7 @@
     }
 
     .products-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr); /* FIX: tetap 2 kolom di mobile besar */
         gap: 15px;
     }
 
@@ -813,12 +815,14 @@
 
     .btn-whatsapp {
         width: 100%;
+        height: 44px;
     }
 }
 
 @media (max-width: 480px) {
     .products-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* FIX: 1 kolom di HP kecil saja */
+        gap: 15px;
     }
 
     .merch-section {

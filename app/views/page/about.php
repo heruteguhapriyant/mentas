@@ -1,6 +1,6 @@
 <?php // About Page - Uses existing Mentas design ?>
 
-<section class="hero" style="padding: 120px 60px 60px;">
+<section class="hero" style="padding: 190px 60px 60px;">
     <div class="hero-content">
         <h1>Tentang Mentas.id</h1>
         <p>Ruang Arsip, Wacana, dan Ekosistem Seni-Budaya</p>

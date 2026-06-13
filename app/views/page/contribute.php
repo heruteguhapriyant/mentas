@@ -89,7 +89,7 @@
             <h2>Ingin menjadi Contributor?</h2>
             <p>Daftar sebagai contributor dan dapatkan akses untuk menulis di platform kami.</p>
             <a href="<?= BASE_URL ?>/auth/register" class="btn-green">
-                <i class="fa-solid fa-user-plus contribute-btn-icon"></i> Daftar Sekarang
+                <i class="fa-solid fa-user-plus contribute-btn-icon"></i> Sign Up
             </a>
         </div>
     </div>

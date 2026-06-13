@@ -79,6 +79,13 @@
             </label>
         </div>
 
+        <div class="form-group">
+            <label>Tanggal Publish</label>
+            <input type="datetime-local" name="published_at" class="form-control" 
+                value="<?= !empty($zine['published_at']) ? date('Y-m-d\TH:i', strtotime($zine['published_at'])) : '' ?>">
+            <small class="form-text text-muted">Isi tanggal kapan zine ini diterbitkan. Jika dikosongkan, otomatis menggunakan tanggal hari ini.</small>
+        </div>
+
         <button type="submit" class="btn btn-primary"><?= $zine ? 'Update' : 'Simpan' ?></button>
     </form>
 </div>

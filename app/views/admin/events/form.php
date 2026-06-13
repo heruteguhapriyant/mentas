@@ -62,6 +62,59 @@
             <small class="form-text">Format: JPG, PNG. Ukuran ideal 1200x630px</small>
         </div>
 
+        <!-- KONTRIBUTOR -->
+        <div class="form-group">
+            <label>Kontributor yang Terlibat</label>
+            <small style="display:block; margin-bottom:8px; color:#666;">
+                Pilih kontributor yang terlibat dalam event ini
+            </small>
+            <?php if (!empty($contributors)): ?>
+                <div class="contributors-grid">
+                    <?php foreach ($contributors as $contributor): ?>
+                        <label class="contributor-checkbox">
+                            <input type="checkbox"
+                                   name="contributors[]"
+                                   value="<?= $contributor['id'] ?>"
+                                   <?= in_array($contributor['id'], $selectedContributors ?? []) ? 'checked' : '' ?>>
+                            <span><?= htmlspecialchars($contributor['name']) ?></span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p style="color:#999;">Belum ada kontributor aktif.</p>
+            <?php endif; ?>
+        </div>
+        
+        
+        <!-- KOMUNITAS -->
+        <div class="form-group">
+            <label>Informasi Komunitas</label>
+            <small style="display:block; margin-bottom:8px; color:#666;">
+                Opsional — isi jika event ini diselenggarakan bersama komunitas tertentu
+            </small>
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label>Nama Komunitas</label>
+                    <input type="text" name="community_name" class="form-control"
+                           value="<?= htmlspecialchars($event['community_name'] ?? '') ?>"
+                           placeholder="Contoh: Komunitas Teater Bandung">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Link Instagram Komunitas</label>
+                    <input type="url" name="community_ig" class="form-control"
+                           value="<?= htmlspecialchars($event['community_ig'] ?? '') ?>"
+                           placeholder="https://instagram.com/namakomunitas">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>No. WhatsApp Komunitas</label>
+                <input type="text" name="community_wa" class="form-control"
+                       value="<?= htmlspecialchars($event['community_wa'] ?? '') ?>"
+                       placeholder="Contoh: 6281234567890 (format internasional, tanpa + atau spasi)">
+                <small class="form-text">Format: 628xxx — dipakai untuk tombol chat WhatsApp di halaman event</small>
+            </div>
+        </div>
+
         <div class="form-group">
             <label class="checkbox-label">
                 <input type="checkbox" name="is_active" <?= ($event['is_active'] ?? 1) ? 'checked' : '' ?>>
@@ -79,6 +132,41 @@
 <style>
 .form-row { display: flex; gap: 20px; }
 @media (max-width: 768px) { .form-row { flex-direction: column; gap: 0; } }
+
+/* Kontributor grid */
+.contributors-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.contributor-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    background: #f9f9f9;
+    user-select: none;
+}
+.contributor-checkbox:hover {
+    border-color: #888;
+    background: #f0f0f0;
+}
+.contributor-checkbox input[type="checkbox"] {
+    accent-color: #333;
+    cursor: pointer;
+}
+.contributor-checkbox input:checked + span {
+    font-weight: 600;
+}
+.contributor-checkbox:has(input:checked) {
+    border-color: #333;
+    background: #e8e8e8;
+}
 </style>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
@@ -120,12 +208,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     image.src = e.target.result;
                     modal.style.display = 'block';
 
-                    if (cropper) {
-                        cropper.destroy();
-                    }
+                    if (cropper) cropper.destroy();
 
                     cropper = new Cropper(image, {
-                        aspectRatio: 16 / 9, // 16:9 for events
+                        aspectRatio: 16 / 9,
                         viewMode: 1,
                         autoCropArea: 1,
                     });
@@ -139,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!cropper) return;
 
         const canvas = cropper.getCroppedCanvas({
-            width: 1200, // HD width for events
+            width: 1200,
             height: 675,
             imageSmoothingEnabled: true,
             imageSmoothingQuality: 'high',
@@ -153,10 +239,6 @@ document.addEventListener('DOMContentLoaded', function() {
             dataTransfer.items.add(newFile);
             input.files = dataTransfer.files;
 
-            // Optional: Update a preview image if you have one
-            // const preview = input.previousElementSibling && input.previousElementSibling.querySelector('img');
-            // if (preview) preview.src = URL.createObjectURL(newFile);
-
             modal.style.display = 'none';
             cropper.destroy();
             cropper = null;
@@ -169,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cropper.destroy();
             cropper = null;
         }
-        input.value = ''; // Clear input if cancelled
+        input.value = '';
     });
 });
 </script>

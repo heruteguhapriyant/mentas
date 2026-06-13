@@ -137,7 +137,7 @@ class MerchController extends Controller
         $message .= "Mohon informasi ketersediaan stok. Terima kasih!";
         
         // Get WhatsApp number from product or default
-        $whatsappNumber = $product['whatsapp_number'] ?? '6283895189649';
+        $whatsappNumber = $product['whatsapp_number'] ?? '6281239308080';
         
         // Generate WhatsApp URL
         $whatsappUrl = "https://wa.me/{$whatsappNumber}?text=" . urlencode($message);

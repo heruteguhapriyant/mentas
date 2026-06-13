@@ -6,8 +6,8 @@
             <h1>Hasil Pencarian</h1>
             <p>Hasil pencarian: "<?= htmlspecialchars($searchQuery) ?>"</p>
         <?php else: ?>
-            <h1>Bulletin</h1>
-            <p>Kumpulan publikasi sastra dari komunitas Mentas dalam format PDF</p>
+            <h1>Katalog</h1>
+            <p>Bulletin dan karya kreator</p>
         <?php endif; ?>
     </div>
 </section>
@@ -132,11 +132,6 @@
                             <a href="<?= BASE_URL ?>/bulletin/<?= $zine['slug'] ?>" 
                                class="btn-outline btn-secondary" target="_blank">
                                 <i class="fa-solid fa-eye"></i> Detail
-                            </a>
-                            <a href="<?= htmlspecialchars($zine['pdf_link']) ?>" 
-                               target="_blank"
-                               class="btn-outline btn-primary">
-                                <i class="fas fa-external-link-alt"></i> Baca / Download
                             </a>
                         <?php else: ?>
                             <a href="<?= BASE_URL ?>/bulletin/<?= $zine['slug'] ?>" 

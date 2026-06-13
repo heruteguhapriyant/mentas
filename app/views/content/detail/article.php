@@ -177,7 +177,7 @@
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <p>Belum ada komentar. Jadilah yang pertama berkomentar!</p>
+                        <p>Belum ada komentar.</p>
                     <?php endif; ?>
                 </div>
 
@@ -203,7 +203,7 @@
                             <textarea name="body" id="body" rows="4" class="form-control" required></textarea>
                         </div>
 
-                        <button type="submit" class="btn-primary">Kirim Komentar</button>
+                        <button type="submit" class="btn-primary">Komentar</button>
                     </form>
                 </div>
             </div>
@@ -235,7 +235,7 @@
             <!-- Recent Posts Widget -->
             <?php if (!empty($recentPosts)): ?>
             <div class="sidebar-widget">
-                <h3 class="sidebar-title">Artikel Terbaru</h3>
+                <h3 class="sidebar-title">Terbaru</h3>
                 <ul class="sidebar-posts">
                     <?php foreach ($recentPosts as $post): ?>
                         <li class="sidebar-post-item">

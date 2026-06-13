@@ -21,11 +21,14 @@ class Product {
      * Get all active products (Updated dengan pagination support)
      */
     public function getAll($limit = null, $offset = 0, $activeOnly = true, $search = null) {
-        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug 
+        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug,
+                       u.name as creator_name
                 FROM {$this->table} p
-                LEFT JOIN categories c ON p.category_id = c.id";
+                LEFT JOIN categories c ON p.category_id = c.id
+                LEFT JOIN users u ON p.creator_id = u.id";
         
         $params = [];
+        $conditions = [];
         
         if ($activeOnly) {
             $conditions[] = "p.is_active = 1";
@@ -43,12 +46,15 @@ class Product {
         
         $sql .= " ORDER BY p.created_at DESC";
         
-        // Add pagination
         if ($limit !== null) {
             $sql .= " LIMIT :limit OFFSET :offset";
         }
         
         $stmt = $this->db->prepare($sql);
+        
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
         
         if ($limit !== null) {
             $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
@@ -60,13 +66,15 @@ class Product {
     }
 
     /**
-     * Get product by ID
+     * Get product by ID — JOIN creator
      */
     public function getById($id) {
         $stmt = $this->db->prepare(
-            "SELECT p.*, c.name as category_name, c.id as category_id
+            "SELECT p.*, c.name as category_name, c.id as category_id,
+                    u.id as creator_id, u.name as creator_name
              FROM {$this->table} p
              LEFT JOIN categories c ON p.category_id = c.id
+             LEFT JOIN users u ON p.creator_id = u.id
              WHERE p.id = :id"
         );
         $stmt->bindParam(':id', $id);
@@ -82,13 +90,15 @@ class Product {
     }
 
     /**
-     * Get product by slug
+     * Get product by slug — JOIN creator
      */
     public function getBySlug($slug) {
         $stmt = $this->db->prepare(
-            "SELECT p.*, c.name as category_name, c.slug as category_slug
+            "SELECT p.*, c.name as category_name, c.slug as category_slug,
+                    u.id as creator_id, u.name as creator_name
              FROM {$this->table} p
              LEFT JOIN categories c ON p.category_id = c.id
+             LEFT JOIN users u ON p.creator_id = u.id
              WHERE p.slug = :slug"
         );
         $stmt->bindParam(':slug', $slug);
@@ -106,7 +116,6 @@ class Product {
                 WHERE c.slug = :slug AND p.is_active = 1 
                 ORDER BY p.created_at DESC";
         
-        // Add pagination
         if ($limit !== null) {
             $sql .= " LIMIT :limit OFFSET :offset";
         }
@@ -124,11 +133,22 @@ class Product {
     }
 
     /**
-     * Count all products (BARU - untuk pagination)
-     * 
-     * @param string|null $categorySlug Filter by category
-     * @param bool $activeOnly Only active products
-     * @return int
+     * Get products by creator (untuk halaman profil author)
+     */
+    public function getByCreator($userId) {
+        $stmt = $this->db->prepare(
+            "SELECT p.*, c.name as category_name, c.slug as category_slug
+             FROM {$this->table} p
+             LEFT JOIN categories c ON p.category_id = c.id
+             WHERE p.creator_id = ? AND p.is_active = 1
+             ORDER BY p.created_at DESC"
+        );
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Count all products (untuk pagination)
      */
     public function countAll($categorySlug = null, $activeOnly = true) {
         if ($categorySlug) {
@@ -165,9 +185,9 @@ class Product {
         $data['slug'] = $data['slug'] ?? self::generateSlug($data['name']);
         
         $sql = "INSERT INTO {$this->table} 
-                (name, slug, category_id, description, price, stock, cover_image, images, whatsapp_number, is_active) 
+                (name, slug, category_id, description, price, stock, creator_id, cover_image, images, whatsapp_number, is_active) 
                 VALUES 
-                (:name, :slug, :category_id, :description, :price, :stock, :cover_image, :images, :whatsapp_number, :is_active)";
+                (:name, :slug, :category_id, :description, :price, :stock, :creator_id, :cover_image, :images, :whatsapp_number, :is_active)";
         
         $stmt = $this->db->prepare($sql);
         
@@ -177,6 +197,7 @@ class Product {
         $stmt->bindParam(':description', $data['description']);
         $stmt->bindParam(':price', $data['price']);
         $stmt->bindParam(':stock', $data['stock']);
+        $stmt->bindParam(':creator_id', $data['creator_id']);
         $stmt->bindParam(':cover_image', $data['cover_image']);
         $stmt->bindParam(':images', $data['images']);
         $stmt->bindParam(':whatsapp_number', $data['whatsapp_number']);
@@ -213,7 +234,7 @@ class Product {
     }
 
     /**
-     * Update stock quantity (UPDATED - untuk set stock langsung)
+     * Update stock quantity
      */
     public function updateStock($id, $quantity) {
         $stmt = $this->db->prepare(
@@ -225,7 +246,7 @@ class Product {
     }
 
     /**
-     * Decrement stock (BARU - untuk mengurangi stock setelah order)
+     * Decrement stock
      */
     public function decrementStock($id, $amount = 1) {
         $stmt = $this->db->prepare(
@@ -247,7 +268,7 @@ class Product {
     }
 
     /**
-     * Count products by category (kept for backward compatibility)
+     * Count products by category
      */
     public function countByCategory($categorySlug) {
         $stmt = $this->db->prepare(
@@ -263,10 +284,7 @@ class Product {
     }
 
     /**
-     * Get featured products (BARU - untuk homepage/banner)
-     * 
-     * @param int $limit Number of products to return
-     * @return array
+     * Get featured products
      */
     public function getFeatured($limit = 4) {
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug
@@ -283,10 +301,7 @@ class Product {
     }
 
     /**
-     * Get new arrivals (BARU - produk terbaru)
-     * 
-     * @param int $limit Number of products to return
-     * @return array
+     * Get new arrivals
      */
     public function getNewArrivals($limit = 8) {
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug
@@ -303,12 +318,7 @@ class Product {
     }
 
     /**
-     * Search products (BARU - untuk fitur search)
-     * 
-     * @param string $keyword Search keyword
-     * @param int $limit Items per page
-     * @param int $offset Offset
-     * @return array
+     * Search products
      */
     public function search($keyword, $limit = 12, $offset = 0) {
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug
@@ -329,10 +339,7 @@ class Product {
     }
 
     /**
-     * Count search results (BARU - untuk pagination search)
-     * 
-     * @param string $keyword Search keyword
-     * @return int
+     * Count search results
      */
     public function countSearch($keyword) {
         $sql = "SELECT COUNT(*) as total 
@@ -349,11 +356,7 @@ class Product {
     }
 
     /**
-     * Get low stock products (BARU - untuk admin notification)
-     * 
-     * @param int $threshold Stock threshold
-     * @param int $limit Number of products
-     * @return array
+     * Get low stock products
      */
     public function getLowStock($threshold = 10, $limit = 10) {
         $sql = "SELECT p.*, c.name as category_name
@@ -371,9 +374,7 @@ class Product {
     }
 
     /**
-     * Get out of stock products (BARU - untuk admin)
-     * 
-     * @return array
+     * Get out of stock products
      */
     public function getOutOfStock() {
         $sql = "SELECT p.*, c.name as category_name
