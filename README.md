@@ -130,7 +130,7 @@ Browser Response (HTML)
 
 1. **Clone repository**
    ```bash
-   git clone https://github.com/Daffa964/mentas.git
+   git clone https://github.com/heruteguhapriyant/mentas.git
    cd mentas
    ```
 
